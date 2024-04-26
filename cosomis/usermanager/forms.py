@@ -70,8 +70,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
     username = None
     email = forms.EmailField(
-        label=_('Email'),
-        widget=forms.EmailInput(attrs={"autofocus": True})
+        label=_("Email"), widget=forms.EmailInput(attrs={"autofocus": True})
     )
     password = forms.CharField(
         label=_("Password"),
@@ -96,8 +95,8 @@ class EmailAuthenticationForm(AuthenticationForm):
         self.user_cache = None
         self.username_field = UserModel._meta.get_field(UserModel.USERNAME_FIELD)
         forms.forms.BaseForm.__init__(self, *args, **kwargs)
-        self.fields['password'].label = _('Password')
-        self.fields['email'].label = _('Email')
+        self.fields["password"].label = _("Password")
+        self.fields["email"].label = _("Email")
 
     def clean(self):
         username = self.cleaned_data.get("email")
@@ -118,7 +117,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 class PassCodeAuthenticationForm(EmailAuthenticationForm):
     def __init__(self, request=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['password'].label = _('Pass Code')
+        self.fields["password"].label = _("Pass Code")
 
 
 class UserCreationForm(forms.ModelForm):

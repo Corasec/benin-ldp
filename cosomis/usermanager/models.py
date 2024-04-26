@@ -89,8 +89,13 @@ class User(AbstractUser):
     email_was_confirm = models.BooleanField(default=False)
     is_approved = models.BooleanField(null=True)
 
-    organization = models.ForeignKey(Organization, on_delete=models.SET_NULL,
-                                     null=True, blank=True, related_name='users')
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="users",
+    )
 
     objects = UserManager()
 

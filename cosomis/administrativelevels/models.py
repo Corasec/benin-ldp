@@ -9,54 +9,87 @@ class AdministrativeLevel(BaseModel):
     field -> priority identified (date)
     Set an Attr(model) as default image
     """
-    LIME_GREEN = 'lime_green'
-    DARK_GREEN = 'dark_green'
-    ORANGE = 'orange'
-    RED = 'red'
+
+    LIME_GREEN = "lime_green"
+    DARK_GREEN = "dark_green"
+    ORANGE = "orange"
+    RED = "red"
     STATUS_COLORS = (
-        (LIME_GREEN, _('Lime Green')),
-        (DARK_GREEN, _('Dark Green')),
-        (ORANGE, _('Orange')),
-        (RED, _('Red'))
+        (LIME_GREEN, _("Lime Green")),
+        (DARK_GREEN, _("Dark Green")),
+        (ORANGE, _("Orange")),
+        (RED, _("Red")),
     )
 
-    EARLY = 'early'
-    NORMAL = 'normal'
-    LATE = 'late'
-    BLOCKED = 'blocked'
+    EARLY = "early"
+    NORMAL = "normal"
+    LATE = "late"
+    BLOCKED = "blocked"
     STATUS_DESCRIPTION = (
-        (EARLY, _('Early')),
-        (NORMAL, _('Normal')),
-        (LATE, _('Late')),
-        (BLOCKED, _('Blocked'))
+        (EARLY, _("Early")),
+        (NORMAL, _("Normal")),
+        (LATE, _("Late")),
+        (BLOCKED, _("Blocked")),
     )
 
-    VILLAGE = 'Village'
-    CANTON = 'Canton'
-    COMMUNE = 'Commune'
-    REGION = 'Region'
-    PREFECTURE = 'Prefecture'
+    VILLAGE = "Village"
+    CANTON = "Canton"
+    COMMUNE = "Commune"
+    REGION = "Region"
+    PREFECTURE = "Prefecture"
     TYPE = (
-        (VILLAGE, _('Village')),
-        (CANTON, _('Canton')),
-        (COMMUNE, _('Commune')),
-        (REGION, _('Region')),
-        (PREFECTURE, _('Prefecture'))
+        (VILLAGE, _("Village")),
+        (CANTON, _("Canton")),
+        (COMMUNE, _("Commune")),
+        (REGION, _("Region")),
+        (PREFECTURE, _("Prefecture")),
     )
-    parent = models.ForeignKey('AdministrativeLevel', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Parent"))
-    geographical_unit = models.ForeignKey('GeographicalUnit', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Geographical unit"))
-    default_image = models.ForeignKey('investments.Attachment', on_delete=models.SET_NULL, null=True, blank=True)
+    parent = models.ForeignKey(
+        "AdministrativeLevel",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Parent"),
+    )
+    geographical_unit = models.ForeignKey(
+        "GeographicalUnit",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Geographical unit"),
+    )
+    default_image = models.ForeignKey(
+        "investments.Attachment", on_delete=models.SET_NULL, null=True, blank=True
+    )
     frontalier = models.BooleanField(default=True, verbose_name=_("Frontalier"))
     rural = models.BooleanField(default=True, verbose_name=_("Rural"))
 
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Latitude"))
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Longitude"))
+    latitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        blank=True,
+        null=True,
+        verbose_name=_("Latitude"),
+    )
+    longitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        blank=True,
+        null=True,
+        verbose_name=_("Longitude"),
+    )
     name = models.CharField(max_length=255, verbose_name=_("Name"))
     rank = models.PositiveIntegerField(null=True, blank=True)
     # adm_0_id to adm_n_id
-    status_color = models.CharField(max_length=20, choices=STATUS_COLORS, default=LIME_GREEN)
-    status_description = models.CharField(max_length=15, choices=STATUS_DESCRIPTION, default=NORMAL)
-    type = models.CharField(max_length=255, verbose_name=_("Type"), choices=TYPE, default=VILLAGE)
+    status_color = models.CharField(
+        max_length=20, choices=STATUS_COLORS, default=LIME_GREEN
+    )
+    status_description = models.CharField(
+        max_length=15, choices=STATUS_DESCRIPTION, default=NORMAL
+    )
+    type = models.CharField(
+        max_length=255, verbose_name=_("Type"), choices=TYPE, default=VILLAGE
+    )
     total_population = models.IntegerField(default=0)
     population_men = models.IntegerField(default=0)
     population_women = models.IntegerField(default=0)
@@ -72,9 +105,9 @@ class AdministrativeLevel(BaseModel):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     no_sql_db_id = models.CharField(null=True, blank=True, max_length=255)
-    
+
     class Meta:
-        unique_together = ['name', 'parent', 'type']
+        unique_together = ["name", "parent", "type"]
 
     def __str__(self):
         return self.name
@@ -82,7 +115,7 @@ class AdministrativeLevel(BaseModel):
     def get_list_priorities(self):
         """Method to get the list of the all priorities that the administrative is linked"""
         return self.villagepriority_set.get_queryset()
-    
+
     # def get_list_subprojects(self):
     #     """Method to get the list of the all subprojects that the administrative is linked"""
     #     return self.subproject_set.get_queryset()
@@ -91,9 +124,13 @@ class AdministrativeLevel(BaseModel):
         if self.cvd:
             return self.cvd.subproject_set.get_queryset()
         return []
-    
+
     def get_facilitator(self, projects_ids):
-        for assign in self.assignadministrativeleveltofacilitator_set.get_queryset().filter(project_id__in=projects_ids, activated=True):
+        for (
+            assign
+        ) in self.assignadministrativeleveltofacilitator_set.get_queryset().filter(
+            project_id__in=projects_ids, activated=True
+        ):
             return assign.facilitator
         return None
 
@@ -115,20 +152,30 @@ class AdministrativeLevel(BaseModel):
     @property
     def children(self):
         return self.administrativelevel_set.get_queryset()
-    
+
     def get_list_geographical_unit(self):
         """Method to get the list of the all Geographical Unit that the administrative is linked"""
         return self.geographicalunit_set.get_queryset()
 
 
 class GeographicalUnit(BaseModel):
-    canton = models.ForeignKey('AdministrativeLevel', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Administrative level"))
-    attributed_number_in_canton = models.IntegerField(verbose_name=_("Attributed number in canton"))
-    unique_code = models.CharField(max_length=100, unique=True, verbose_name=_("Unique code"))
+    canton = models.ForeignKey(
+        "AdministrativeLevel",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        verbose_name=_("Administrative level"),
+    )
+    attributed_number_in_canton = models.IntegerField(
+        verbose_name=_("Attributed number in canton")
+    )
+    unique_code = models.CharField(
+        max_length=100, unique=True, verbose_name=_("Unique code")
+    )
     description = models.TextField(null=True, blank=True, verbose_name=_("Description"))
 
     class Meta:
-        unique_together = ['canton', 'attributed_number_in_canton']
+        unique_together = ["canton", "attributed_number_in_canton"]
 
     def get_name(self):
         administrativelevels = self.get_villages()
@@ -141,13 +188,13 @@ class GeographicalUnit(BaseModel):
                 name += "/"
             count += 1
         return name if name else self.unique_code
-    
+
     def get_villages(self):
         return self.administrativelevel_set.get_queryset()
 
     def get_cvds(self):
         return self.cvd_set.get_queryset()
-    
+
     def __str__(self):
         return self.get_name()
 
@@ -159,24 +206,26 @@ class Project(BaseModel):
 
 
 class Phase(BaseModel):
-    village = models.ForeignKey(AdministrativeLevel, on_delete=models.CASCADE, related_name='phases')
+    village = models.ForeignKey(
+        AdministrativeLevel, on_delete=models.CASCADE, related_name="phases"
+    )
     order = models.PositiveIntegerField(blank=True, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     no_sql_db_id = models.CharField(null=True, blank=True, max_length=255)
 
     def __str__(self):
-        return '%s. %s(%s)' % (self.order, self.name, self.village)
+        return "%s. %s(%s)" % (self.order, self.name, self.village)
 
     def get_status(self):
         completed = self.activities.filter(
             tasks__id__in=models.Subquery(
-                Task.objects.filter(status=Task.COMPLETED).values('id')
+                Task.objects.filter(status=Task.COMPLETED).values("id")
             )
         ).exists()
         not_started = self.activities.filter(
             tasks__id__in=models.Subquery(
-                Task.objects.filter(status=Task.NOT_STARTED).values('id')
+                Task.objects.filter(status=Task.NOT_STARTED).values("id")
             )
         ).exists()
         if not_started and not completed:
@@ -184,19 +233,20 @@ class Phase(BaseModel):
         elif not not_started and completed:
             return Task.COMPLETED
         elif self.activities.filter(
-                tasks__id__in=models.Subquery(
-                    Task.objects.filter(status=Task.ERROR).values('id')
-                )
+            tasks__id__in=models.Subquery(
+                Task.objects.filter(status=Task.ERROR).values("id")
+            )
         ).exists():
             return Task.ERROR
         return Task.IN_PROGRESS
 
     def get_order(self):
-        last_phase = self.__class__.objects.filter(
-            village=self.village
-        ).aggregate(
-            last_phase=models.Max('order')
-        )['last_phase'] or 0
+        last_phase = (
+            self.__class__.objects.filter(village=self.village).aggregate(
+                last_phase=models.Max("order")
+            )["last_phase"]
+            or 0
+        )
         return last_phase + 1
 
     def save(self, *args, **kwargs):
@@ -206,14 +256,16 @@ class Phase(BaseModel):
 
 
 class Activity(BaseModel):
-    phase = models.ForeignKey(Phase, on_delete=models.CASCADE, related_name='activities')
+    phase = models.ForeignKey(
+        Phase, on_delete=models.CASCADE, related_name="activities"
+    )
     order = models.PositiveIntegerField(blank=True, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
     no_sql_db_id = models.CharField(null=True, blank=True, max_length=255)
 
     def __str__(self):
-        return '%s. %s(%s)' % (self.order, self.name, self.phase)
+        return "%s. %s(%s)" % (self.order, self.name, self.phase)
 
     def get_status(self):
         not_started = self.tasks.filter(status=Task.NOT_STARTED).exists()
@@ -227,11 +279,12 @@ class Activity(BaseModel):
         return Task.IN_PROGRESS
 
     def get_order(self):
-        last_activity = self.__class__.objects.filter(
-            phase=self.phase
-        ).aggregate(
-            last_activity=models.Max('order')
-        )['last_activity'] or 0
+        last_activity = (
+            self.__class__.objects.filter(phase=self.phase).aggregate(
+                last_activity=models.Max("order")
+            )["last_activity"]
+            or 0
+        )
         return last_activity + 1
 
     def save(self, *args, **kwargs):
@@ -241,10 +294,10 @@ class Activity(BaseModel):
 
 
 class Task(BaseModel):
-    NOT_STARTED = 'not started'
-    IN_PROGRESS = 'in progress'
-    COMPLETED = 'completed'
-    ERROR = 'error'
+    NOT_STARTED = "not started"
+    IN_PROGRESS = "in progress"
+    COMPLETED = "completed"
+    ERROR = "error"
 
     STATUS = [
         (NOT_STARTED, _(NOT_STARTED)),
@@ -253,7 +306,9 @@ class Task(BaseModel):
         (ERROR, _(ERROR)),
     ]
 
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name='tasks')
+    activity = models.ForeignKey(
+        Activity, on_delete=models.CASCADE, related_name="tasks"
+    )
     order = models.PositiveIntegerField(blank=True, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -264,14 +319,20 @@ class Task(BaseModel):
     attachments = models.JSONField(null=True, blank=True)
 
     def __str__(self):
-        return '%s. %s(%s) - %s' % (self.order, self.name, str(self.activity.id), self.status)
+        return "%s. %s(%s) - %s" % (
+            self.order,
+            self.name,
+            str(self.activity.id),
+            self.status,
+        )
 
     def get_order(self):
-        last_task = self.__class__.objects.filter(
-            activity=self.activity
-        ).aggregate(
-            last_task=models.Max('order')
-        )['last_task'] or 0
+        last_task = (
+            self.__class__.objects.filter(activity=self.activity).aggregate(
+                last_task=models.Max("order")
+            )["last_task"]
+            or 0
+        )
         return last_task + 1
 
     def save(self, *args, **kwargs):
@@ -288,21 +349,20 @@ class Task(BaseModel):
 
 
 def update_or_create_amd_couch(sender, instance, **kwargs):
-    print("test", instance.id, kwargs['created'])
+    print("test", instance.id, kwargs["created"])
     client = CddClient()
-    if kwargs['created']:
+    if kwargs["created"]:
         couch_object_id = client.create_administrative_level(instance)
         to_update = AdministrativeLevel.objects.filter(id=instance.id)
         to_update.update(no_sql_db_id=couch_object_id)
     else:
         client.update_administrative_level(instance)
 
+
 # def delete_amd_couch(sender, instance, **kwargs):
 #     client = CddClient()
 #     client.delete_administrative_level(instance)
 
 
-
 # post_save.connect(update_or_create_amd_couch, sender=AdministrativeLevel)
 # post_delete.connect(delete_amd_couch, sender=AdministrativeLevel) # POST-DELETE method to delete the administrativelevel in the couchdb
-

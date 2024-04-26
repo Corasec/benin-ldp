@@ -6,20 +6,28 @@ from django.utils.translation import gettext_lazy as _
 from authentication.models import Facilitator
 from usermanager.models import User
 
-#Login User Serialization
-class CheckUserSerializer(serializers.Serializer):
-	username = serializers.CharField()
-	password = serializers.CharField()
-	def validate(self, data):
-		username = data.get('username')
-		password = data.get('password')
-	
-		user = User.objects.filter(Q(email=username) | Q(username=username)).first()
-		user = Facilitator.objects.using('cdd').filter(Q(email=username) | Q(username=username)).first() if not user else user
 
-		if user and check_password(password, user.password):
-			if not user.is_active:
-				return serializers.ValidationError(_("Your account is inactive"))
-			return user
-    			
-		raise serializers.ValidationError(_("Incorrect identifiers"))
+# Login User Serialization
+class CheckUserSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        username = data.get("username")
+        password = data.get("password")
+
+        user = User.objects.filter(Q(email=username) | Q(username=username)).first()
+        user = (
+            Facilitator.objects.using("cdd")
+            .filter(Q(email=username) | Q(username=username))
+            .first()
+            if not user
+            else user
+        )
+
+        if user and check_password(password, user.password):
+            if not user.is_active:
+                return serializers.ValidationError(_("Your account is inactive"))
+            return user
+
+        raise serializers.ValidationError(_("Incorrect identifiers"))

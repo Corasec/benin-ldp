@@ -7,54 +7,107 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('administrativelevels', '0001_initial'),
+        ("administrativelevels", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Phase',
+            name="Phase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_date', models.DateTimeField(auto_now=True, null=True)),
-                ('order', models.PositiveIntegerField(blank=True, null=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('village', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administrativelevels.administrativelevel')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateTimeField(auto_now_add=True, null=True)),
+                ("updated_date", models.DateTimeField(auto_now=True, null=True)),
+                ("order", models.PositiveIntegerField(blank=True, null=True)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                (
+                    "village",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="administrativelevels.administrativelevel",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('village', 'order')},
+                "unique_together": {("village", "order")},
             },
         ),
         migrations.CreateModel(
-            name='Activity',
+            name="Activity",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_date', models.DateTimeField(auto_now=True, null=True)),
-                ('order', models.PositiveIntegerField(blank=True, null=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('phase', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administrativelevels.phase')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateTimeField(auto_now_add=True, null=True)),
+                ("updated_date", models.DateTimeField(auto_now=True, null=True)),
+                ("order", models.PositiveIntegerField(blank=True, null=True)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                (
+                    "phase",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="administrativelevels.phase",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('phase', 'order')},
+                "unique_together": {("phase", "order")},
             },
         ),
         migrations.CreateModel(
-            name='Task',
+            name="Task",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_date', models.DateTimeField(auto_now=True, null=True)),
-                ('order', models.PositiveIntegerField(blank=True, null=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('status', models.CharField(choices=[('not started', 'not started'), ('in progress', 'in progress'), ('completed', 'completed')], default='not started', max_length=127)),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='administrativelevels.activity')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateTimeField(auto_now_add=True, null=True)),
+                ("updated_date", models.DateTimeField(auto_now=True, null=True)),
+                ("order", models.PositiveIntegerField(blank=True, null=True)),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("not started", "not started"),
+                            ("in progress", "in progress"),
+                            ("completed", "completed"),
+                        ],
+                        default="not started",
+                        max_length=127,
+                    ),
+                ),
+                (
+                    "activity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="administrativelevels.activity",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('activity', 'order')},
+                "unique_together": {("activity", "order")},
             },
         ),
     ]

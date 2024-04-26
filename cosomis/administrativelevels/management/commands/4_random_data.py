@@ -66,6 +66,4 @@ class Command(BaseCommand):
                 investment.sector__id = 3
             investment.save()
             i = i + 1
-        self.stdout.write(self.style.SUCCESS('Successfully finish random!'))
-
-
+        self.stdout.write(self.style.SUCCESS("Successfully finish random!"))

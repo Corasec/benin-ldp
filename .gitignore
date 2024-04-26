@@ -21,3 +21,18 @@ cosomis/cosomis/*.env
 *.db
 
 .idea/
+*.log
+local_settings.py
+
+# virtual environments
+.venv
+ENV/
+venv*/
+dump.rdb
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# dotenv
+.env

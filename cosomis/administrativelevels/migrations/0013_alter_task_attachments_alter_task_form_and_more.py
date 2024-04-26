@@ -6,23 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('administrativelevels', '0012_task_attachments'),
+        ("administrativelevels", "0012_task_attachments"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='attachments',
+            model_name="task",
+            name="attachments",
             field=models.JSONField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='task',
-            name='form',
+            model_name="task",
+            name="form",
             field=models.JSONField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='task',
-            name='form_responses',
+            model_name="task",
+            name="form_responses",
             field=models.JSONField(blank=True, null=True),
         ),
     ]

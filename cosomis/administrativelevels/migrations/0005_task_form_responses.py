@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('administrativelevels', '0004_administrativelevel_default_image_and_more'),
+        ("administrativelevels", "0004_administrativelevel_default_image_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='task',
-            name='form_responses',
-            field=models.TextField(blank=True, help_text='This is a json field that needs to be parsed.', null=True),
+            model_name="task",
+            name="form_responses",
+            field=models.TextField(
+                blank=True,
+                help_text="This is a json field that needs to be parsed.",
+                null=True,
+            ),
         ),
     ]

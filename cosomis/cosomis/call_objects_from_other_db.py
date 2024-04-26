@@ -3,6 +3,7 @@ from typing import (
 )
 from django.db.models import Model
 
+
 class CallObjects:
     def __init__(self, using) -> None:
         self.using = using
@@ -23,5 +24,4 @@ class CallObjects:
         return object_to_save.delete(self.using)
 
 
-
-cdd_objects_call = CallObjects('cdd')
+cdd_objects_call = CallObjects("cdd")

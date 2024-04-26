@@ -12,6 +12,7 @@ Class-based views
 Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+
 from django.urls import path
 from django.conf.urls import include
 from django.contrib import admin
@@ -29,20 +30,19 @@ from . import views
 #     path('unicorn/', include('django_unicorn.urls')),
 # ]
 urlpatterns = [
-    path('set-language/', 
-         views.set_language, 
-         name='set_language'),
+    path("set-language/", views.set_language, name="set_language"),
     # path('api/', include('cosomis.urls_api')),
 ]
 
 urlpatterns += i18n_patterns(
-    path('admin/', admin.site.urls),
-    path('', include('usermanager.urls')),
-    path('administrative-levels/', include('administrativelevels.urls')),
-    path('investments/', include('investments.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("usermanager.urls")),
+    path("administrative-levels/", include("administrativelevels.urls")),
+    path("investments/", include("investments.urls")),
 )
 
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [path("__debug__/", include("debug_toolbar.urls"))]

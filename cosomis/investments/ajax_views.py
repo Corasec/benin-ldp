@@ -11,7 +11,7 @@ class FillAdmLevelsSelectFilters(generics.GenericAPIView):
     """
 
     def post(self, request, *args, **kwargs):
-        adm_obj = AdministrativeLevel.objects.get(id=request.POST['value'])
+        adm_obj = AdministrativeLevel.objects.get(id=request.POST["value"])
         opt_qs = AdministrativeLevel.objects.filter(parent=adm_obj)
         if adm_obj.type == AdministrativeLevel.REGION:
             opt_qs = opt_qs.filter(type=AdministrativeLevel.PREFECTURE)
@@ -22,9 +22,9 @@ class FillAdmLevelsSelectFilters(generics.GenericAPIView):
         elif adm_obj.type == AdministrativeLevel.CANTON:
             opt_qs = opt_qs.filter(type=AdministrativeLevel.VILLAGE)
 
-        return Response({
-            'values': [{'id': adm.id, 'name': adm.name} for adm in opt_qs]
-        })
+        return Response(
+            {"values": [{"id": adm.id, "name": adm.name} for adm in opt_qs]}
+        )
 
 
 class FillSectorsSelectFilters(generics.GenericAPIView):
@@ -33,7 +33,7 @@ class FillSectorsSelectFilters(generics.GenericAPIView):
     """
 
     def post(self, request, *args, **kwargs):
-        opt_qs = Sector.objects.filter(category__id=request.POST['value'])
-        return Response({
-            'values': [{'id': adm.id, 'name': adm.name} for adm in opt_qs]
-        })
+        opt_qs = Sector.objects.filter(category__id=request.POST["value"])
+        return Response(
+            {"values": [{"id": adm.id, "name": adm.name} for adm in opt_qs]}
+        )

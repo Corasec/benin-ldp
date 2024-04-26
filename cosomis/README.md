@@ -1,21 +1,28 @@
-### Run server
+# ldp-benin
 
-Run `make server`
+Run the App
+`cd benin-ldp/cosomis`
 
-### Update requirements
+## Setup
 
-Run `make pip-install`
+Set Python environment (use python 3)
+`python3 -m venv venv`
 
-### Generate translations
+Activate Python Environment
+`source venv/bin/activate`
 
-To  update the translations and generate the .po and .mo
-Run `make generate-transalations`
+Upgrade pip
+`pip install --upgrade pip`
 
-### Format the code with Black
+Install application
 
-You need to install Black first in your environment (https://github.com/psf/black)
+- `pip install -r requirements.txt`
+- `pip install -r requirements.dev.txt`
 
-Then, run `make black`
+Start Application
 
-In Pycharm, you can configure it in the Tools sections
+- Create a local environment file (customize according to your needs) from the provided template: `cp cdd/example.env cdd/.env`. For example fill database credentials
+- Do the same for `local_settings.py`: `cp cdd/local_settings_template.py cdd/local_settings.py` and update if needed.
+- `python3 manage.py migrate`
+- `python3 manage.py runserver`
 

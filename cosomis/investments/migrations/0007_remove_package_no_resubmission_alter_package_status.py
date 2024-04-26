@@ -6,17 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('investments', '0006_attachment_task'),
+        ("investments", "0006_attachment_task"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='package',
-            name='no_resubmission',
+            model_name="package",
+            name="no_resubmission",
         ),
         migrations.AlterField(
-            model_name='package',
-            name='status',
-            field=models.CharField(choices=[('PS', 'Pending Submission'), ('P', 'Pending Approval'), ('A', 'Approved'), ('R', 'Rejected'), ('C', 'Closed'), ('E', 'Under Execution')], default='PS', max_length=50),
+            model_name="package",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PS", "Pending Submission"),
+                    ("P", "Pending Approval"),
+                    ("A", "Approved"),
+                    ("R", "Rejected"),
+                    ("C", "Closed"),
+                    ("E", "Under Execution"),
+                ],
+                default="PS",
+                max_length=50,
+            ),
         ),
     ]

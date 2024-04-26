@@ -13,9 +13,15 @@ class UserCustomAdmin(UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ('email', 'username', 'date_joined', 'last_login', 'is_staff', )
-    search_fields = ('email', 'username')
-    readonly_fields = ('date_joined', 'last_login')
+    list_display = (
+        "email",
+        "username",
+        "date_joined",
+        "last_login",
+        "is_staff",
+    )
+    search_fields = ("email", "username")
+    readonly_fields = ("date_joined", "last_login")
 
     def get_form(self, request, obj=None, **kwargs):
         """
@@ -36,7 +42,7 @@ class UserPassCodeForm(forms.ModelForm):
 
 class UserPassCodeAdmin(admin.ModelAdmin):
     form = UserPassCodeForm
-    list_display = ['user', 'pass_code']
+    list_display = ["user", "pass_code"]
 
     def save_model(self, request, obj, form, change):
         obj.pass_code = make_password(obj.pass_code)
@@ -44,7 +50,7 @@ class UserPassCodeAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if hasattr(obj, "pass_code"):
-            return ['pass_code']
+            return ["pass_code"]
         return self.readonly_fields
 
 

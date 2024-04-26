@@ -7,7 +7,7 @@ from administrativelevels.models import AdministrativeLevel
 
 
 class Command(BaseCommand):
-    help = 'Description of your command'
+    help = "Description of your command"
 
     def add_arguments(self, parser):
         # You can add command-line arguments here, if needed
@@ -16,27 +16,24 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Your command logic here
         self.nsc = NoSQLClient()
-        db = self.nsc.get_db('administrative_levels')
-        selector = {
-            "type": "administrative_level",
-            "administrative_level": "Country"
-        }
+        db = self.nsc.get_db("administrative_levels")
+        selector = {"type": "administrative_level", "administrative_level": "Country"}
         docs = db.get_query_result(selector)
         for document in docs:
             create_or_update_adm(document)
             recursive_administrative_level(document, db)
-        self.stdout.write(self.style.SUCCESS('Successfully executed mycommand!'))
+        self.stdout.write(self.style.SUCCESS("Successfully executed mycommand!"))
 
 
 def recursive_administrative_level(administrative_level, database):
     print(
-        administrative_level['name'],
-        administrative_level['administrative_level'],
-        administrative_level['administrative_id']
+        administrative_level["name"],
+        administrative_level["administrative_level"],
+        administrative_level["administrative_id"],
     )
     selector = {
         "type": "administrative_level",
-        "parent_id": administrative_level['administrative_id']
+        "parent_id": administrative_level["administrative_id"],
     }
     docs = database.get_query_result(selector)
     for document in docs:
@@ -46,10 +43,10 @@ def recursive_administrative_level(administrative_level, database):
 
 def create_or_update_adm(administrative_level_data):
     # Extract the administrative_level_id and other fields from the data
-    adm_id = administrative_level_data.get('administrative_id')
-    adm_name = administrative_level_data.get('name')
-    adm_parent_id = administrative_level_data.get('parent_id')
-    adm_type = administrative_level_data.get('administrative_level')
+    adm_id = administrative_level_data.get("administrative_id")
+    adm_name = administrative_level_data.get("name")
+    adm_parent_id = administrative_level_data.get("parent_id")
+    adm_type = administrative_level_data.get("administrative_level")
     # Other fields can be added as needed
 
     # Check if an AdministrativeLevel with the given adm_id exists

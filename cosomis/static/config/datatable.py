@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
+
 def get_datatable_config():
     return {
         "language": {
@@ -13,7 +14,7 @@ def get_datatable_config():
                 "sFirst": _("First"),
                 "sLast": _("Last"),
                 "sNext": _("Next"),
-                "sPrevious": _("Previous")
-            }
+                "sPrevious": _("Previous"),
+            },
         }
     }

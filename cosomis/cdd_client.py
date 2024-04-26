@@ -4,6 +4,7 @@
 import time
 from no_sql_client import NoSQLClient
 
+
 def iterate_administrative_level(adm_list, type):
 
     for administrative_level in adm_list.filter(type=type):
@@ -21,7 +22,7 @@ class CddClient:
         for administrative_level in adm_list.filter(type=type):
             print("CREATING", administrative_level.name)
             couch_object_id = self.create_administrative_level(administrative_level)
-            
+
             to_update = adm_list.filter(id=administrative_level.id)
             to_update.update(no_sql_db_id=couch_object_id)
 
@@ -45,14 +46,14 @@ class CddClient:
         self.nsc.create_document(self.adm_db, data)
         new = self.adm_db.get_query_result(
             {
-                "type": 'administrative_level',
+                "type": "administrative_level",
                 "administrative_id": str(adm_obj.id),
             }
         )
         final = None
         for obj in new:
             final = obj
-        return final['_id']
+        return final["_id"]
 
     def sync_administrative_levels(self, administrative_levels) -> bool:
 
@@ -70,9 +71,7 @@ class CddClient:
         return True
 
     def update_administrative_level(self, obj) -> bool:
-        administrative_level = self.adm_db[
-             obj.no_sql_db_id
-        ]
+        administrative_level = self.adm_db[obj.no_sql_db_id]
         print(administrative_level)
         parent = ""
         if obj.parent:
@@ -92,9 +91,7 @@ class CddClient:
 
     def delete_administrative_level(self, obj) -> bool:
         try:
-            administrative_level = self.adm_db[
-                obj.no_sql_db_id
-            ]
+            administrative_level = self.adm_db[obj.no_sql_db_id]
             print(administrative_level)
 
             administrative_level.delete()
