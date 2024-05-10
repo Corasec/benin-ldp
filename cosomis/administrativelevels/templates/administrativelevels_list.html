@@ -98,14 +98,14 @@
         }
 
 
-        var administrative_level_ids = ["id_region", "id_prefecture", "id_commune", "id_canton"];
+        var administrative_level_ids = ["id_departement", "id_commune", "id_arrondissement"];
         var administrative_level_ids_length = administrative_level_ids.length;
          document.getElementById("seeVillage").style.display = "none";
          document.getElementById("villages_title").style.display = "none"
           // Parcourir les identifiants et griser les champs sauf id_region
           administrative_level_ids.forEach(function(id) {
             var element = document.getElementById(id);
-            if (id !== "id_region") {
+            if (id !== "id_departement") {
               element.disabled = true; // Désactive le champ
 
             }
@@ -137,16 +137,13 @@
                                 }catch(e){
                                     //id don't exist
                                 }
-                                if (elt_id == "id_region") {
-                                    set_datas($(`#id_prefecture`), data);
-                                }
-                                else if (elt_id == "id_prefecture") {
+                                if (elt_id == "id_departement") {
                                     set_datas($(`#id_commune`), data);
                                 }
                                 else if (elt_id == "id_commune") {
-                                    set_datas($(`#id_canton`), data);
+                                    set_datas($(`#id_arrondissement`), data);
                                 }
-                                else if (elt_id == "id_canton") {
+                                else if (elt_id == "id_arrondissement") {
                                     let container = $("#search_results")
                                     container.html('');
                                     let container_txt_html = "";
@@ -226,15 +223,9 @@
 {% block select2 %}
 <script src="{% static '\admin\js\vendor\select2\i18n\fr.js' %}"></script>
 <script type="text/javascript">
-    $("#id_region").select2({
+    $("#id_departement").select2({
         language: '{{ current_language }}',
-        placeholder: "{% translate 'Region' %}",
-        allowClear: true,
-        width: 'inherit'
-    });
-    $("#id_prefecture").select2({
-        placeholder: "{% translate 'Prefecture' %}",
-        language: '{{ current_language }}',
+        placeholder: "{% translate 'Département' %}",
         allowClear: true,
         width: 'inherit'
     });
@@ -244,8 +235,8 @@
         allowClear: true,
         width: 'inherit'
     });
-    $("#id_canton").select2({
-        placeholder: "{% translate 'Canton' %}",
+    $("#id_arrondissement").select2({
+        placeholder: "{% translate 'Arrondissement' %}",
         language: '{{ current_language }}',
         allowClear: true,
         width: 'inherit'

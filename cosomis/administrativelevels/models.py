@@ -2,7 +2,7 @@ import json
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from cosomis.models_base import BaseModel
-
+from cosomis.constants import ADMINISTRATIVE_LEVEL_TYPE
 
 class AdministrativeLevel(BaseModel):
     """
@@ -32,18 +32,11 @@ class AdministrativeLevel(BaseModel):
         (BLOCKED, _("Blocked")),
     )
 
-    VILLAGE = "Village"
-    CANTON = "Canton"
-    COMMUNE = "Commune"
-    REGION = "Region"
-    PREFECTURE = "Prefecture"
-    TYPE = (
-        (VILLAGE, _("Village")),
-        (CANTON, _("Canton")),
-        (COMMUNE, _("Commune")),
-        (REGION, _("Region")),
-        (PREFECTURE, _("Prefecture")),
-    )
+    VILLAGE = "village"
+    ARRONDISSEMENT = "arrondissement"
+    COMMUNE = "commune"
+    DÉPARTEMENT = "département"
+    TYPE = ADMINISTRATIVE_LEVEL_TYPE
     parent = models.ForeignKey(
         "AdministrativeLevel",
         null=True,
@@ -148,6 +141,12 @@ class AdministrativeLevel(BaseModel):
 
     def is_prefecture(self):
         return self.type.lower() == self.PREFECTURE.lower()
+    
+    def is_arrondissement(self):
+        return self.type.lower() == self.ARRONDISSEMENT.lower()
+    
+    def is_departement(self):
+        return self.type.lower() == self.DÉPARTEMENT.lower()
 
     @property
     def children(self):

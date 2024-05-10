@@ -1,5 +1,12 @@
 from django.utils.translation import gettext_lazy as _
+from extended_choices import Choices
 
+ADMINISTRATIVE_LEVEL_TYPE = Choices(
+    ("DÉPARTEMENT", "département", "Département"),
+    ("COMMUNE", "commune", "Commune"),
+    ("ARRONDISSEMENT", "arrondissement", "Arrondissement"),
+    ("VILLAGE", "village", "Village"),
+)
 
 OBSTACLES_FOCUS_GROUP = [
     "Obstacles of the farmers and breeders group",

@@ -98,7 +98,7 @@ class AdministrativeLevelsListView(PageMixin, LoginRequiredMixin, ListView):
     def get_queryset(self):
         search = self.request.GET.get("search", None)
         page_number = self.request.GET.get("page", None)
-        _type = self.request.GET.get("type", "Village")
+        _type = self.request.GET.get("type", "village")
         if search:
             if search == "All":
                 ads = AdministrativeLevel.objects.filter(type=_type)
@@ -118,7 +118,7 @@ class AdministrativeLevelsListView(PageMixin, LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super(AdministrativeLevelsListView, self).get_context_data(**kwargs)
         ctx["search"] = self.request.GET.get("search", None)
-        ctx["type"] = self.request.GET.get("type", "Village")
+        ctx["type"] = self.request.GET.get("type", "village")
         return ctx
 
 
@@ -136,14 +136,12 @@ class AdministrativeLevelCreateView(
 
     def get_parent(self, type: str):
         parent = None
-        if type == "Prefecture":
-            parent = "Region"
-        elif type == "Commune":
-            parent = "Prefecture"
-        elif type == "Canton":
+        if type == "Commune":
+            parent = "département"
+        elif type == "arrondissement":
             parent = "Commune"
-        elif type == "Village":
-            parent = "Canton"
+        elif type == "village":
+            parent = "arrondissement"
         return parent
 
     form_class = AdministrativeLevelForm  # specify the class form to be displayed
@@ -342,7 +340,7 @@ class AdministrativeLevelSearchListView(PageMixin, LoginRequiredMixin, ListView)
         ctx = super(AdministrativeLevelSearchListView, self).get_context_data(**kwargs)
         ctx["form"] = VillageSearchForm()
         ctx["search"] = self.request.GET.get("search", None)
-        ctx["type"] = self.request.GET.get("type", "Village")
+        ctx["type"] = self.request.GET.get("type", "village")
         ctx["current_language"] = translation.get_language()
         return ctx
 
