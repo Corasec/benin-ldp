@@ -32,14 +32,16 @@ class InvestmentsForm(forms.Form):
         return self.cleaned_data['all_queryset'] == 'true'
 
     def clean(self):
-        qs = Investment.objects.filter(project_status=Investment.NOT_FUNDED)
+        project = self.cleaned_data['project']
+
+        qs = Investment.objects.filter(project_status=Investment.NOT_FUNDED, estimated_cost__lte=project.total_amount)
         inv_ids = self.cleaned_data['investments'] if 'investments' in self.cleaned_data else []
         all_queryset = self.cleaned_data['all_queryset']
         self.cleaned_data['investments'] = qs.exclude(id__in=inv_ids) if all_queryset else qs.filter(id__in=inv_ids)
 
     def save(self):
         investments = list()
-        project  = self.cleaned_data['project']
+        project = self.cleaned_data['project']
         for inv in self.cleaned_data['investments']:
             self.package.funded_investments.add(inv)
             inv.funded_by = project
