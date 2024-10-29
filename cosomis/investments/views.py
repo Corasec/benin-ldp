@@ -202,6 +202,7 @@ class IndexListView(
             {'data': 'population_priority', 'name': 'population_priority', 'searchable': 'false', 'orderable': 'false'},
 
         ]
+        context["datatable_config"]["order"] = [3, 'asc']
         if len(kwargs["query_strings_raw"]) > 0 :
             context["datatable_config"]["ajax"] += "&" + kwargs["selected_investments_data_querystring"]
         context.update(kwargs)
