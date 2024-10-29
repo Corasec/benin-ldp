@@ -21,7 +21,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
 
     def get_select_input(self, obj):
         if ('project_total_fund' in self.context and self.context['project_total_fund'] is not None and self.context['project_total_fund'] <= obj.estimated_cost) is True:
-            return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox" disabled title="'+ _("The project does not have enough funds. The project has ") + str(obj.estimated_cost) + ' FCFA">'
+            return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox" disabled title="'+ _("The project does not have enough funds. The project has ") + str(self.context['project_total_fund']) + ' FCFA">'
         if 'all_queryset' in self.context and self.context['all_queryset'] == 'false':
             return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox">'
         return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox" checked>'
