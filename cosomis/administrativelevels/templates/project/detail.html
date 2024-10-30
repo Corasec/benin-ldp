@@ -49,12 +49,12 @@
 
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>{{ organization.total_investments_amount|intcomma }}</h3>
+                        <h3>{{ organization.total_investments_amount|intcomma }} FCFA</h3>
                         <p>
                         <p>{% translate "Total Investments Amount" %}</p></p>
                     </div>
                     <div class="icon">
-                        <i class="fa fa-solid fa-dollar-sign"></i>
+                        <i class="fa fa-solid fa-money-bill"></i>
                     </div>
                 </div>
             </div>
@@ -217,7 +217,7 @@
 
                                     <div class="form-group row">
                                         <div class="col-sm-10">
-                                            <button class="btn btn-success" type="submit">Save</button>
+                                            <button class="btn btn-success" type="submit">{% translate 'Save' %}</button>
                                         </div>
                                     </div>
                                 </form>
@@ -281,7 +281,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <button class="btn btn-primary btn-block" type="submit">{% translate "Update" %}</button>
+                            <button class="btn btn-primary btn-block" type="submit">{% translate "Save" %}</button>
                         </div>
                     </div>
                 </form>

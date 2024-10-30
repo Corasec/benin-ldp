@@ -32,21 +32,37 @@
             {% with request.resolver_match.url_name as url_name %}
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                 <li class="nav-item">
-                    <a href="{% url 'dashboard:dashboard_summary' %}"
-                        class="nav-link {% if url_name == 'dashboard_summary' %}active{% endif %}">
-                        <i class="nav-icon fa fa-tachometer"></i>
-                        <p>{% translate "Summary" %}</p>
+                    <a href="{% url 'investments:home_investments' %}"
+                       class="nav-link {% if url_name == 'home_investments' %}active{% endif %}">
+                        <i class="nav-icon fa fa-comments-dollar"></i>
+                        <p>{% translate "Investments" %}</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a 
+                    <a
                         href="{% url 'administrativelevels:search' %}"
                         {% comment %}href="{% url 'administrativelevels:list' %}"{% endcomment %}
                        class="nav-link {% if url_name == 'search' %}active{% endif %}">
                         <i class="nav-icon fa fa-home"></i>
-                        <p>{% translate "Administrative levels" %}</p>
+                        <p>{% translate "Locality profile" %}</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'dashboard:dashboard_summary' %}"
+                        class="nav-link {% if url_name == 'dashboard_summary' %}active{% endif %}">
+                        <i class="nav-icon fa fa-tachometer"></i>
+                        <p>{% translate "Dashboard" %}</p>
+                    </a>
+                </li>
+                {% if not request.user.is_moderator %}
+                <li class="nav-item">
+                    <a href="{% url 'administrativelevels:projects' %}"
+                       class="nav-link {% if url_name == 'projects' %}active{% endif %}">
+                        <i class="nav-icon fas fa-project-diagram"></i>
+                        <p>{% translate "Project tracking" %}</p>
+                    </a>
+                </li>
+                {% endif %}
                 <li class="nav-item">
                     <a href="{% url 'administrativelevels:attachments' %}?type=Photo"
                        class="nav-link {% if url_name == 'attachments' %}active{% endif %}">
@@ -54,29 +70,16 @@
                         <p>{% translate "Gallery" %}</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{% url 'investments:home_investments' %}"
-                       class="nav-link {% if url_name == 'home_investments' %}active{% endif %}">
-                        <i class="nav-icon fa fa-comments-dollar"></i>
-                        <p>{% translate "Investments" %}</p>
-                    </a>
-                </li>
                 {% if not request.user.is_moderator %}
-                <li class="nav-item">
+                 <li class="nav-item">
                     <a href="{% url 'investments:profile' %}"
                        class="nav-link {% if url_name == 'profile' %}active{% endif %}">
                         <i class="nav-icon fa fa-user"></i>
-                        <p>{% translate "Profile" %}</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{% url 'administrativelevels:projects' %}"
-                       class="nav-link {% if url_name == 'projects' %}active{% endif %}">
-                        <i class="nav-icon fas fa-project-diagram"></i>
-                        <p>{% translate "Project Management" %}</p>
+                        <p>{% translate "User" %}</p>
                     </a>
                 </li>
                 {% endif %}
+
             </ul>
             {% endwith %}
         </nav>

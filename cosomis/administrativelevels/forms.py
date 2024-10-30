@@ -7,6 +7,8 @@ from investments.models import Attachment, Package, Investment
 from .models import AdministrativeLevel, Project, Sector
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.utils.translation import gettext_lazy as _
+from openpyxl import load_workbook
+from django.core.exceptions import ValidationError
 
 
 class UpdateInvestmentForm(forms.ModelForm):
@@ -47,7 +49,7 @@ class ProjectForm(forms.ModelForm):
 
 
 class BulkUploadInvestmentsForm(forms.Form):
-    csv_file = forms.FileField()
+    xlsx_file = forms.FileField(label="XLSX File")
     headers = [
         'village_id',
         'ranking',
@@ -65,54 +67,68 @@ class BulkUploadInvestmentsForm(forms.Form):
         self.project = kwargs.pop('project', None)
         super().__init__(*args, **kwargs)
 
+    def clean_xlsx_file(self):
+        """Validate if the uploaded file is a valid XLSX file."""
+        uploaded_file = self.cleaned_data['xlsx_file']
+        try:
+            # Load the XLSX file
+            wb = load_workbook(uploaded_file)
+            sheet = wb.active
+            headers = [cell.value for cell in sheet[1]]  # Read the first row for headers
+        except Exception as e:
+            raise ValidationError(f"Invalid XLSX file: {e}")
+        return uploaded_file
+
     def save(self):
         project = self.project
-        package = project.packages.all().first()
-        init_headers = self.headers
-        investments = list()
-
-        package = package if package is not None else Package.objects.create(
+        package = project.packages.all().first() or Package.objects.create(
             project=project,
             user=project.owner
         )
+        investments = []
+        uploaded_file = self.cleaned_data['xlsx_file']
 
-        # Get the uploaded file
-        uploaded_file = self.cleaned_data['csv_file']
+        # Load the XLSX file
+        wb = load_workbook(uploaded_file)
+        sheet = wb.active  # Use the first sheet
 
-        # Open the file as a text stream
-        file_stream = TextIOWrapper(uploaded_file.file, encoding='utf-8')
-
-        # Read the CSV file
-        csv_reader = csv.reader(file_stream)
-
-        # Process the CSV data
         headers_dict = {}
-        for idx, row in enumerate(csv_reader):
-            if idx == 0:
+        init_headers = list(self.headers)  # Make a copy of the headers
+
+        for idx, row in enumerate(sheet.iter_rows(values_only=True), start=1):
+            if idx == 1:
+                # Read the headers
                 for k, header in enumerate(row):
-                    if header in init_headers:
-                        headers_dict[header] = k
-                        init_headers.remove(header)
+                    normalized_header = header.strip().lower() if header else None
+                    if normalized_header in init_headers:
+                        headers_dict[normalized_header] = k
+                        init_headers.remove(normalized_header)
+
+                if init_headers:
+                    raise ValidationError(f"Missing required headers: {', '.join(init_headers)}")
+
             else:
-                investments.append(Investment(
-                    title=row[headers_dict['title']],
-                    administrative_level=AdministrativeLevel.objects.get(id=row[headers_dict['village_id']]),
-                    sector=Sector.objects.get(id=row[headers_dict['sector_id']]),
-                    estimated_cost=row[headers_dict['estimated_cost']],
-                    start_date=row[headers_dict['start_date']],
-                    duration=row[headers_dict['duration']],
-                    physical_execution_rate=row[headers_dict['physical_execution_rate']],
-                    financial_implementation_rate=row[headers_dict['financial_implementation_rate']],
-                    project_status=row[headers_dict['project_status']],
-                    delays_consumed=0
-                ))
+                try:
+                    investments.append(Investment(
+                        title=row[headers_dict['title']],
+                        administrative_level=AdministrativeLevel.objects.get(id=row[headers_dict['village_id']]),
+                        sector=Sector.objects.get(id=row[headers_dict['sector_id']]),
+                        estimated_cost=row[headers_dict['estimated_cost']],
+                        start_date=row[headers_dict['start_date']],
+                        duration=row[headers_dict['duration']],
+                        physical_execution_rate=row[headers_dict['physical_execution_rate']],
+                        financial_implementation_rate=row[headers_dict['financial_implementation_rate']],
+                        project_status=row[headers_dict['project_status']],
+                        delays_consumed=0
+                    ))
+                except (KeyError, IndexError, ValueError) as e:
+                    raise ValidationError(f"Error processing row {idx}: {e}")
 
+        # Bulk create all investments
         Investment.objects.bulk_create(investments)
-        for investment in investments:
-            package.funded_investments.add(investment)
 
-        # Here you can process the data as needed
-        # For example, you can save it to the database or process it further
+        # Add the investments to the package's funded investments
+        package.funded_investments.add(*investments)
 
         return project
 
