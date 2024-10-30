@@ -59,14 +59,22 @@ class Command(BaseCommand):
                     best_match.funded_by = project
                     best_match.longitude = row["Longitude (x)"]
                     best_match.latitude = row["Latitude (y)"]
-                    if row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"] == "Approuvé":
+                    phsycical_execution_rate = row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"]
+                    # check if phsycical_execution_rate is a number
+                    phsycical_execution_rate = pd.to_numeric(phsycical_execution_rate, errors='coerce')
+                    if pd.isna(phsycical_execution_rate):
+                        phsycical_execution_rate = 0
+                    best_match.physical_execution_rate = phsycical_execution_rate
+                    if row["status"] == "Identifié":
                         best_match.project_status = "F"
-                    elif row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"] == "En cours":
+                    elif row["status"] == "En cours":
                         best_match.project_status = "P"
-                    elif pd.isna(row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"]):
+                    elif pd.isna(row["status"]):
                         best_match.project_status = "F"
-                    elif row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"] == "Interrompu":
+                    elif row["status"] == "Arrêt":
                         best_match.project_status = "PA"
+                    elif row["status"] == "Achevé":
+                        best_match.project_status = "C"
                     else:
                         best_match.project_status = "P"
                     best_match.save()

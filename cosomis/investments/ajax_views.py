@@ -266,6 +266,7 @@ class StatisticsView(View):
             'latitude',
             'longitude',
             'sector__name',
+            'sector__category__name',
             'physical_execution_rate'
         )
 
