@@ -556,7 +556,7 @@
 
         $.ajax({
             type: "POST",
-            url: base_url + "ajax/datatable/results/?{{ selected_investments_data_querystring }}",
+            url: base_url + "ajax/datatable/results/?{{ selected_investments_data_querystring|safe }}",
             data: {
                 all_queryset: $('.checkbox-select-all-monitor').val(),
                 selected_ids: $('.inv-list').val(),
