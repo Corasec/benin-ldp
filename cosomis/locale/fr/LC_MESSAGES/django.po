@@ -3007,3 +3007,6 @@ msgstr "Connectez-vous pour démarrer votre session"
 
 msgid "The project does not have enough funds"
 msgstr "Le projet ne dispose pas de suffisamment de fonds"
+
+msgid "Not enough funds"
+msgstr "Pas assez de fonds"

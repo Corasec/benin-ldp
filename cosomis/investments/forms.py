@@ -42,10 +42,14 @@ class InvestmentsForm(forms.Form):
     def save(self):
         investments = list()
         project = self.cleaned_data['project']
+        total_investment = 0
         for inv in self.cleaned_data['investments']:
             self.package.funded_investments.add(inv)
+            total_investment = total_investment + inv.estimated_cost
             inv.funded_by = project
             investments.append(inv)
+        if total_investment > project.total_amount:
+            raise Exception("Not enough funds")
         self.package.project = project
         self.package.save()
         Investment.objects.bulk_update(investments, ['funded_by'])
