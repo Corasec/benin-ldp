@@ -20,12 +20,28 @@ class InvestmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_select_input(self, obj):
-        if ('project_total_fund' in self.context and self.context['project_total_fund'] is not None and self.context['project_total_fund'] <= obj.estimated_cost) is True:
+        if self.__is_unfunded_and_available(obj):
             return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox" disabled title="'+ _("The project does not have enough funds. The project has ") + str(self.context['project_total_fund']) + ' FCFA">'
+        if self.__is_funded(obj):
+            return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox" checked disabled title="'+ _("This investment is already funded by the project") + '">'
         if 'all_queryset' in self.context and self.context['all_queryset'] == 'false':
             return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox">'
+        if self.__is_already_funded_by_other(obj):
+            return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(
+                obj.id) + '" type="checkbox" disabled title="'+ _("This investment is already funded by other project") + '">'
+
         return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(obj.id) + '" type="checkbox" checked>'
 
+    def __is_funded(self, obj):
+        return ('project_id' in self.context and self.context['project_id'] is not None
+                and obj.funded_by is not None and obj.funded_by.id == self.context['project_id'])
+
+    def __is_already_funded_by_other(self, obj):
+        return ('project_id' in self.context and self.context['project_id'] is not None
+                and obj.funded_by is not None and obj.funded_by.id != self.context['project_id'])
+    def __is_unfunded_and_available(self, obj):
+        return ('project_total_fund' in self.context and self.context['project_total_fund'] is not None
+                and self.context['project_total_fund'] <= obj.estimated_cost) is True and obj.funded_by is None
     def get_administrative_level__type(self, obj):
         return obj.administrative_level.type
 

@@ -364,7 +364,7 @@ class IndexListView(
         try:
             form.save()
             return HttpResponseRedirect(self.get_success_url())
-        except Exception:
+        except Exception as exception:
             messages.error(self.request, _("Not enough funds"))
             return redirect(self.request.META['HTTP_REFERER'])
 

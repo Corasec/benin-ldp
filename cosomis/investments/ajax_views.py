@@ -63,7 +63,7 @@ class InvestmentModelViewSet(ModelViewSet):
 
         project = Project.objects.filter(id=request.data['project_id']).first()
 
-        qs = qs.filter(estimated_cost__lte=project.total_amount).exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids, estimated_cost__lte=project.total_amount)
+        qs = qs.filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id)).exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids).filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id))
 
 
         return Response({
@@ -71,14 +71,17 @@ class InvestmentModelViewSet(ModelViewSet):
             'total_villages_display': qs.values('administrative_level').distinct().count(),
             'total_subprojects_display': qs.count(),
             'project_total_fund': project.total_amount,
+            'project_id': project.id,
         })
 
     def get_serializer_context(self):
+        project = Project.objects.filter(id=self.request.query_params['project_id']).first() if 'project_id' in self.request.query_params and self.request.query_params['project_id'] else None
         context = {
             'request': self.request,
             'format': self.format_kwarg,
             'view': self,
-            'project_total_fund': Project.objects.filter(id=self.request.query_params['project_id']).first().total_amount if 'project_id' in self.request.query_params and self.request.query_params['project_id'] else None
+            'project_total_fund': project.total_amount if project is not None else 0,
+            'project_id': project.id if project is not None else None,
         }
         if 'all_queryset' in self.request.query_params:
             context['all_queryset'] = self.request.query_params['all_queryset']
