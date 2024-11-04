@@ -24,6 +24,21 @@ def notifications(request):
                 'pending_approvals': packages_qs.count() + users_qs.count(),
                 'has_urgent_approvals': has_urgent_packages or has_urgent_users
             }
+        else:
+            max_response_day = settings.MAX_RESPONSE_DAYS if hasattr(settings, 'MAX_RESPONSE_DAYS') else 3
+            urgent_day = datetime.now() - timedelta(days=max_response_day)
+            last_login_date = request.user.last_login - timedelta(days=max_response_day*10)
+
+            packages_qs = Package.objects.filter(status__in=[Package.APPROVED, Package.REJECTED],
+                                                 user_id=request.user.id,
+                                                 updated_date__gte=last_login_date)
+
+            has_urgent_packages = packages_qs.filter(updated_date__lte=urgent_day).exists()
+
+            resp = {
+                'pending_approvals': packages_qs.count(),
+                'has_urgent_approvals': has_urgent_packages
+            }
         return resp
     except (TypeError, AttributeError):
         return resp
