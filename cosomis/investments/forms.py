@@ -32,18 +32,24 @@ class InvestmentsForm(forms.Form):
         return self.cleaned_data['all_queryset'] == 'true'
 
     def clean(self):
-        qs = Investment.objects.filter(project_status=Investment.NOT_FUNDED)
+        project = self.cleaned_data['project']
+
+        qs = Investment.objects.filter(project_status=Investment.NOT_FUNDED, estimated_cost__lte=project.total_amount)
         inv_ids = self.cleaned_data['investments'] if 'investments' in self.cleaned_data else []
         all_queryset = self.cleaned_data['all_queryset']
         self.cleaned_data['investments'] = qs.exclude(id__in=inv_ids) if all_queryset else qs.filter(id__in=inv_ids)
 
     def save(self):
         investments = list()
-        project  = self.cleaned_data['project']
+        project = self.cleaned_data['project']
+        total_investment = 0
         for inv in self.cleaned_data['investments']:
             self.package.funded_investments.add(inv)
+            total_investment = total_investment + inv.estimated_cost
             inv.funded_by = project
             investments.append(inv)
+        if total_investment > project.total_amount:
+            raise Exception("Not enough funds")
         self.package.project = project
         self.package.save()
         Investment.objects.bulk_update(investments, ['funded_by'])

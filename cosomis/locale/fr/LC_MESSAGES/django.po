@@ -2540,7 +2540,7 @@ msgstr "Est financé"
 
 #: investments/templates/investments/list.html:171
 #: investments/templates/investments/list.html:174
-#: investments/templates/investments/list.html:178
+#: investments/templates/investments/list.html:178/
 msgid "Is not funded"
 msgstr "N'est pas financé"
 
@@ -3033,3 +3033,12 @@ msgstr "Connectez-vous pour démarrer votre session"
 #~ msgstr "# Sous-projets"
 
 
+msgid "The project does not have enough funds"
+msgstr "Le projet ne dispose pas de suffisamment de fonds"
+
+msgid "Not enough funds"
+msgstr "Pas assez de fonds"
+
+
+msgid "This investment is already funded by the project"
+msgstr "Cet investissement est déjà financé par le projet"

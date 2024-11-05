@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
-from administrativelevels.models import AdministrativeLevel, Sector
+from administrativelevels.models import AdministrativeLevel, Sector, Project
 from .models import Investment, Package
 from .serializers import InvestmentSerializer
 
@@ -61,19 +61,27 @@ class InvestmentModelViewSet(ModelViewSet):
         inv_ids = request.data['selected_ids'].split('-')
         if '' in inv_ids: inv_ids.remove('')
 
-        qs = qs.exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids)
+        project = Project.objects.filter(id=request.data['project_id']).first()
+
+        qs = qs.filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id)).exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids).filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id))
+
 
         return Response({
             'total_funding_display': qs.aggregate(total_funding_display=Sum('estimated_cost'))['total_funding_display'] or 0,
             'total_villages_display': qs.values('administrative_level').distinct().count(),
-            'total_subprojects_display': qs.count()
+            'total_subprojects_display': qs.count(),
+            'project_total_fund': project.total_amount,
+            'project_id': project.id,
         })
 
     def get_serializer_context(self):
+        project = Project.objects.filter(id=self.request.query_params['project_id']).first() if 'project_id' in self.request.query_params and self.request.query_params['project_id'] else None
         context = {
             'request': self.request,
             'format': self.format_kwarg,
-            'view': self
+            'view': self,
+            'project_total_fund': project.total_amount if project is not None else 0,
+            'project_id': project.id if project is not None else None,
         }
         if 'all_queryset' in self.request.query_params:
             context['all_queryset'] = self.request.query_params['all_queryset']

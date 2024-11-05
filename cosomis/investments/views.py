@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.views import generic
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -202,6 +204,7 @@ class IndexListView(
             {'data': 'population_priority', 'name': 'population_priority', 'searchable': 'false', 'orderable': 'false'},
 
         ]
+        context["datatable_config"]["order"] = [3, 'asc']
         if len(kwargs["query_strings_raw"]) > 0 :
             context["datatable_config"]["ajax"] += "&" + kwargs["selected_investments_data_querystring"]
         context.update(kwargs)
@@ -358,8 +361,12 @@ class IndexListView(
         return resp
 
     def form_valid(self, form):
-        form.save()
-        return HttpResponseRedirect(self.get_success_url())
+        try:
+            form.save()
+            return HttpResponseRedirect(self.get_success_url())
+        except Exception as exception:
+            messages.error(self.request, _("Not enough funds"))
+            return redirect(self.request.META['HTTP_REFERER'])
 
     def get_success_url(self):
         return reverse("investments:cart")
