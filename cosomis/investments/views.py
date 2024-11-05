@@ -492,6 +492,90 @@ class CartView(IsInvestorMixin, PageMixin, generic.DetailView):
         return super(CartView, self).get_context_data(**context)
 
 
+class InvestorApprovesListView(IsInvestorMixin, PageMixin, generic.ListView):
+    template_name = "investments/investor/approvals_list.html"
+    package_model = Package
+    user_model = User
+    ordering = ["-status", "-created_date"]
+    allow_empty = True
+    object_list = None
+    title = _("Welcome, Investor!")
+
+    def post(self, request, *args, **kwargs):
+        form = UserApprovalForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message=form.success_message,
+                extra_tags=messages.DEFAULT_TAGS[messages.SUCCESS],
+            )
+        return self.get(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.package_list = self.get_package_queryset()
+        self.user_list = self.get_user_queryset()
+
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def get_package_queryset(self):
+        queryset = self.package_model._default_manager.filter(
+            user_id=self.request.user.id
+        )
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
+
+    def get_user_queryset(self):
+        queryset = self.user_model._default_manager.filter(
+            is_approved=None, is_moderator=False
+        ).order_by("date_joined")
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Get the context for this view."""
+        overdue_date = datetime.now() - timedelta(days=settings.MAX_RESPONSE_DAYS)
+        package_queryset = self.package_list
+        user_queryset = self.user_list
+        context = {
+            "paginator": None,
+            "page_obj": None,
+            "is_paginated": False,
+            "package_list": package_queryset,
+            "packages_overdue": package_queryset.filter(updated_date__lt=overdue_date),
+            "user_list": user_queryset,
+            "users_overdue": user_queryset.filter(date_joined__lt=overdue_date),
+
+            "packages_approved": package_queryset.filter(status=Package.APPROVED),
+            "packages_rejected": package_queryset.filter(status=Package.REJECTED),
+            "packages_pending_approval": package_queryset.filter(status=Package.PENDING_APPROVAL),
+            "packages_pending_submission": package_queryset.filter(status=Package.PENDING_SUBMISSION),
+            "packages_under_execution": package_queryset.filter(status=Package.UNDER_EXECUTION),
+
+        }
+        context.update(kwargs)
+
+        context.setdefault("title", self.title)
+        context.setdefault("active_level1", self.active_level1)
+        context.setdefault("active_level2", self.active_level2)
+        context.setdefault("breadcrumb", self.breadcrumb)
+        context.setdefault("form_mixin", self.form_mixin)
+
+        context.setdefault("view", self)
+        if self.extra_context is not None:
+            context.update(self.extra_context)
+        return context
+
+
+
+
+
 class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
     template_name = "investments/moderator/approvals_list.html"
     package_model = Package

@@ -98,6 +98,18 @@
         </li>
         {% else %}
         <li class="nav-item">
+            <a href="{% url 'investments:investor_notifications' %}" class="nav-link">
+                <i class="fa fa-bell"></i>
+                {% if pending_approvals > 0 %}
+                    {% if has_urgent_approvals %}
+                    <span class="badge badge-danger navbar-badge">{{ pending_approvals }}</span>
+                    {% else %}
+                    <span class="badge badge-warning navbar-badge">{{ pending_approvals }}</span>
+                    {% endif %}
+                {% endif %}
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{% url 'investments:cart' %}" class="nav-link">
                 <i class="fa fa-shopping-cart"></i>
                 {% if cart_items > 0 %}
