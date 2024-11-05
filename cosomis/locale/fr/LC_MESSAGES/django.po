@@ -53,7 +53,9 @@ msgstr "Description"
 #: dashboard/templates/dashboard_summary.html:66
 msgid "Organization"
 msgstr "Organisation"
-
+#: dashboard/templates/dashboard_summary.html:378
+msgid "Type of subproject"
+msgstr "Type de sous-project"
 #: administrativelevels/forms.py:24
 msgid "Start Date"
 msgstr "Date de début"
@@ -352,8 +354,8 @@ msgstr ""
 #: administrativelevels/templates/administrativelevel_village_list.html:11
 #: administrativelevels/views.py:40 administrativelevels/views.py:122
 #: cosomis/templates/layouts/sidebar.html:48
-msgid "Administrative levels"
-msgstr "Niveaux administratifs"
+msgid "Locality profile"
+msgstr "Profil localité"
 
 #: administrativelevels/templates/administrative_level/create.html:48
 #: administrativelevels/templates/administrativelevel_village_list.html:37
@@ -633,6 +635,9 @@ msgstr "Voir"
 msgid "Last Updated"
 msgstr "Dernière mise à jour"
 
+#: administrativelevels/templates/project/detail.html
+msgid "Update"
+msgstr "Mettre à jour"
 #: administrativelevels/templates/administrativelevel_detail.html:83
 #: administrativelevels/templates/cvd_detail.html:83
 #: ⁨administrativelevels/templates/village_detail copy.html⁩:83
@@ -1499,20 +1504,23 @@ msgstr "Budget"
 
 #: administrativelevels/templates/project/create/bulk_upload_investments.html:13
 msgid ""
-"Please upload a CSV file containing all the investments you want to attach "
-"to the newly created project. You can find an example by"
+"Please upload an XLSX file containing all the investments you wish to link"
+"to the newly created project. You can find an example in"
 msgstr ""
-"Veuillez télécharger un fichier CSV contenant tous les investissements que "
-"vous souhaitez rattacher au projet nouvellement créé. Vous pouvez trouver un "
-"exemple en"
+"Veuillez télécharger un fichier XLSX contenant tous les investissements que vous souhaitez rattacher "
+"au projet nouvellement créé. Vous pouvez trouver un exemple dans "
+
+#: administrativelevels/templates/project/create/bulk_upload_investments.html
+msgid "For additional instructions please download the manual"
+msgstr "Pour des instructions supplémentaires, veuillez télécharger le manuel"
 
 #: administrativelevels/templates/project/create/bulk_upload_investments.html:14
 msgid "downloading"
 msgstr "téléchargement"
 
 #: administrativelevels/templates/project/create/bulk_upload_investments.html:14
-msgid "the CSV template file."
-msgstr "le fichier modèle CSV."
+msgid "the XLSX template file."
+msgstr "le fichier modèle XLSX."
 
 #: administrativelevels/templates/project/create/bulk_upload_investments.html:16
 msgid "For additional reference, you can also download the"
@@ -1727,6 +1735,34 @@ msgstr "Créer niveau administratif"
 #: investments/views.py:131 investments/views.py:686
 msgid "Endorsed by youth"
 msgstr "Soutenu par les jeunes"
+
+#: dashboard/template/dashboard_summary.html:214
+msgid "Number of sub-projects by minority group"
+msgstr "Nombre de sous-projets par groupe minoritaire"
+
+#: dashboard/template/dashboard_summary.html:196
+msgid "Number of priorities by sector"
+msgstr "Nombre de priorités par secteur"
+
+#: dashboard/template/dashboard_summary.html:291
+msgid "Location of sub-projects by sector"
+msgstr "Localisation des sous projets par secteur"
+
+#: dashboard/template/dashboard_summary.html:199
+msgid "Priorities not yet identified in this village"
+msgstr "Priorités non encore identifié dans ce village"
+
+#: dashboard/template/dashboard_summary.html:234
+msgid "No sub-projects for farmers yet"
+msgstr "Pas encore de sous projet pour les Agriculteurs"
+
+#: dashboard/template/dashboard_summary.html:247
+msgid "No sub-projects for womens yet"
+msgstr "Pas encore de sous projet pour les agriculteurs"
+
+#: dashboard/template/dashboard_summary.html:260
+msgid "No sub-projects for youth yet"
+msgstr "Pas encore de sous projets pour les jeunes"
 
 #: administrativelevels/views.py:469 dashboard/views_summary.py:65
 #: investments/views.py:132 investments/views.py:687
@@ -1963,20 +1999,16 @@ msgstr "Se déconnecter"
 #: cosomis/templates/layouts/sidebar.html:38
 #: investments/templates/investments/cart.html:104
 #: investments/templates/investments/package.html:120
-msgid "Summary"
-msgstr "Résumé"
+msgid "Dashboard"
+msgstr "Tableau de bord"
 
 #: cosomis/templates/layouts/sidebar.html:62 investments/views.py:46
-msgid "Investments"
-msgstr "Investissements"
-
-#: cosomis/templates/layouts/sidebar.html:70
-msgid "Profile"
-msgstr "Profil"
+msgid "Fund a project"
+msgstr "Financer un projet"
 
 #: cosomis/templates/layouts/sidebar.html:77
-msgid "Project Management"
-msgstr "Gestion de projet"
+msgid "Project tracking"
+msgstr "Suivi des projets"
 
 #: cosomis/templates/layouts/sidebar.html:89
 msgid "Toggle Sidebar"
@@ -2099,10 +2131,6 @@ msgstr "Total priorités sous-projets communautaires"
 msgid "Total Selected Sub-Projects"
 msgstr "Total sous-projets communautaires sélectionnés"
 
-#: dashboard/templates/dashboard_summary.html:196
-msgid "Total Funded / Unfunded Investments"
-msgstr "Total des investissements financés / non financés"
-
 #: dashboard/templates/dashboard_summary.html:184
 msgid "Completed Sub-Projects"
 msgstr "Sous-projets communautaires achevés"
@@ -2130,6 +2158,10 @@ msgstr "Niveau Physique"
 #: dashboard/views_administrativelevels.py:26
 msgid "Administrative levels Dashboard"
 msgstr "Tableau de bord des niveaux administratifs"
+
+#: administrativelevels/templates/administrativelevel_village_list.html:11
+msgid "Administrative levels"
+msgstr "Niveaux administratifs"
 
 #: dashboard/views_administrativelevels.py:93
 #: dashboard/views_administrativelevels.py:111
@@ -2382,12 +2414,12 @@ msgstr "VDP Soumission"
 #: investments/models.py:99
 #: investments/templates/investments/moderator/approvals_list.html:136
 msgid "Pending Approval"
-msgstr ""
+msgstr "En attente d'approbation"
 
 #: investments/models.py:101
 #: investments/templates/investments/moderator/approvals_list.html:140
 msgid "Rejected"
-msgstr ""
+msgstr "Rejeté"
 
 #: investments/models.py:102
 #: investments/templates/investments/moderator/approvals_list.html:142
@@ -2483,11 +2515,11 @@ msgstr "Rechercher un niveau"
 
 #: investments/templates/investments/cart.html:288
 msgid "You need to select a project related to this investments."
-msgstr ""
+msgstr "Vous devez sélectionner un projet lié à ces investissements."
 
 #: investments/templates/investments/cart.html:303
 msgid "Save"
-msgstr ""
+msgstr "Enregistrer"
 
 #: investments/templates/investments/list.html:53
 #: investments/templates/investments/moderator/package_review.html:34
@@ -2533,11 +2565,7 @@ msgstr "Projet"
 
 #: investments/templates/investments/list.html:445
 msgid "Your organization must have a project to submit investments"
-msgstr ""
-
-#: investments/templates/investments/list.html:447
-msgid "Click to your first project"
-msgstr ""
+msgstr "Votre organisation doit avoir un projet pour soumettre des investissements"
 
 #: investments/templates/investments/list.html:450
 msgid "Add to Cart"
@@ -2547,6 +2575,10 @@ msgstr "Ajouter une priorité"
 #: investments/templates/investments/moderator/package_review.html:346
 msgid "# Villages:"
 msgstr "# Villages:"
+
+#: investments/templates/investments/list.html:447
+msgid "Click to your first project"
+msgstr "Cliquez pour créer votre premier projet"
 
 #: investments/templates/investments/list.html:475
 #: investments/templates/investments/moderator/package_review.html:374
@@ -2559,18 +2591,18 @@ msgstr ""
 
 #: investments/templates/investments/moderator/approvals_list.html:53
 msgid "User approval requests"
-msgstr ""
+msgstr "Demandes d’approbations de comptes utilisateurs"
 
 #: investments/templates/investments/moderator/approvals_list.html:83
 #: investments/templates/investments/moderator/package_review.html:364
 msgid "Approve"
-msgstr "Approuvé"
+msgstr "Approuver"
 
 #: investments/templates/investments/moderator/approvals_list.html:84
 #: investments/templates/investments/moderator/package_review.html:366
 #: investments/templates/investments/moderator/package_review.html:452
 msgid "Reject"
-msgstr ""
+msgstr "Rejeter"
 
 #: investments/templates/investments/moderator/approvals_list.html:85
 msgid "Spam"
@@ -2578,19 +2610,19 @@ msgstr ""
 
 #: investments/templates/investments/moderator/approvals_list.html:102
 msgid "Submission approval requests"
-msgstr ""
+msgstr "Demande d'approbation pour financement"
 
 #: investments/templates/investments/moderator/approvals_list.html:147
 msgid "Review by"
-msgstr ""
+msgstr "Traité par"
 
 #: investments/templates/investments/moderator/approvals_list.html:172
 msgid "Are you sure do you want to remove the package?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer le paquet ?"
 
 #: investments/templates/investments/moderator/approvals_list.html:181
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: investments/templates/investments/moderator/package_review.html:439
 msgid "Request resubmission of package"
@@ -2603,11 +2635,11 @@ msgstr "Investissements"
 
 #: investments/templates/investments/profile.html:39
 msgid "Total committed funds"
-msgstr ""
+msgstr "Total des fonds engagés"
 
 #: investments/templates/investments/profile.html:42
 msgid "Total target communities"
-msgstr ""
+msgstr "Total des communautés cibles"
 
 #: investments/templates/investments/profile.html:52
 msgid "About Organization"
@@ -2615,7 +2647,7 @@ msgstr "À propos de l'organisation"
 
 #: investments/templates/investments/profile.html:69
 msgid "Total investments amount"
-msgstr ""
+msgstr "Montant total des investissements"
 
 #: investments/views.py:414
 msgid "Your package"
@@ -2642,7 +2674,7 @@ msgstr "Bienvenue, Monsieur le Modérateur !"
 
 #: investments/views.py:576
 msgid "Investment Package Review"
-msgstr ""
+msgstr "Examen du dossier d'investissement"
 
 #: investments/views.py:689
 msgid "Endorsed by pastoralist"
@@ -2684,7 +2716,7 @@ msgstr "Précédent"
 
 #: usermanager/admin.py:24
 msgid "Personal info"
-msgstr ""
+msgstr "Informations personnelles"
 
 #: usermanager/admin.py:26
 #, fuzzy
@@ -2694,7 +2726,7 @@ msgstr "Version"
 
 #: usermanager/admin.py:38
 msgid "Management"
-msgstr ""
+msgstr "Gestion"
 
 #: usermanager/admin.py:39
 msgid "Important dates"
@@ -3000,7 +3032,4 @@ msgstr "Connectez-vous pour démarrer votre session"
 #~ msgid "# Sous-projets:"
 #~ msgstr "# Sous-projets"
 
-#, fuzzy
-#~| msgid "Type of subproject"
-#~ msgid "Type sous-projet"
-#~ msgstr "Type de sous-project"
+
