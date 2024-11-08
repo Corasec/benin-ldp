@@ -476,7 +476,7 @@
                     {% else %}
                         <table class="table rounded-table table-striped" style="width: 100%;">
                             <thead>
-                                <th data-priority="1" class="align-middle border-top-left-corner"><input class="" id="checkbox-select-all" type="checkbox" checked></th>
+                                <th data-priority="1" class="align-middle border-top-left-corner"><input class="" id="checkbox-select-all" type="checkbox"></th>
                                 <th data-priority="2" class="align-middle rounded-0 border-0">{% translate 'Name' %}</th>
                                 <th data-priority="3" class="align-middle rounded-0 border-0">{% translate 'Source' %}</th>
                                 <th data-priority="4" class="align-middle rounded-0 border-0">{% translate 'Estimate cost' %}</th>
@@ -550,6 +550,12 @@
     let investments_list = [];
     let table = $(".table").DataTable({{ datatable_config | safe }});
 
+    let urlObj = new URL(table.ajax.url());
+    let params = new URLSearchParams(urlObj.search);
+    params.set('project_id', $('#project-select-id').val());
+    urlObj.search = params.toString();
+    table.ajax.url(urlObj.toString());
+    table.ajax.reload();
     function sum_subprojects() {
         let base_url = window.location.href.split('?')[0]
         let loader = $('.loader');
@@ -560,6 +566,7 @@
             data: {
                 all_queryset: $('.checkbox-select-all-monitor').val(),
                 selected_ids: $('.inv-list').val(),
+                project_id: $('#project-select-id').val(),
                 csrfmiddlewaretoken: '{{ csrf_token }}',
             },
             beforeSend: function() {
@@ -639,6 +646,7 @@
                     url: base_url + "ajax/adm-levels",
                     data: {
                       value: selected_value,
+                      project_id: $('#project-select-id').val(),
                       csrfmiddlewaretoken: '{{ csrf_token }}',
                     },
                     success: function(response){
@@ -670,6 +678,7 @@
                     url: base_url + "ajax/sectors",
                     data: {
                       value: selected_value,
+                      project_id: $('#project-select-id').val(),
                       csrfmiddlewaretoken: '{{ csrf_token }}',
                     },
                     success: function(response){
@@ -726,6 +735,7 @@
         let urlObj = new URL(table.ajax.url());
         let params = new URLSearchParams(urlObj.search);
         params.set('all_queryset', master_checkbox.val());
+        params.set('project_id', $('#project-select-id').val());
         urlObj.search = params.toString();
         table.ajax.url(urlObj.toString());
         table.ajax.reload();

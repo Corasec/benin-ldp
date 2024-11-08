@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-import time
+from django.db import transaction
 from no_sql_client import NoSQLClient
 from cloudant.result import Result
 from cloudant.document import Document
@@ -8,99 +8,85 @@ from administrativelevels.models import AdministrativeLevel, Phase, Activity, Ta
 from investments.models import Sector
 
 
-def update_or_create_document(document):
-    # Extract the phase_id from the phase document
+def update_or_create_phase(document):
     object_id = document['_id']
-    document_type = document['type']
     administrative_level_id = document['administrative_level_id']
-    # Check if a document with the given phase_id exists in the 'purs_test' database
-    if document_type == 'phase':
-        existing_phase = Phase.objects.filter(
-            no_sql_db_id=object_id,
-            village=int(administrative_level_id)
-        )
-        if not existing_phase:
-            try:
-                Phase.objects.create(
-                    no_sql_db_id=object_id,
-                    village=AdministrativeLevel.objects.get(no_sql_db_id=administrative_level_id),
-                    name=document['name'],
-                    description=document['description'],
-                    order=document['order'],
-                )
-            except Exception as e:
-                print(e, "Error creating phase", document['name'], document['administrative_level_id'])
-        else:
-            try:
-                existing_phase = existing_phase[0]
-                existing_phase.name = document['name']
-                existing_phase.description = document['description']
-                existing_phase.order = document['order']
-                existing_phase.save()
-            except Exception as e:
-                print(e, "Error updating phase", document['name'], document['administrative_level_id'])
-    elif document_type == 'activity':
-        existing_activity = Activity.objects.filter(
-            no_sql_db_id=object_id,
-            phase__village=int(administrative_level_id)
-        )
-        if not existing_activity:
-            try:
-                administrative_level = AdministrativeLevel.objects.get(no_sql_db_id=administrative_level_id)
-                Activity.objects.create(
-                    no_sql_db_id=object_id,
-                    phase=Phase.objects.get(no_sql_db_id=document['phase_id'], village=administrative_level),
-                    name=document['name'],
-                    description=document['description'],
-                    order=document['order'],
-                )
-            except Exception as e:
-                print(e, "Error creating activity", document['name'], document['administrative_level_id'])
-        else:
-            existing_activity = existing_activity[0]
-            existing_activity.name = document['name']
-            existing_activity.description = document['description']
-            existing_activity.order = document['order']
-            existing_activity.save()
+    try:
+        with transaction.atomic():
+            administrative_level = AdministrativeLevel.objects.get(no_sql_db_id=administrative_level_id)
+            phase, created = Phase.objects.get_or_create(
+                no_sql_db_id=object_id,
+                village=administrative_level,
+                defaults={
+                    'name': document['name'],
+                    'description': document['description'],
+                    'order': document['order'],
+                }
+            )
+            if not created:
+                phase.name = document['name']
+                phase.description = document['description']
+                phase.order = document['order']
+                phase.save()
+    except Exception as e:
+        print(e, "Error processing phase:", document['name'], document['administrative_level_id'])
 
-    elif document_type == 'task':
-        existing_task = Task.objects.filter(
-            no_sql_db_id=object_id,
-            activity__phase__village=int(administrative_level_id)
-        )
-        if not existing_task:
-            try:
-                administrative_level = AdministrativeLevel.objects.get(no_sql_db_id=administrative_level_id)
-                if document['completed']:
-                    status = 'completed'
-                else:
-                    status = 'not started'
-                existing_task = Task.objects.create(
-                    no_sql_db_id=object_id,
-                    activity=Activity.objects.get(no_sql_db_id=document['activity_id'], phase__village=administrative_level),
-                    name=document['name'],
-                    description=document['description'],
-                    order=document['order'],
-                    status=status,
-                    form_responses=document['form_response'],
-                    form=document['form'],
-                )
-            except Exception as e:
-                print(e, "Error creating task", document['name'], document['administrative_level_id'])
-        else:
-            if document['completed']:
-                status = 'completed'
-            else:
-                status = 'not started'
-            existing_task = existing_task.first()
-            existing_task.name = document['name']
-            existing_task.description = document['description']
-            existing_task.order = document['order']
-            existing_task.status = status
-            existing_task.form_responses = document['form_response']
-            existing_task.form = document['form']
-            existing_task.save()
 
+def update_or_create_activity(document):
+    object_id = document['_id']
+    administrative_level_id = document['administrative_level_id']
+    try:
+        with transaction.atomic():
+            administrative_level = AdministrativeLevel.objects.get(no_sql_db_id=administrative_level_id)
+            phase = Phase.objects.get(no_sql_db_id=document['phase_id'], village=administrative_level)
+            activity, created = Activity.objects.get_or_create(
+                no_sql_db_id=object_id,
+                phase=phase,
+                defaults={
+                    'name': document['name'],
+                    'description': document['description'],
+                    'order': document['order'],
+                }
+            )
+            if not created:
+                activity.name = document['name']
+                activity.description = document['description']
+                activity.order = document['order']
+                activity.save()
+    except Exception as e:
+        print(e, "Error processing activity:", document['name'], document['administrative_level_id'])
+
+
+def update_or_create_task(document):
+    object_id = document['_id']
+    administrative_level_id = document['administrative_level_id']
+    try:
+        with transaction.atomic():
+            administrative_level = AdministrativeLevel.objects.get(no_sql_db_id=administrative_level_id)
+            activity = Activity.objects.get(no_sql_db_id=document['activity_id'], phase__village=administrative_level)
+            status = 'completed' if document['completed'] else 'not started'
+            task, created = Task.objects.get_or_create(
+                no_sql_db_id=object_id,
+                activity=activity,
+                defaults={
+                    'name': document['name'],
+                    'description': document['description'],
+                    'order': document['order'],
+                    'status': status,
+                    'form_responses': document.get('form_response', {}),
+                    'form': document.get('form', ''),
+                }
+            )
+            if not created:
+                task.name = document['name']
+                task.description = document['description']
+                task.order = document['order']
+                task.status = status
+                task.form_responses = document.get('form_response', {})
+                task.form = document.get('form', '')
+                task.save()
+    except Exception as e:
+        print(e, "Error processing task:", document['name'], document['administrative_level_id'])
 
 
 class Command(BaseCommand):
@@ -119,24 +105,23 @@ class Command(BaseCommand):
         return False
 
     def handle(self, *args, **options):
-        # Your command logic here
         self.nsc = NoSQLClient()
         facilitator_dbs = self.nsc.list_all_databases('facilitator')
         for db_name in facilitator_dbs:
             if self.check_for_valid_facilitator(db_name):
-                db = self.nsc.get_db(db_name).get_query_result({
-                    "type": "phase"
-                })
+                # Ensure all phases are created first
+                db = self.nsc.get_db(db_name).get_query_result({"type": "phase"})
                 for document in db:
-                    update_or_create_document(document)
-                db = self.nsc.get_db(db_name).get_query_result({
-                    "type": "activity"
-                })
+                    update_or_create_phase(document)
+
+                # Then create all activities
+                db = self.nsc.get_db(db_name).get_query_result({"type": "activity"})
                 for document in db:
-                    update_or_create_document(document)
-                db = self.nsc.get_db(db_name).get_query_result({
-                    "type": "task"
-                })
+                    update_or_create_activity(document)
+
+                # Finally, create all tasks
+                db = self.nsc.get_db(db_name).get_query_result({"type": "task"})
                 for document in db:
-                    update_or_create_document(document)
+                    update_or_create_task(document)
+
         self.stdout.write(self.style.SUCCESS('Successfully executed mycommand!'))

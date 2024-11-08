@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.views import generic
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -202,6 +204,7 @@ class IndexListView(
             {'data': 'population_priority', 'name': 'population_priority', 'searchable': 'false', 'orderable': 'false'},
 
         ]
+        context["datatable_config"]["order"] = [3, 'asc']
         if len(kwargs["query_strings_raw"]) > 0 :
             context["datatable_config"]["ajax"] += "&" + kwargs["selected_investments_data_querystring"]
         context.update(kwargs)
@@ -358,8 +361,12 @@ class IndexListView(
         return resp
 
     def form_valid(self, form):
-        form.save()
-        return HttpResponseRedirect(self.get_success_url())
+        try:
+            form.save()
+            return HttpResponseRedirect(self.get_success_url())
+        except Exception as exception:
+            messages.error(self.request, _("Not enough funds"))
+            return redirect(self.request.META['HTTP_REFERER'])
 
     def get_success_url(self):
         return reverse("investments:cart")
@@ -490,6 +497,90 @@ class CartView(IsInvestorMixin, PageMixin, generic.DetailView):
         context['projects'] = self.request.user.organization.projects.all()
 
         return super(CartView, self).get_context_data(**context)
+
+
+class InvestorApprovesListView(IsInvestorMixin, PageMixin, generic.ListView):
+    template_name = "investments/investor/approvals_list.html"
+    package_model = Package
+    user_model = User
+    ordering = ["-status", "-created_date"]
+    allow_empty = True
+    object_list = None
+    title = _("Welcome, Investor!")
+
+    def post(self, request, *args, **kwargs):
+        form = UserApprovalForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                message=form.success_message,
+                extra_tags=messages.DEFAULT_TAGS[messages.SUCCESS],
+            )
+        return self.get(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.package_list = self.get_package_queryset()
+        self.user_list = self.get_user_queryset()
+
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def get_package_queryset(self):
+        queryset = self.package_model._default_manager.filter(
+            user_id=self.request.user.id
+        )
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
+
+    def get_user_queryset(self):
+        queryset = self.user_model._default_manager.filter(
+            is_approved=None, is_moderator=False
+        ).order_by("date_joined")
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Get the context for this view."""
+        overdue_date = datetime.now() - timedelta(days=settings.MAX_RESPONSE_DAYS)
+        package_queryset = self.package_list
+        user_queryset = self.user_list
+        context = {
+            "paginator": None,
+            "page_obj": None,
+            "is_paginated": False,
+            "package_list": package_queryset,
+            "packages_overdue": package_queryset.filter(updated_date__lt=overdue_date),
+            "user_list": user_queryset,
+            "users_overdue": user_queryset.filter(date_joined__lt=overdue_date),
+
+            "packages_approved": package_queryset.filter(status=Package.APPROVED),
+            "packages_rejected": package_queryset.filter(status=Package.REJECTED),
+            "packages_pending_approval": package_queryset.filter(status=Package.PENDING_APPROVAL),
+            "packages_pending_submission": package_queryset.filter(status=Package.PENDING_SUBMISSION),
+            "packages_under_execution": package_queryset.filter(status=Package.UNDER_EXECUTION),
+
+        }
+        context.update(kwargs)
+
+        context.setdefault("title", self.title)
+        context.setdefault("active_level1", self.active_level1)
+        context.setdefault("active_level2", self.active_level2)
+        context.setdefault("breadcrumb", self.breadcrumb)
+        context.setdefault("form_mixin", self.form_mixin)
+
+        context.setdefault("view", self)
+        if self.extra_context is not None:
+            context.update(self.extra_context)
+        return context
+
+
+
 
 
 class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
