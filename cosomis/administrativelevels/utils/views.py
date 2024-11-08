@@ -1,5 +1,6 @@
 import csv
 import json
+import geojson
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery
 from django.views import generic
@@ -9,7 +10,7 @@ from django.http import JsonResponse
 from rest_framework import generics, response
 
 from cosomis.mixins import AJAXRequestMixin, JSONResponseMixin
-from administrativelevels.models import AdministrativeLevel, Phase, Activity, Task, Sector
+from administrativelevels.models import AdministrativeLevel, Phase, Activity, Task, Sector, GeoSegment
 
 
 class GetAdministrativeLevelForCVDByADLView(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, generic.View):
@@ -203,7 +204,7 @@ class InitializeVillageCoordinatesView(LoginRequiredMixin, generic.TemplateView)
 
     def get(self, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        self.create_json()
+        self.load_geojson()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -241,6 +242,48 @@ class InitializeVillageCoordinatesView(LoginRequiredMixin, generic.TemplateView)
                 'villages_affected': counter
             }
         return self.get(request, *args, **kwargs)
+
+    def load_geojson(self):
+        # Replace 'your_file.geojson' with the path to your GeoJSON file
+        with open('administrativelevels/utils/grid_clusterID.geojson', 'r') as file:
+            data = geojson.load(file)
+
+        # Print the GeoJSON data
+        print(len(data['features']))
+
+        geo_segments = list()
+
+        # Accessing specific features (e.g., list of features)
+        for feature in data['features']:
+            if feature['properties']['Country'] == 'Togo':
+                coordinates = GeoSegment.sort_coordinates(feature['geometry']['coordinates'][0])
+                geo_segments.append(GeoSegment(
+                    longitude_northwest=coordinates[0][0],
+                    latitude_northwest=coordinates[0][1],
+                    longitude_northeast=coordinates[1][0],
+                    latitude_northeast=coordinates[1][1],
+                    longitude_southeast=coordinates[2][0],
+                    latitude_southeast=coordinates[2][1],
+                    longitude_southwest=coordinates[3][0],
+                    latitude_southwest=coordinates[3][1],
+                    cluster_id=feature['properties']['ClusterID'],
+                    country=feature['properties']['Country'],
+                    lc_gencat_20=feature['properties']['LC_gencat_20'],
+                    region=feature['properties']['Region'],
+                    acled_bexrem_sum=feature['properties']['acled_BExRem_sum'],
+                    acled_civvio_sum=feature['properties']['acled_CivVio_sum'],
+                    acled_riodem_sum=feature['properties']['acled_RioDem_sum'],
+                    fatal_sum=feature['properties']['fatal_sum'],
+                    grid_id=feature['properties']['gridID'],
+                    popplace_travel=feature['properties']['popPlace_travel'],
+                    population_20=feature['properties']['population_20'],
+                    population_2000_diff=feature['properties']['population_2000_diff'],
+                    pr_avg_2020_diff=feature['properties']['pr_avg_2020_diff'],
+                    road_len=feature['properties']['roadLen'],
+                    tmmx_avg_2020_diff=feature['properties']['tmmx_avg_2020_diff'],
+                ))
+
+        GeoSegment.objects.bulk_create(geo_segments)
 
     def create_json(self):
         """

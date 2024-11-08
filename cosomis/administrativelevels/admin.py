@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AdministrativeLevel, GeographicalUnit, Phase, Activity, Task, Project, Sector, Category
+from .models import AdministrativeLevel, GeographicalUnit, Phase, Activity, Task, Project, Sector, Category, GeoSegment
 
 class AdministrativeLevelAdmin(admin.ModelAdmin):
     list_display = ("name","type","parent")
@@ -12,3 +12,4 @@ admin.site.register(Task)
 admin.site.register(Project)
 admin.site.register(Sector)
 admin.site.register(Category)
+admin.site.register(GeoSegment)

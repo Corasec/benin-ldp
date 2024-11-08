@@ -1,5 +1,7 @@
-function loadGeoJsonMap(url, access_token, admin_level_coordinates, type) {
+function loadGeoJsonMap(url, access_token, admin_level_coordinates, children, type) {
     mapboxgl.accessToken = access_token;
+
+        console.log('holaaa');
 
     fetch(url)
     .then(response => response.json())
@@ -12,6 +14,23 @@ function loadGeoJsonMap(url, access_token, admin_level_coordinates, type) {
         let load_percentage = $('#load-percentage');
         let map_message = $('#map-message');
         let around_africa_id = 'around_africa';
+
+        function parseListOfLists(input) {
+          try {
+            // Parse the input string as JSON
+            const parsed = JSON.parse(input);
+
+            // Check if parsed is actually an array of arrays
+            if (Array.isArray(parsed) && parsed.every(item => Array.isArray(item))) {
+              return parsed;
+            } else {
+              throw new Error("Input is not a valid list of lists");
+            }
+          } catch (error) {
+            console.error("Invalid input format:", error.message);
+            return null;
+          }
+        }
 
         function clearAllTimeout() {
             let id = window.setTimeout(function () {
@@ -114,6 +133,13 @@ function loadGeoJsonMap(url, access_token, admin_level_coordinates, type) {
          new mapboxgl.Marker()
         .setLngLat(admin_level_coordinates)
         .addTo(mymap)
+
+        children = (parseListOfLists(children));
+        children.forEach( coord => {
+            new mapboxgl.Marker()
+                .setLngLat(coord)
+                .addTo(mymap)
+        })
 
 
         //mymap.fitBounds(bbox);

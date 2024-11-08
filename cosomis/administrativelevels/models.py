@@ -53,6 +53,7 @@ class AdministrativeLevel(BaseModel):
 
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Latitude"))
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Longitude"))
+    # geo_segment = models.ForeignKey('GeoSegment', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Geo segment"))
     code_loc = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Code location"))
     name = models.CharField(max_length=255, verbose_name=_("Name"))
     rank = models.PositiveIntegerField(null=True, blank=True)
@@ -130,6 +131,15 @@ class AdministrativeLevel(BaseModel):
         """Method to get the list of the all Geographical Unit that the administrative is linked"""
         return self.geographicalunit_set.get_queryset()
 
+    @property
+    def geo_segment(self):
+        return GeoSegment.objects.filter(
+            models.Q(latitude_northwest__gte=self.latitude) &
+            models.Q(latitude_southwest__lte=self.latitude) &
+            models.Q(longitude_northwest__lte=self.longitude) &
+            models.Q(longitude_northeast__gte=self.longitude)
+        ).first()
+
 
 class GeographicalUnit(BaseModel):
     canton = models.ForeignKey('AdministrativeLevel', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Administrative level"))
@@ -160,6 +170,76 @@ class GeographicalUnit(BaseModel):
     
     def __str__(self):
         return self.get_name()
+
+
+class GeoSegment(BaseModel):
+    latitude_northwest = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Latitude"))
+    longitude_northwest = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Longitude"))
+    latitude_northeast = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Latitude"))
+    longitude_northeast = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Longitude"))
+    latitude_southeast = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Latitude"))
+    longitude_southeast = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Longitude"))
+    latitude_southwest = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Latitude"))
+    longitude_southwest = models.DecimalField(max_digits=9, decimal_places=6,db_index=True, blank=True, null=True, verbose_name=_("Longitude"))
+
+    cluster_id = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Cluster ID"))
+    country = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Country code"))
+    lc_gencat_20 = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("LC gencat 20"))
+    region = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Region"))
+    acled_bexrem_sum = models.FloatField(blank=True, null=True)
+    acled_civvio_sum = models.FloatField(blank=True, null=True)
+    acled_riodem_sum = models.FloatField(blank=True, null=True)
+    fatal_sum = models.FloatField(blank=True, null=True)
+    grid_id = models.IntegerField(blank=True, null=True, verbose_name=_("Grid ID"))
+    popplace_travel = models.FloatField(blank=True, null=True)
+    population_20 = models.FloatField(blank=True, null=True)
+    population_2000_diff = models.FloatField(blank=True, null=True)
+    pr_avg_2020_diff = models.FloatField(blank=True, null=True)
+    road_len = models.FloatField(blank=True, null=True)
+    tmmx_avg_2020_diff = models.FloatField(blank=True, null=True)
+
+    def is_coordinate_inside_geosegment(self, point_coord):
+        # lat 8.807737
+        # lon 1.578550
+        x, y = point_coord
+        polygon_coords = [
+            [float(self.latitude_northwest), float(self.longitude_northwest)], [float(self.latitude_northeast), float(self.longitude_northeast)],
+            [float(self.latitude_southeast), float(self.longitude_southeast)], [float(self.latitude_southwest), float(self.longitude_southwest)]
+        ]
+        n = len(polygon_coords)
+        inside = False
+
+        # Iterate over each edge of the polygon
+        for i in range(n):
+            x1, y1 = polygon_coords[i]
+            x2, y2 = polygon_coords[(i + 1) % n]
+
+            # Check if the point is between the y-coordinates of the polygon edge
+            if (y1 > y) != (y2 > y):
+                # Calculate the intersection point of the ray with the polygon edge
+                intersection_x = x1 + (y - y1) * (x2 - x1) / (y2 - y1)
+                # Toggle inside if the point is to the left of the intersection
+                if x < intersection_x:
+                    inside = not inside
+
+        return inside
+
+    @classmethod
+    def sort_coordinates(cls, coords):
+
+        # Find extremes for each direction
+        north = max(coords, key=lambda x: x[1])
+        south = min(coords, key=lambda x: x[1])
+        west = min(coords, key=lambda x: x[0])
+        east = max(coords, key=lambda x: x[0])
+
+        # Determine the four corner points
+        northwest = max([north, west], key=lambda x: (x[1], -x[0]))  # Max latitude, min longitude for NW
+        northeast = max([north, east], key=lambda x: (x[1], x[0]))  # Max latitude, max longitude for NE
+        southeast = min([south, east], key=lambda x: (x[1], x[0]))  # Min latitude, max longitude for SE
+        southwest = min([south, west], key=lambda x: (x[1], -x[0]))  # Min latitude, min longitude for SW
+
+        return [northwest, northeast, southeast, southwest]
 
 
 class Category(BaseModel):

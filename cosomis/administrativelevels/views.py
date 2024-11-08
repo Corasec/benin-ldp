@@ -12,6 +12,8 @@ from django.views.generic import DetailView, ListView, CreateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import BaseFormView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from openpyxl.workbook import child
+
 from usermanager.permissions import AdminPermissionRequiredMixin, IsInvestorMixin
 from .forms import AdministrativeLevelForm
 from cosomis.mixins import PageMixin
@@ -187,7 +189,9 @@ class AdministrativeLevelDetailView(
                 context["investments"] = Investment.objects.filter(
                     administrative_level=self.object
                 )
+                context['geo_segment'] = context["object"].geo_segment
         admin_level = context.get("object")
+
 
         context["context_object_name"] = admin_level.type.lower()
 
@@ -227,6 +231,11 @@ class AdministrativeLevelDetailView(
         context["mapbox_access_token"] = os.environ.get("MAPBOX_ACCESS_TOKEN")
         self.object.latitude = 10.693749945416448
         self.object.longitude = 0.330183201548857
+
+        context['children_coordinates'] = list()
+        for child in context["object"].children.all():
+            if child.latitude is not None:
+                context['children_coordinates'].append([float(child.longitude), float(child.latitude)])
 
         package = Package.objects.get_active_cart(
             user=self.request.user
