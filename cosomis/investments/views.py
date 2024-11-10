@@ -661,7 +661,7 @@ class ModeratorPackageReviewView(
 ):
     template_name = "investments/moderator/package_review.html"
     form_class = PackageApprovalForm
-    queryset = Package.objects.filter(status=Package.PENDING_APPROVAL)
+    queryset = Package.objects.filter()
     pk_url_kwarg = "package"
     title = _("Investment Package Review")
 
@@ -672,6 +672,13 @@ class ModeratorPackageReviewView(
                 return self.form_valid(form)
             else:
                 return self.form_invalid(form)
+        elif 'package-item' in request.POST and 'action' in request.POST:
+            package_item = PackageFundedInvestment.objects.filter(id=self.request.POST['package-item']).first()
+            if request.POST['action'] == 'approve':
+                package_item.approve()
+            elif request.POST['action'] == 'reject':
+                package_item.reject()
+
         url = reverse(
             "investments:package_review", kwargs={"package": self.get_object().id}
         )

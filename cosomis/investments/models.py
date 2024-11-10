@@ -1,7 +1,7 @@
 from boto3.session import Session
 from botocore.exceptions import NoCredentialsError, ClientError
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from cosomis.models_base import BaseModel
 from django.utils.translation import gettext_lazy as _
 
@@ -155,6 +155,40 @@ class PackageFundedInvestment(BaseModel):
     class Meta:
         db_table = "investments_package_funded_investments"
 
+    def approve(self):
+        with transaction.atomic():
+            self.status = self.APPROVED
+            self.save()
+            self.update_package_status()
+
+    def reject(self):
+        with transaction.atomic():
+            self.status = self.REJECTED
+            self.save()
+            self.update_package_status()
+
+    def update_package_status(self):
+        packages = PackageFundedInvestment.objects.filter(package_id=self.package_id)
+        pending = packages.filter(status__in=self.PENDING_APPROVAL).count()
+
+        if pending > 0:
+            self.package.status = self.package.PENDING_APPROVAL
+            self.package.save()
+            return
+
+        approved = packages.filter(status__in=self.APPROVED).count()
+        rejected = packages.filter(status__in=self.REJECTED).count()
+
+        if approved > 0 and rejected == 0:
+            self.package.status = self.package.APPROVED
+
+        elif rejected > 0 and approved == 0:
+            self.package.status = self.package.REJECTED
+
+        elif rejected > 0 and approved > 0:
+            self.package.status = self.package.PARTIALLY_APPROVED
+
+        self.package.save()
 
 class Attachment(BaseModel):
     """
