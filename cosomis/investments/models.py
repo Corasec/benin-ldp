@@ -96,12 +96,14 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
     APPROVED = "A"
     REJECTED = "R"
     UNDER_EXECUTION = "E"
+    PARTIALLY_APPROVED = "PA"
     STATUS = (
         (PENDING_SUBMISSION, _("Pending Submission")),
         (PENDING_APPROVAL, _("Pending Approval")),
         (APPROVED, _("Approved")),
         (REJECTED, _("Rejected")),
         (UNDER_EXECUTION, _("Under Execution")),
+        (PARTIALLY_APPROVED, _("Partially Approved")),
     )
 
     objects = PackageQuerySet.as_manager()
@@ -120,7 +122,7 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
         blank=True,
         null=True,
     )
-    funded_investments = models.ManyToManyField(Investment, related_name="packages")
+    funded_investments = models.ManyToManyField(Investment, through="PackageFundedInvestment", related_name="packages")
     draft_status = models.BooleanField(default=True)
     status = models.CharField(max_length=50, choices=STATUS, default=PENDING_SUBMISSION)
 
@@ -134,6 +136,24 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
         return self.funded_investments.all().aggregate(
             estimated_final_cost=models.Sum("estimated_cost")
         )["estimated_final_cost"]
+
+class PackageFundedInvestment(BaseModel):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    investment = models.ForeignKey(Investment, on_delete=models.CASCADE)
+    PENDING_APPROVAL = "P"
+    APPROVED = "A"
+    REJECTED = "R"
+    STATUS = (
+        (PENDING_APPROVAL, _("Pending Approval")),
+        (APPROVED, _("Approved")),
+        (REJECTED, _("Rejected")),
+    )
+
+    status = models.CharField(max_length=50, choices=STATUS, default=PENDING_APPROVAL)
+    rejection_reason = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = "investments_package_funded_investments"
 
 
 class Attachment(BaseModel):

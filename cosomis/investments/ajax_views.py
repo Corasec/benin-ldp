@@ -63,8 +63,7 @@ class InvestmentModelViewSet(ModelViewSet):
 
         project = Project.objects.filter(id=request.data['project_id']).first()
 
-        qs = qs.filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id)).exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids).filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id))
-
+        qs = qs.exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids)
 
         return Response({
             'total_funding_display': qs.aggregate(total_funding_display=Sum('estimated_cost'))['total_funding_display'] or 0,
