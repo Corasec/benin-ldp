@@ -19,7 +19,7 @@ from usermanager.permissions import IsInvestorMixin, IsModeratorMixin
 
 from static.config.datatable import get_datatable_config
 
-from .models import Investment, Package
+from .models import Investment, Package, PackageFundedInvestment
 from .forms import InvestmentsForm, PackageApprovalForm, UserApprovalForm
 
 
@@ -583,10 +583,6 @@ class InvestorApprovesListView(IsInvestorMixin, PageMixin, generic.ListView):
             context.update(self.extra_context)
         return context
 
-
-
-
-
 class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
     template_name = "investments/moderator/approvals_list.html"
     package_model = Package
@@ -659,7 +655,6 @@ class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
             is_approved=None, is_moderator=False
         ).order_by("date_joined")
         return queryset
-
 
 class ModeratorPackageReviewView(
     IsModeratorMixin, PageMixin, generic.FormView, generic.DetailView
@@ -830,7 +825,7 @@ class ModeratorPackageReviewView(
         return resp
 
     def get_investment_list(self):
-        queryset = self.object.funded_investments.all()
+        queryset = PackageFundedInvestment.objects.select_related('investment').filter(package_id=self.object.id)
         if "region-filter" in self.request.GET and self.request.GET[
             "region-filter"
         ] not in ["", None]:
@@ -891,7 +886,7 @@ class ModeratorPackageReviewView(
                 **{self.request.GET["subpopulation-filter"]: True}
             )
 
-        return {"investments": queryset}
+        return {"package_investments": queryset}
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
