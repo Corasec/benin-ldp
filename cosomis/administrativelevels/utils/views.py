@@ -5,7 +5,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery
 from django.views import generic
 from django.http import HttpResponse
-from django.http import JsonResponse
 
 from rest_framework import generics, response
 

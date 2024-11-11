@@ -423,7 +423,13 @@ class CartView(IsInvestorMixin, PageMixin, generic.DetailView):
     def post(self, request, *args, **kwargs):
         package = Package.objects.get_active_cart(user=self.request.user)
         if not package.project:
-            package.project = Project.objects.get(id=request.POST["project"], organization=request.user.organization)
+            project = Project.objects.get(id=request.POST["project"], organization=request.user.organization)
+            total_investment = 0
+            for inv in package.funded_investments.all():
+                total_investment = total_investment + inv.estimated_cost
+            if total_investment > project.total_amount:
+                raise Exception("Not enough funds")
+            package.project = project
             package.save()
             return redirect(reverse('investments:cart'))
         else:
@@ -438,6 +444,13 @@ class CartView(IsInvestorMixin, PageMixin, generic.DetailView):
                 obj.project = None
                 obj.save()
             else:
+                project = package.project
+                total_investment = 0
+                for inv in package.funded_investments.all():
+                    total_investment = total_investment + inv.estimated_cost
+                if total_investment > project.total_amount:
+                    messages.add_message(request, messages.ERROR, _("Not enough funds"))
+                    return redirect(reverse('investments:cart'))
                 obj.status = Package.PENDING_APPROVAL
                 obj.save()
                 messages.add_message(request, messages.SUCCESS, _("Package submitted."))
