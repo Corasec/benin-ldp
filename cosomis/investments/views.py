@@ -420,6 +420,11 @@ class CartView(IsInvestorMixin, PageMixin, generic.DetailView):
         package = Package.objects.get_active_cart(user=self.request.user)
         if not package.project:
             project = Project.objects.get(id=request.POST["project"], organization=request.user.organization)
+            total_investment = 0
+            for inv in package.funded_investments.all():
+                total_investment = total_investment + inv.estimated_cost
+            if total_investment > project.total_amount:
+                raise Exception("Not enough funds")
             package.project = project
             package.save()
             return redirect(reverse('investments:cart'))
