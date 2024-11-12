@@ -19,7 +19,7 @@ from usermanager.permissions import IsInvestorMixin, IsModeratorMixin
 
 from static.config.datatable import get_datatable_config
 
-from .models import Investment, Package
+from .models import Investment, Package, PackageFundedInvestment
 from .forms import InvestmentsForm, PackageApprovalForm, UserApprovalForm
 
 
@@ -361,12 +361,8 @@ class IndexListView(
         return resp
 
     def form_valid(self, form):
-        try:
-            form.save()
-            return HttpResponseRedirect(self.get_success_url())
-        except Exception as exception:
-            messages.error(self.request, _("Not enough funds"))
-            return redirect(self.request.META['HTTP_REFERER'])
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse("investments:cart")
@@ -592,10 +588,6 @@ class InvestorApprovesListView(IsInvestorMixin, PageMixin, generic.ListView):
             context.update(self.extra_context)
         return context
 
-
-
-
-
 class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
     template_name = "investments/moderator/approvals_list.html"
     package_model = Package
@@ -669,13 +661,12 @@ class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
         ).order_by("date_joined")
         return queryset
 
-
 class ModeratorPackageReviewView(
     IsModeratorMixin, PageMixin, generic.FormView, generic.DetailView
 ):
     template_name = "investments/moderator/package_review.html"
     form_class = PackageApprovalForm
-    queryset = Package.objects.filter(status=Package.PENDING_APPROVAL)
+    queryset = Package.objects.filter()
     pk_url_kwarg = "package"
     title = _("Investment Package Review")
 
@@ -686,6 +677,13 @@ class ModeratorPackageReviewView(
                 return self.form_valid(form)
             else:
                 return self.form_invalid(form)
+        elif 'package-item' in request.POST and 'action' in request.POST:
+            package_item = PackageFundedInvestment.objects.filter(id=self.request.POST['package-item']).first()
+            if request.POST['action'] == 'approve':
+                package_item.approve()
+            elif request.POST['action'] == 'reject':
+                package_item.reject()
+
         url = reverse(
             "investments:package_review", kwargs={"package": self.get_object().id}
         )
@@ -839,7 +837,7 @@ class ModeratorPackageReviewView(
         return resp
 
     def get_investment_list(self):
-        queryset = self.object.funded_investments.all()
+        queryset = PackageFundedInvestment.objects.select_related('investment').filter(package_id=self.object.id)
         if "region-filter" in self.request.GET and self.request.GET[
             "region-filter"
         ] not in ["", None]:
@@ -900,7 +898,7 @@ class ModeratorPackageReviewView(
                 **{self.request.GET["subpopulation-filter"]: True}
             )
 
-        return {"investments": queryset}
+        return {"package_investments": queryset}
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""

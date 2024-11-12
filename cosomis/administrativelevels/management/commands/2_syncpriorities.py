@@ -51,19 +51,26 @@ def update_or_create_priorities_document(priorities_document):
             for idx, priority in enumerate(
                     priorities_document['form_response'][0]['sousComposante11']['prioritesDuVillage']):
                 try:
-                    Investment.objects.create(
-                        ranking=idx + 1,
+                    exist = Investment.objects.filter(
                         title=priority["priorite"],
-                        description=priority["siAutreVeuillezDecrire"],
-                        estimated_cost=priority.get("coutEstime"),
-                        sector=Sector.objects.get(name=priority["priorite"]),
-                        delays_consumed=0,
-                        duration=0,
-                        financial_implementation_rate=0,
-                        physical_execution_rate=0,
                         administrative_level=administrative_level,
-                        # beneficiaries= priority.get("nombreEstimeDeBeneficiaires"),
-                    )
+                        ranking=idx + 1,
+                        description=priority["siAutreVeuillezDecrire"]
+                    ).exists()
+                    if not exist:
+                        Investment.objects.create(
+                            ranking=idx + 1,
+                            title=priority["priorite"],
+                            description=priority["siAutreVeuillezDecrire"],
+                            estimated_cost=priority.get("coutEstime"),
+                            sector=Sector.objects.get(name=priority["priorite"]),
+                            delays_consumed=0,
+                            duration=0,
+                            financial_implementation_rate=0,
+                            physical_execution_rate=0,
+                            administrative_level=administrative_level,
+                            # beneficiaries= priority.get("nombreEstimeDeBeneficiaires"),
+                        )
                 except Exception as e:
                     print(e, "Error creating investment", priority["priorite"], administrative_level)
     # Otherwise, create a new one

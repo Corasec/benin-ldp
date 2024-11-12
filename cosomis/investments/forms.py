@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from administrativelevels.models import Project
 from usermanager.models import User
-from .models import Package, Investment
+from .models import Package, Investment, PackageFundedInvestment
 
 
 class InvestmentsForm(forms.Form):
@@ -83,6 +83,11 @@ class PackageApprovalForm(forms.Form):
             package.status = Package.APPROVED
         package.review_by = self.user
         package.save()
+        package_funded_investments = PackageFundedInvestment.objects.filter(package_id=package.id)
+        for package_item in package_funded_investments:
+            package_item.status = package.status
+            package_item.rejection_reason = package.rejection_reason
+            package_item.save()
 
 
 class UserApprovalForm(forms.Form):

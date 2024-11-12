@@ -5,17 +5,23 @@ from administrativelevels.models import AdministrativeLevel, Task, Activity, Pha
 
 
 def parse_fields(fields, field_types, response):
-    print(response)
     matched_responses = []
     for key, field_info in fields.items():
         if "fields" in field_info:  # Nested fields
             nested_fields = field_info["fields"]
-            nested_field_types = field_types[key]["properties"] if key in field_types and "properties" in field_types[key] else {}
-            nested_response = response[key] if key in response else {}
+            nested_field_types = field_types[key]["properties"] if key in field_types and "properties" in field_types[
+                key] else {}
+
+            # Ensure response is not None and has the key
+            if response and key in response:
+                nested_response = response[key]
+            else:
+                nested_response = {}
+
             nested_responses = parse_fields(nested_fields, nested_field_types, nested_response)
             for nested_response in nested_responses:
                 matched_responses.append(nested_response)
-        elif key in response:  # Base case
+        elif response and key in response:  # Base case with response check
             response_value = response[key]
             field_type = field_types[key]["type"] if key in field_types else "unknown"
             matched_responses.append({
@@ -23,7 +29,6 @@ def parse_fields(fields, field_types, response):
                 "response": response_value,
                 "type": field_type
             })
-
     return matched_responses
 
 def match_form_labels_with_responses(form, form_responses):
