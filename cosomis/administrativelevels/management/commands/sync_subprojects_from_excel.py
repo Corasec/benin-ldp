@@ -73,7 +73,7 @@ class Command(BaseCommand):
                         best_match.project_status = "F"
                     elif row["status"] == "Arrêt":
                         best_match.project_status = "PA"
-                    elif row["status"] == "Achevé":
+                    elif row["status"] == "Achevé" or row["status"] == "Réception provisoire":
                         best_match.project_status = "C"
                     else:
                         best_match.project_status = "P"
