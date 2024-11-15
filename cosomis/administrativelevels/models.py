@@ -133,12 +133,14 @@ class AdministrativeLevel(BaseModel):
 
     @property
     def geo_segment(self):
-        return GeoSegment.objects.filter(
-            models.Q(latitude_northwest__gte=self.latitude) &
-            models.Q(latitude_southwest__lte=self.latitude) &
-            models.Q(longitude_northwest__lte=self.longitude) &
-            models.Q(longitude_northeast__gte=self.longitude)
-        ).first()
+        if self.longitude is not None and self.latitude is not None:
+            return GeoSegment.objects.filter(
+                models.Q(latitude_northwest__gte=self.latitude) &
+                models.Q(latitude_southwest__lte=self.latitude) &
+                models.Q(longitude_northwest__lte=self.longitude) &
+                models.Q(longitude_northeast__gte=self.longitude)
+            ).first()
+        return None
 
 
 class GeographicalUnit(BaseModel):

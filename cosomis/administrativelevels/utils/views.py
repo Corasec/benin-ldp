@@ -1,6 +1,8 @@
 import csv
 import json
 import geojson
+import os
+import subprocess
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery
 from django.views import generic
@@ -204,7 +206,6 @@ class InitializeVillageCoordinatesView(LoginRequiredMixin, generic.TemplateView)
 
     def get(self, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        self.load_geojson()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -490,3 +491,24 @@ class InitializeVillageCoordinatesView(LoginRequiredMixin, generic.TemplateView)
                 'is_in_file': False,
                 'type': node.type,
             } for node in parent.children.all()]
+
+    def convert_shapefiles_to_geojson(self, root_directory):
+        # Traverse all subdirectories
+        for subdir, _, files in os.walk(root_directory):
+            for file in files:
+                # Process only .shp files
+                if file.endswith(".shp"):
+                    shp_path = os.path.join(subdir, file)
+                    geojson_path = os.path.splitext(shp_path)[0] + ".json"  # Naming the GeoJSON file
+
+                    # Use ogr2ogr command from GDAL to convert to GeoJSON
+                    command = [
+                        "ogr2ogr", "-f", "GeoJSON", geojson_path, shp_path
+                    ]
+
+                    try:
+                        # Run the command to convert the shapefile
+                        subprocess.run(command, check=True)
+                        print(f"Converted {shp_path} to {geojson_path}")
+                    except subprocess.CalledProcessError as e:
+                        print(f"Error converting {shp_path}: {e}")

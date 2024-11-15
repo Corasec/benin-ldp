@@ -229,13 +229,8 @@ class AdministrativeLevelDetailView(
             administrative_level=admin_level.id
         )
         context["mapbox_access_token"] = os.environ.get("MAPBOX_ACCESS_TOKEN")
-        self.object.latitude = 10.693749945416448
-        self.object.longitude = 0.330183201548857
 
-        context['children_coordinates'] = list()
-        for child in context["object"].children.all():
-            if child.latitude is not None:
-                context['children_coordinates'].append([float(child.longitude), float(child.latitude)])
+        context['children_coordinates'] = self._get_villages_coordinates_from_administrative_level(self.object)
 
         package = Package.objects.get_active_cart(
             user=self.request.user
@@ -304,6 +299,16 @@ class AdministrativeLevelDetailView(
                         Q(type__icontains='Document')
                     ).first()
         return None
+
+    def _get_villages_coordinates_from_administrative_level(self, administrative_level):
+        coordinates = list()
+        for child in administrative_level.children.all():
+            if child.type == AdministrativeLevel.VILLAGE:
+                if child.longitude is not None and child.latitude is not None:
+                    coordinates.append([float(child.longitude), float(child.latitude)])
+            else:
+                coordinates += self._get_villages_coordinates_from_administrative_level(child)
+        return coordinates
 
 
 class CommuneDetailView(PageMixin, LoginRequiredMixin, DetailView):

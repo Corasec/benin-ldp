@@ -1,7 +1,5 @@
-function loadGeoJsonMap(url, access_token, admin_level_coordinates, children, type) {
+function loadGeoJsonMap(url, access_token, admin_level_coordinates, type, name) {
     mapboxgl.accessToken = access_token;
-
-        console.log('holaaa');
 
     fetch(url)
     .then(response => response.json())
@@ -82,7 +80,7 @@ function loadGeoJsonMap(url, access_token, admin_level_coordinates, children, ty
                     'layout': {},
                     'paint': {
                         'fill-color': colors[index],
-                        'fill-opacity': 0.5
+                        'fill-opacity': 0.3
                     },
                     'filter': ['==', 'ClusterID', cluster]
                 });
@@ -119,35 +117,103 @@ function loadGeoJsonMap(url, access_token, admin_level_coordinates, children, ty
                   }
                 });
         }
-        var geoJson = {
-            "type": "FeatureCollection",
-            "features": data.features
-        };
+
+        function filterFeaturesByProperty(geojsonData, propertyName, propertyValue) {
+            return geojsonData.features.filter(
+                feature => feature.properties[propertyName] === propertyValue
+            );
+        }
+
+        // var geoJson = {
+        //     "type": "FeatureCollection",
+        //     "features": data.features
+        // };
+
         const mymap = new mapboxgl.Map({
             container: 'mapid',
             style: 'mapbox://styles/mapbox/outdoors-v12',
-            center: admin_level_coordinates,
-            zoom: 8,
         })
 
-         new mapboxgl.Marker()
-        .setLngLat(admin_level_coordinates)
-        .addTo(mymap)
+        //  new mapboxgl.Marker()
+        // .setLngLat(admin_level_coordinates)
+        // .addTo(mymap)
 
-        children = (parseListOfLists(children));
-        children.forEach( coord => {
+        admin_level_coordinates = (parseListOfLists(admin_level_coordinates));
+        admin_level_coordinates.forEach( coord => {
             new mapboxgl.Marker()
                 .setLngLat(coord)
                 .addTo(mymap)
         })
 
+        mymap.on('load', () => {
 
-        //mymap.fitBounds(bbox);
+            if (admin_level_coordinates.length > 1) {
+
+                // List of GeoJSON files and unique IDs
+                const geojsonSources = [
+                    // { id: 'source1', url: '/static/geojson/CANTON MARITIME RGPH 4.json' },
+                    { id: 'source2', url: '/static/geojson/COUCHE_CANTON_TOGO.json' }
+                ];
+
+                // Loop through each GeoJSON source, add it, and create a corresponding layer
+                geojsonSources.forEach(source => {
+                    fetch(source.url)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add each source with its unique ID
+                            mymap.addSource(source.id, {
+                                type: 'geojson',
+                                data: data
+                            });
+
+                            // Add a layer for each source
+                            mymap.addLayer({
+                                id: `${source.id}-layer`,
+                                type: 'fill', // Change to 'line' or 'circle' based on data type
+                                source: source.id,
+                                paint: {
+                                    'fill-color': '#ad03fc', // Random color
+                                    'fill-opacity': 0.4
+                                },
+                                filter: ['==', ['get', type.toUpperCase()], name.toUpperCase()]
+                            });
+
+                            let filteredFeatures = filterFeaturesByProperty(data, type.toUpperCase(), name.toUpperCase());
+                            if (filteredFeatures.length > 0) {
+                                // Initialize bounds using the first feature's coordinates
+                                const bounds = filteredFeatures.reduce((bounds, feature) => {
+                                    // Get coordinates for each feature's polygon
+                                    const coordinates = feature.geometry.coordinates[0];
+                                    coordinates.forEach(coord => bounds.extend(coord));
+                                    return bounds;
+                                }, new mapboxgl.LngLatBounds(filteredFeatures[0].geometry.coordinates[0][0], filteredFeatures[0].geometry.coordinates[0][0]));
+
+                                // Center and zoom to fit all filtered features
+                                mymap.fitBounds(bounds, {
+                                    padding: 20,  // Adds padding around the polygon for better visibility
+                                    maxZoom: 15   // Limits maximum zoom level (optional)
+                                });
+                            }
+
+                        })
+                        .catch(error => console.log(`Error loading GeoJSON from ${source.url}:`, error));
+                });
+
+            }else{
+                mymap.fitBounds([
+                    [0.05, 6.1], // Southwest corner
+                    [1.8, 11.1]  // Northeast corner
+                ], {
+                    padding: 20,  // Adds padding around the map view
+                    maxZoom: 10   // Limit maximum zoom to prevent over-zooming
+                });
+            }
+        });
 
         mymap.on('load', () => {
             mymap.dragRotate.disable();
 
-            addLayers(geoJson);
+            // addLayers(geoJson);
         });
 
         regions_angle.hide();
