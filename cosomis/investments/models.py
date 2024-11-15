@@ -86,6 +86,8 @@ class Investment(BaseModel): # Investment module
         blank=True,
     )
     no_sql_id = models.CharField(max_length=255)
+    imported_project_id = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return f'{self.title}'
 

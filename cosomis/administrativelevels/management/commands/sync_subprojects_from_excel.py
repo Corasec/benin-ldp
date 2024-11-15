@@ -59,6 +59,7 @@ class Command(BaseCommand):
                     best_match.funded_by = project
                     best_match.longitude = row["Longitude (x)"]
                     best_match.latitude = row["Latitude (y)"]
+                    best_match.imported_project_id = 'COSO' + str(row["ID"])
                     phsycical_execution_rate = row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"]
                     # check if phsycical_execution_rate is a number
                     phsycical_execution_rate = pd.to_numeric(phsycical_execution_rate, errors='coerce')
@@ -108,19 +109,36 @@ class Command(BaseCommand):
                     cost = float(row["COUT ESTIME DE L'OUVRAGE"])
                 except:
                     cost = 0
+                physical_execution_rate = row["NIVEAU ACTUEL DE REALISATION PHYSIQUE DE L'OUVRAGE"]
+                if pd.isna(phsycical_execution_rate):
+                    phsycical_execution_rate = 0
+
+                project_status = "P"
+                if row["status"] == "Identifié":
+                    project_status = "F"
+                elif row["status"] == "En cours":
+                    project_status = "P"
+                elif pd.isna(row["status"]):
+                    project_status = "F"
+                elif row["status"] == "Arrêt":
+                    project_status = "PA"
+                elif row["status"] == "Achevé" or row["status"] == "Réception provisoire":
+                    project_status = "C"
+
                 Investment.objects.create(
                     title=row["CDD Option"],
                     administrative_level=village.first(),
                     funded_by=project,
                     longitude=row["Longitude (x)"],
                     latitude=row["Latitude (y)"],
-                    project_status="F",
+                    project_status=project_status,
                     sector=matched_sectors[0] if matched_sectors else other_sector,
                     estimated_cost=cost,
                     duration=0,
                     delays_consumed=0,
-                    physical_execution_rate=0,
-                    financial_implementation_rate=0
+                    physical_execution_rate=physical_execution_rate,
+                    financial_implementation_rate=0,
+                    imported_project_id='COSO' + str(row["ID"])
                 )
             else:
                 existing_with_village += 1
