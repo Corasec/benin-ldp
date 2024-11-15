@@ -1,4 +1,5 @@
 import math
+from xml.sax.handler import property_interning_dict
 
 from django.db.models import Count, Q, Subquery, F, Sum
 from django.http import JsonResponse
@@ -60,18 +61,23 @@ class InvestmentModelViewSet(ModelViewSet):
         qs = self.get_queryset()
         inv_ids = request.data['selected_ids'].split('-')
         if '' in inv_ids: inv_ids.remove('')
+        if request.data['project_id']:
+            project = Project.objects.filter(id=request.data['project_id']).first()
+            project_amount = project.total_amount
+            project_id = project.id
+        else:
+            project = None
+            project_amount = 0
+            project_id = None
 
-        project = Project.objects.filter(id=request.data['project_id']).first()
-
-        qs = qs.filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id)).exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids).filter(Q(estimated_cost__lte=project.total_amount) | Q(funded_by__id=project.id))
-
+        qs = qs.exclude(id__in=inv_ids) if request.data['all_queryset'] == 'true' else qs.filter(id__in=inv_ids)
 
         return Response({
             'total_funding_display': qs.aggregate(total_funding_display=Sum('estimated_cost'))['total_funding_display'] or 0,
             'total_villages_display': qs.values('administrative_level').distinct().count(),
             'total_subprojects_display': qs.count(),
-            'project_total_fund': project.total_amount,
-            'project_id': project.id,
+            'project_total_fund': project_amount,
+            'project_id': project_id,
         })
 
     def get_serializer_context(self):

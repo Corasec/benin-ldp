@@ -1,7 +1,7 @@
 from boto3.session import Session
 from botocore.exceptions import NoCredentialsError, ClientError
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from cosomis.models_base import BaseModel
 from django.utils.translation import gettext_lazy as _
 
@@ -96,12 +96,14 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
     APPROVED = "A"
     REJECTED = "R"
     UNDER_EXECUTION = "E"
+    PARTIALLY_APPROVED = "PA"
     STATUS = (
         (PENDING_SUBMISSION, _("Pending Submission")),
         (PENDING_APPROVAL, _("Pending Approval")),
         (APPROVED, _("Approved")),
         (REJECTED, _("Rejected")),
         (UNDER_EXECUTION, _("Under Execution")),
+        (PARTIALLY_APPROVED, _("Partially Approved")),
     )
 
     objects = PackageQuerySet.as_manager()
@@ -120,7 +122,7 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
         blank=True,
         null=True,
     )
-    funded_investments = models.ManyToManyField(Investment, related_name="packages")
+    funded_investments = models.ManyToManyField(Investment, through="PackageFundedInvestment", related_name="packages")
     draft_status = models.BooleanField(default=True)
     status = models.CharField(max_length=50, choices=STATUS, default=PENDING_SUBMISSION)
 
@@ -135,6 +137,58 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
             estimated_final_cost=models.Sum("estimated_cost")
         )["estimated_final_cost"]
 
+class PackageFundedInvestment(BaseModel):
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+    investment = models.ForeignKey(Investment, on_delete=models.CASCADE)
+    PENDING_APPROVAL = "P"
+    APPROVED = "A"
+    REJECTED = "R"
+    STATUS = (
+        (PENDING_APPROVAL, _("Pending Approval")),
+        (APPROVED, _("Approved")),
+        (REJECTED, _("Rejected")),
+    )
+
+    status = models.CharField(max_length=50, choices=STATUS, default=PENDING_APPROVAL)
+    rejection_reason = models.TextField(null=True, blank=True)
+
+    class Meta:
+        db_table = "investments_package_funded_investments"
+
+    def approve(self):
+        with transaction.atomic():
+            self.status = self.APPROVED
+            self.save()
+            self.update_package_status()
+
+    def reject(self):
+        with transaction.atomic():
+            self.status = self.REJECTED
+            self.save()
+            self.update_package_status()
+
+    def update_package_status(self):
+        packages = PackageFundedInvestment.objects.filter(package_id=self.package_id)
+        pending = packages.filter(status__in=self.PENDING_APPROVAL).count()
+
+        if pending > 0:
+            self.package.status = self.package.PENDING_APPROVAL
+            self.package.save()
+            return
+
+        approved = packages.filter(status__in=self.APPROVED).count()
+        rejected = packages.filter(status__in=self.REJECTED).count()
+
+        if approved > 0 and rejected == 0:
+            self.package.status = self.package.APPROVED
+
+        elif rejected > 0 and approved == 0:
+            self.package.status = self.package.REJECTED
+
+        elif rejected > 0 and approved > 0:
+            self.package.status = self.package.PARTIALLY_APPROVED
+
+        self.package.save()
 
 class Attachment(BaseModel):
     """

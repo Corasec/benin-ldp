@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from administrativelevels.models import Project
 from usermanager.models import User
-from .models import Package, Investment
+from .models import Package, Investment, PackageFundedInvestment
 
 
 class InvestmentsForm(forms.Form):
@@ -32,9 +32,7 @@ class InvestmentsForm(forms.Form):
         return self.cleaned_data['all_queryset'] == 'true'
 
     def clean(self):
-        project = self.cleaned_data['project']
-
-        qs = Investment.objects.filter(project_status=Investment.NOT_FUNDED, estimated_cost__lte=project.total_amount)
+        qs = Investment.objects.filter(project_status=Investment.NOT_FUNDED)
         inv_ids = self.cleaned_data['investments'] if 'investments' in self.cleaned_data else []
         all_queryset = self.cleaned_data['all_queryset']
         self.cleaned_data['investments'] = qs.exclude(id__in=inv_ids) if all_queryset else qs.filter(id__in=inv_ids)
@@ -42,14 +40,10 @@ class InvestmentsForm(forms.Form):
     def save(self):
         investments = list()
         project = self.cleaned_data['project']
-        total_investment = 0
         for inv in self.cleaned_data['investments']:
             self.package.funded_investments.add(inv)
-            total_investment = total_investment + inv.estimated_cost
             inv.funded_by = project
             investments.append(inv)
-        if total_investment > project.total_amount:
-            raise Exception("Not enough funds")
         self.package.project = project
         self.package.save()
         Investment.objects.bulk_update(investments, ['funded_by'])
@@ -89,6 +83,11 @@ class PackageApprovalForm(forms.Form):
             package.status = Package.APPROVED
         package.review_by = self.user
         package.save()
+        package_funded_investments = PackageFundedInvestment.objects.filter(package_id=package.id)
+        for package_item in package_funded_investments:
+            package_item.status = package.status
+            package_item.rejection_reason = package.rejection_reason
+            package_item.save()
 
 
 class UserApprovalForm(forms.Form):

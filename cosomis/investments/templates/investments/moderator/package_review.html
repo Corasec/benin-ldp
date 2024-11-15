@@ -358,12 +358,31 @@
                         </p>
                     </div>
                     <div class="col-3">
+                        <div class="text-right">
+                                    <strong>{% translate 'Status' %}:</strong>
+                                    {% if package.status == package.PENDING_SUBMISSION %}
+                                        {% translate 'Pending Submission' %}
+                                    {% elif package.status == package.PENDING_APPROVAL %}
+                                        {% translate 'Pending Approval' %}
+                                    {% elif package.status == package.APPROVED %}
+                                        {% translate 'Approved' %}
+                                    {% elif package.status == package.REJECTED %}
+                                        {% translate 'Rejected' %}
+                                    {% elif package.status == package.UNDER_EXECUTION %}
+                                        {% translate 'Under Execution' %}
+                                    {% elif package.status == package.PARTIALLY_APPROVED %}
+                                        {% translate 'Partially Approval' %}
+                                    {% endif %}
+                        </div>
+                        <br>
+                        {% if package.status != package.PARTIALLY_APPROVED and package.status != package.APPROVE and package.status != package.REJECTED %}
                         <form action="" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="investments-from">
                             <p><input type="submit" class="btn btn-primary btn-sm btn-block" value="{% translate 'Approve' %}" id="investments-submit"></p>
                         </form>
                         <p><a class="btn btn-default btn-sm btn-block" data-toggle="modal" data-target="#rejectModal">{% translate 'Reject' %}</a></p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -384,36 +403,65 @@
                                 <th data-priority="7" class="align-middle rounded-0 border-0">{% translate 'Prefecture' %}</th>
                                 <th data-priority="8" class="align-middle rounded-0 border-0">{% translate 'Region' %}</th>
                                 <th data-priority="9" class="align-middle rounded-0 border-0">{% translate 'Village priority' %}</th>
-                                <th data-priority="10" class="align-middle border-top-right-corner border-bottom-0">{% translate 'Population priority' %}</th>
+                                <th data-priority="10" class="align-middle rounded-0 border-0">{% translate 'Population priority' %}</th>
+                                <th data-priority="11" class="align-middle rounded-0 border-0">{% translate 'Status' %}</th>
+                                <th data-priority="12" class="align-middle rounded-0 border-0">{% translate 'Reason' %}</th>
+                                <th data-priority="13" class="align-middle border-top-right-corner border-bottom-0"></th>
                             </thead>
                         <tbody>
-                        {% for investment in investments %}
+                        {% for package_investment in package_investments %}
                         <tr>
                             <td>
-                                <input class="project-table-check" id="checkbox-{{ investment.id }}" value="{{ investment.id }}" type="checkbox" checked>
+                                <input class="project-table-check" id="checkbox-{{ package_investment.investment.id }}" value="{{ package_investment.investment.id }}" type="checkbox" checked>
                             </td>
-                            <td>{{ investment.title }}</td>
-                            <td>{{ investment.administrative_level.type }}</td>
-                            <td data-order="{{ investment.estimated_cost }}" data-search="{{ investment.estimated_cost }}">
+                            <td>{{ package_investment.investment.title }}</td>
+                            <td>{{ package_investment.investment.administrative_level.type }}</td>
+                            <td data-order="{{ package_investment.investment.estimated_cost }}" data-search="{{ package_investment.investment.estimated_cost }}">
                                 {{ investment.estimated_cost|intcomma }} FCFA
                             </td>
-                            <td>{{ investment.administrative_level.name }}</td>
-                            <td>{{ investment.administrative_level.parent.parent.name }}</td>
-                            <td>{{ investment.administrative_level.parent.parent.parent.name }}</td>
-                            <td>{{ investment.administrative_level.parent.parent.parent.parent.name }}</td>
-                            <td>{{ investment.ranking }}</td>
+                            <td>{{ package_investment.investment.administrative_level.name }}</td>
+                            <td>{{ package_investment.investment.administrative_level.parent.parent.name }}</td>
+                            <td>{{ package_investment.investment.administrative_level.parent.parent.parent.name }}</td>
+                            <td>{{ package_investment.investment.administrative_level.parent.parent.parent.parent.name }}</td>
+                            <td>{{ package_investment.investment.ranking }}</td>
                             <td>
-                                {% if investment.endorsed_by_youth %}
-                                    J{% if investment.endorsed_by_women or investment.endorsed_by_agriculturist or investment.endorsed_by_pastoralist %},{% endif %}
+                                {% if package_investment.investment.endorsed_by_youth %}
+                                    J{% if package_investment.investment.endorsed_by_women or package_investment.investment.endorsed_by_agriculturist or package_investment.investment.endorsed_by_pastoralist %},{% endif %}
                                 {% endif %}
-                                {% if investment.endorsed_by_women %}
-                                    F{% if investment.endorsed_by_agriculturist or investment.endorsed_by_pastoralist %},{% endif %}
+                                {% if package_investment.investment.endorsed_by_women %}
+                                    F{% if package_investment.investment.endorsed_by_agriculturist or package_investment.investment.endorsed_by_pastoralist %},{% endif %}
                                 {% endif %}
-                                {% if investment.endorsed_by_agriculturist %}
-                                    AG{% if investment.endorsed_by_pastoralist %},{% endif %}
+                                {% if package_investment.investment.endorsed_by_agriculturist %}
+                                    AG{% if package_investment.investment.endorsed_by_pastoralist %},{% endif %}
                                 {% endif %}
-                                {% if investment.endorsed_by_pastoralist %}
+                                {% if package_investment.investment.endorsed_by_pastoralist %}
                                     ME
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if package_investment.status == package_investment.PENDING_APPROVAL %}
+                                    {% translate 'Pending Approval' %}
+                                {% elif package_investment.status == package_investment.APPROVED %}
+                                    {% translate 'Approved' %}
+                                {% elif package_investment.status == package_investment.REJECTED %}
+                                    {% translate 'Rejected' %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if package_investment.rejection_reason is not None %}
+                                    {{ package_investment.rejection_reason }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if package_investment.status == package_investment.PENDING_APPROVAL %}
+                                    <form action="" method="post" name="approve-package-item-form" id="approve-package-item-form-id-{{ package_investment.id }}">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="approve-package-item-input-form-{{ package_investment.id }}" value="{{ package_investment.id }}" name="package-item">
+                                        <input type="hidden" id="action-input-form-{{ package_investment.id }}" value="" name="action">
+                                    </form>
+                                    <button class="col-12 mb-2 btn btn-xs btn-primary approve-package-item-action" name="{{ package_investment.id }}" id="approve-{{ package_investment.id }}">{% translate 'Approve' %}</button>
+
+                                    <button class="col-12 btn btn-xs btn-default approve-package-item-action" name="{{ package_investment.id }}" id="reject-{{ package_investment.id }}">{% translate 'Reject' %}</button>
                                 {% endif %}
                             </td>
                         </tr>
@@ -623,6 +671,17 @@
         addToCartBtn.addEventListener('click', function () {
             // Submit the form with the ID 'investment-form'
             document.getElementById('investment-form').submit();
+        });
+
+        $('.approve-package-item-action').on('click', function(){
+
+            let package_name = $(this).attr('name');
+            let action = $(this).attr('id').split('-')[0];
+
+            $('#action-input-form-' + package_name).attr('value', action);
+
+            $('#approve-package-item-id-' + package_name).submit();
+
         });
     });
 </script>

@@ -430,12 +430,12 @@
                                     {% for project in projects %}
                                         {% if cart_project %}
                                             {% if cart_project.id == project.id %}
-                                            <option value="{{ project.id }}" selected>{{ project.name }}</option>
+                                            <option value="{{ project.id }}" {% if forloop.first %} selected {% endif %}>{{ project.name }}</option>
                                             {% else %}
-                                            <option value="{{ project.id }}">{{ project.name }}</option>
+                                            <option value="{{ project.id }}" {% if forloop.first %} selected {% endif %}>{{ project.name }}</option>
                                             {% endif %}
                                         {% else %}
-                                            <option value="{{ project.id }}">{{ project.name }}</option>
+                                            <option value="{{ project.id }}" {% if forloop.first %} selected {% endif %}>{{ project.name }}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
@@ -476,7 +476,7 @@
                     {% else %}
                         <table class="table rounded-table table-striped" style="width: 100%;">
                             <thead>
-                                <th data-priority="1" class="align-middle border-top-left-corner"><input class="" id="checkbox-select-all" type="checkbox"></th>
+                                <th data-priority="1" class="align-middle border-top-left-corner"><input class="" id="checkbox-select-all" type="checkbox" checked></th>
                                 <th data-priority="2" class="align-middle rounded-0 border-0">{% translate 'Name' %}</th>
                                 <th data-priority="3" class="align-middle rounded-0 border-0">{% translate 'Source' %}</th>
                                 <th data-priority="4" class="align-middle rounded-0 border-0">{% translate 'Estimate cost' %}</th>
