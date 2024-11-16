@@ -3097,3 +3097,9 @@ msgstr "Pas assez de fonds"
 
 msgid "This investment is already funded by the project"
 msgstr "Cet investissement est déjà financé par le projet"
+
+msgid "Youth"
+msgstr "Jeunes"
+
+msgid "Agriculturist"
+msgstr "Agriculteurs"
