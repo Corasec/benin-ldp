@@ -1,4 +1,8 @@
-function loadGeoJsonMap(url, access_token, admin_level_coordinates, type, name) {
+function loadGeoJsonMap(
+    url, access_token, village_url,
+    admin_level_coordinates,
+    type, name
+) {
     mapboxgl.accessToken = access_token;
 
     fetch(url)
@@ -14,20 +18,17 @@ function loadGeoJsonMap(url, access_token, admin_level_coordinates, type, name) 
         let around_africa_id = 'around_africa';
 
         function parseListOfLists(input) {
-          try {
-            // Parse the input string as JSON
-            const parsed = JSON.parse(input);
+             try {
+                // Parse the input string as JSON;
+                input = input.replace(/'/g, '"');
+                let parsed = JSON.parse(input);
 
-            // Check if parsed is actually an array of arrays
-            if (Array.isArray(parsed) && parsed.every(item => Array.isArray(item))) {
-              return parsed;
-            } else {
-              throw new Error("Input is not a valid list of lists");
+                // Check if parsed is actually an array of arrays
+                return parsed.villages;
+            } catch (error) {
+                console.error("Invalid input format:", error.message);
+                return null;
             }
-          } catch (error) {
-            console.error("Invalid input format:", error.message);
-            return null;
-          }
         }
 
         function clearAllTimeout() {
@@ -140,9 +141,23 @@ function loadGeoJsonMap(url, access_token, admin_level_coordinates, type, name) 
 
         admin_level_coordinates = (parseListOfLists(admin_level_coordinates));
         admin_level_coordinates.forEach( coord => {
-            new mapboxgl.Marker()
-                .setLngLat(coord)
+            const popup = new mapboxgl.Popup({ offset: 25 }).setText(coord.name);
+            let marker = new mapboxgl.Marker()
+                .setLngLat(coord.coordinates)
                 .addTo(mymap)
+
+            let markerElement = marker.getElement()
+            markerElement.addEventListener('click', () => {
+                window.open(village_url.replace('0', coord.id.toString()), '_blank')
+            });
+
+            markerElement.addEventListener('mouseenter', () => {
+                popup.setLngLat(coord.coordinates).addTo(mymap);
+            });
+
+            markerElement.addEventListener('mouseleave', () => {
+                popup.remove();
+            });
         })
 
         mymap.on('load', () => {
