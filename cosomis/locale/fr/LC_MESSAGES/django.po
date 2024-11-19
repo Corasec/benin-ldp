@@ -3103,3 +3103,6 @@ msgstr "Jeunes"
 
 msgid "Agriculturist"
 msgstr "Agriculteurs"
+
+msgid "Collaborator"
+msgstr "Collaborateurs"
