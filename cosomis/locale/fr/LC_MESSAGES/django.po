@@ -440,7 +440,7 @@ msgstr "Personne âgé"
 #: administrativelevels/templates/components/administrative_level_overview.html:59
 #: administrativelevels/templates/prefecture/prefecture_detail.html:46
 #: administrativelevels/templates/region/region_detail.html:46
-msgid "Handicap"
+msgid "Persons with disabilities"
 msgstr "Personnes handicapées"
 
 #: administrativelevels/templates/administrative_level/detail/index.html:52
