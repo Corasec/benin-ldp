@@ -3106,3 +3106,6 @@ msgstr "Agriculteurs"
 
 msgid "Collaborator"
 msgstr "Collaborateurs"
+
+msgid "Are you sure do you want to submit the package?"
+msgstr "Êtes-vous sûr de vouloir soumettre le package?"
