@@ -111,6 +111,15 @@ class TaskDetailAjaxView(generic.TemplateView):
                 },  # This is now a properly formatted JSON string or a dict
             }
 
+            for attachment in task.attachments.all():
+                print('----')
+                print(attachment.id)
+                print(attachment.name)
+                print(attachment.type)
+                print(attachment.order)
+                print(attachment.url)
+                print('----')
+
         else:
             # Optionally handle the case where the task is not found
             context['error'] = 'Task not found'
@@ -153,7 +162,7 @@ class FillAttachmentSelectFilters(generics.GenericAPIView):
         })
 
 
-# class SectorCodesCSVView(LoginRequiredMixin, generic.View):
+# class SectorCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
 #     queryset = Sector.objects.all()
 #
 #     def get(self, *args, **kwargs):
@@ -171,7 +180,7 @@ class FillAttachmentSelectFilters(generics.GenericAPIView):
 #         return response
 
 
-class SectorCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
+class SectorCodesXLSXView(LoginRequiredApproveRequiredMixin, generic.View):
     queryset = Sector.objects.all()
 
     def get(self, *args, **kwargs):
@@ -202,7 +211,7 @@ class SectorCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
         return response
 
 
-# class VillagesCodesCSVView(LoginRequiredMixin, generic.View):
+# class VillagesCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
 #     queryset = AdministrativeLevel.objects.filter(type=AdministrativeLevel.VILLAGE)
 #
 #     def get(self, *args, **kwargs):
@@ -220,7 +229,8 @@ class SectorCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
 #
 #         return response
 
-class VillagesCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
+
+class VillagesCodesXLSXView(LoginRequiredApproveRequiredMixin, generic.View):
     queryset = AdministrativeLevel.objects.filter(
         type=AdministrativeLevel.VILLAGE
     ).select_related(
@@ -278,6 +288,10 @@ class InitializeVillageCoordinatesView(LoginRequiredApproveRequiredMixin, generi
 
         with open(self.file_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
+
+            header = next(csv_reader)
+            print("Header:")
+            print(header)
 
             for row in csv_reader:
                 village = AdministrativeLevel.objects.filter(
@@ -360,6 +374,10 @@ class InitializeVillageCoordinatesView(LoginRequiredApproveRequiredMixin, generi
 
         with open(self.file_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
+
+            header = next(csv_reader)
+            print("Header:")
+            print(header)
 
             for row in csv_reader:
                 region_flag = False
