@@ -1,6 +1,5 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
-from cosomis.mixins import PageMixin, AJAXRequestMixin
+from cosomis.mixins import PageMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -20,7 +19,7 @@ from . import functions
 
 
 
-class DashboardTemplateView(PageMixin, LoginRequiredMixin, generic.TemplateView):
+class DashboardTemplateView(PageMixin, LoginRequiredApproveRequiredMixin, generic.TemplateView):
     template_name = 'dashboard_administrativelevels.html'
     active_level1 = 'dashboard_administrativelevels'
     title = _('Administrative levels Dashboard')
@@ -83,7 +82,7 @@ class DashboardAdministrativeLevelMixin:
         }
 
 
-class DashboardWaveListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardWaveListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'
@@ -217,7 +216,7 @@ class DashboardWaveListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin,
         return ctx
 
 
-class DashboardWaveTimesListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardWaveTimesListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'
@@ -300,7 +299,7 @@ class DashboardWaveTimesListView(DashboardAdministrativeLevelMixin, AJAXRequestM
 
 
 
-class DashboardSummaryAdministrativeLevelNumberListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSummaryAdministrativeLevelNumberListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'
@@ -383,7 +382,7 @@ class DashboardSummaryAdministrativeLevelNumberListView(DashboardAdministrativeL
 
 
 
-class DashboardSummaryAdministrativeLevelAllocationListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSummaryAdministrativeLevelAllocationListView(DashboardAdministrativeLevelMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'

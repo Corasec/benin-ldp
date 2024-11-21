@@ -3,18 +3,17 @@ import json
 import geojson
 import os
 import subprocess
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery
 from django.views import generic
 from django.http import HttpResponse
 
 from rest_framework import generics, response
 
-from cosomis.mixins import AJAXRequestMixin, JSONResponseMixin
+from cosomis.mixins import AJAXRequestMixin, JSONResponseMixin, LoginRequiredApproveRequiredMixin
 from administrativelevels.models import AdministrativeLevel, Phase, Activity, Task, Sector, GeoSegment
 
 
-class GetAdministrativeLevelForCVDByADLView(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, generic.View):
+class GetAdministrativeLevelForCVDByADLView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
     def get(self, request, *args, **kwargs):
         adl_id = request.GET.get('administrative_level_id')
 
@@ -28,7 +27,7 @@ class GetAdministrativeLevelForCVDByADLView(AJAXRequestMixin, LoginRequiredMixin
         return self.render_to_json_response(sorted(d, key=lambda o: o['name']), safe=False)
 
 
-class GetChoicesForNextAdministrativeLevelNoConditionView(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, generic.View):
+class GetChoicesForNextAdministrativeLevelNoConditionView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
     def get(self, request, *args, **kwargs):
         parent_id = request.GET.get('parent_id')
 
@@ -44,7 +43,7 @@ class GetChoicesForNextAdministrativeLevelNoConditionView(AJAXRequestMixin, Logi
         return phases == 0 and attachements == 0 and village.total_population ==0
     
 
-class GetChoicesForNextAdministrativeLevelView(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, generic.View):
+class GetChoicesForNextAdministrativeLevelView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
     def get(self, request, *args, **kwargs):
         parent_id = request.GET.get('parent_id')
         geographical_unit_id = request.GET.get('geographical_unit_id', None)
@@ -56,7 +55,7 @@ class GetChoicesForNextAdministrativeLevelView(AJAXRequestMixin, LoginRequiredMi
         return self.render_to_json_response(sorted(d, key=lambda o: o['name']), safe=False)
 
 
-class GetChoicesAdministrativeLevelByGeographicalUnitView(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, generic.View):
+class GetChoicesAdministrativeLevelByGeographicalUnitView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
     def get(self, request, *args, **kwargs):
         geographical_unit_id = request.GET.get('geographical_unit_id')
         cvd_id = request.GET.get('cvd_id', None)
@@ -68,7 +67,7 @@ class GetChoicesAdministrativeLevelByGeographicalUnitView(AJAXRequestMixin, Logi
         return self.render_to_json_response(sorted(d, key=lambda o: o['name']), safe=False)
     
 
-class GetAncestorAdministrativeLevelsView(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, generic.View):
+class GetAncestorAdministrativeLevelsView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
     def get(self, request, *args, **kwargs):
         administrative_id = request.GET.get('administrative_id', None)
         ancestors = []
@@ -162,7 +161,7 @@ class FillAttachmentSelectFilters(generics.GenericAPIView):
         })
 
 
-class SectorCodesCSVView(LoginRequiredMixin, generic.View):
+class SectorCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
     queryset = Sector.objects.all()
 
     def get(self, *args, **kwargs):
@@ -180,7 +179,7 @@ class SectorCodesCSVView(LoginRequiredMixin, generic.View):
         return response
 
 
-class VillagesCodesCSVView(LoginRequiredMixin, generic.View):
+class VillagesCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
     queryset = AdministrativeLevel.objects.filter(type=AdministrativeLevel.VILLAGE)
 
     def get(self, *args, **kwargs):
@@ -199,7 +198,7 @@ class VillagesCodesCSVView(LoginRequiredMixin, generic.View):
         return response
 
 
-class InitializeVillageCoordinatesView(LoginRequiredMixin, generic.TemplateView):
+class InitializeVillageCoordinatesView(LoginRequiredApproveRequiredMixin, generic.TemplateView):
     template_name = 'village_coordinates.html'
     file_path = 'administrativelevels/utils/Village Coords RGPH-5.csv'
 

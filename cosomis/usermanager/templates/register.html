@@ -60,31 +60,28 @@
 <div class="card">
         <div class="card-body login-card-body">
             <p class="login-box-msg">
-                {% translate "Log in to start your session" %}
+                {% translate "Sign up as a partner" %}
             </p>
 
             <form method="post">
                 {% csrf_token %}
-                {% bootstrap_field form.email %}
-                {% bootstrap_field form.password %}
+                {% bootstrap_field form.username %}
+                <hr>
+                {% bootstrap_field form.password1 %}
+                {% bootstrap_field form.password2 %}
                 <div class="row">
                     <!-- /.col -->
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary btn-block">
-                            {% translate "Log in" %}
+                            {% translate "Sign up" %}
                         </button>
                     </div>
                     <!-- /.col -->
                 </div>
             </form>
-            {% comment %}
-                <p class="mb-1">
-                    #} {# <a href="forgot-password.html">I forgot my password</a>#} {#
-                </p>
-          {% endcomment %}
-                        <p class="mt-1 mb-0">
-                            <a href="{% url 'usermanager:signup' %}" class="text-center">{% translate 'Sign up as a partner' %}</a>
-                        </p>
+            <p class="mt-1 mb-0">
+                <a href="{% url 'usermanager:login' %}" class="text-center">{% translate 'Already has an account? Sign in' %}</a>
+            </p>
         </div>
         <!-- /.login-card-body -->
     </div>

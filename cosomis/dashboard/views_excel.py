@@ -1,6 +1,5 @@
 from django.views.generic import View
-from cosomis.mixins import AJAXRequestMixin, JSONResponseMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
+from cosomis.mixins import AJAXRequestMixin, JSONResponseMixin, LoginRequiredApproveRequiredMixin
 from django.utils.translation import gettext_lazy
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -16,7 +15,7 @@ from administrativelevels.libraries import download_file
 
 
 
-class DownloadExcelFile(AJAXRequestMixin, LoginRequiredMixin, JSONResponseMixin, View):
+class DownloadExcelFile(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, View):
     template_name = 'statistics/subprojects_tracking.html'
     context_object_name = 'Download'
     title = gettext_lazy("Download")

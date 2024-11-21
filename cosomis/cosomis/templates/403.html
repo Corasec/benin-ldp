@@ -1,4 +1,4 @@
-{% load bootstrap4 static i18n %}
+{% load humanize static i18n %}
 
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
@@ -18,9 +18,12 @@
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'AdminLTE/plugins/fontawesome-free/css/all.min.css' %}" />
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"/>
+    <!-- Font Awesome Free 5.13.0 -->
+    <link rel="stylesheet" href="{% static 'AdminLTE/plugins/fontawesome-free/css/all.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'AdminLTE/plugins/fontawesome-free/css/v4-shims.min.css' %}"/>
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"/>
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="{% static 'AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}" />
     <!-- Theme style -->
@@ -39,15 +42,23 @@
 </style>
 
 <div class="structure_name">
-    <small>Programme d’urgence de renforcement</small><br>
-    <small>de la résilience et de la sécurité</small><br>
-    <small>des communautés</small>
+    <strong>403</strong><br>
+    <small>{% translate 'Your user is still under validation' %}</small><br>
+    <small>{% translate 'or you do not have permission to see this page.' %}</small>
 </div>
 <body class="hold-transition login-page">
 {%  if OTHER_LANGUAGES %}
     <nav class="main-header navbar navbar-expand">
         <ul class="navbar-nav ml-auto">
             {% include 'layouts/language_dropdown.html' %}
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item white-shaded-nav-item">
+                <a class="nav-link" href="{% url 'usermanager:logout' %}" title="{% translate 'Logout' %}"
+                   role="button">
+                    <i class="fa fa-sign-out align-bottom"></i>
+                </a>
+            </li>
         </ul>
     </nav>
 {% endif %}
@@ -57,37 +68,6 @@
 <!--     </div> -->
     <!-- /.login-logo -->
 
-<div class="card">
-        <div class="card-body login-card-body">
-            <p class="login-box-msg">
-                {% translate "Log in to start your session" %}
-            </p>
-
-            <form method="post">
-                {% csrf_token %}
-                {% bootstrap_field form.email %}
-                {% bootstrap_field form.password %}
-                <div class="row">
-                    <!-- /.col -->
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-block">
-                            {% translate "Log in" %}
-                        </button>
-                    </div>
-                    <!-- /.col -->
-                </div>
-            </form>
-            {% comment %}
-                <p class="mb-1">
-                    #} {# <a href="forgot-password.html">I forgot my password</a>#} {#
-                </p>
-          {% endcomment %}
-                        <p class="mt-1 mb-0">
-                            <a href="{% url 'usermanager:signup' %}" class="text-center">{% translate 'Sign up as a partner' %}</a>
-                        </p>
-        </div>
-        <!-- /.login-card-body -->
-    </div>
 </div>
 <!-- /.login-box -->
 

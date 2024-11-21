@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.views import generic
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.mixins import LoginRequiredMixin
+from cosomis.mixins import LoginRequiredApproveRequiredMixin
 from usermanager.models import Organization
 from administrativelevels.models import AdministrativeLevel, Sector, Category
 from investments.models import Investment  # Make sure to import the Investment model
 
 
-class DashboardSummaryView(LoginRequiredMixin, generic.TemplateView):
+class DashboardSummaryView(LoginRequiredApproveRequiredMixin, generic.TemplateView):
     template_name = "dashboard_summary.html"
     active_level1 = 'dashboard_summary'
     title = _('Dashboard')

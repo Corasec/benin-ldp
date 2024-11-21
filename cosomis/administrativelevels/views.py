@@ -11,12 +11,10 @@ from django.utils import translation
 from django.views.generic import DetailView, ListView, CreateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import BaseFormView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from openpyxl.workbook import child
 
 from usermanager.permissions import AdminPermissionRequiredMixin, IsInvestorMixin
 from .forms import AdministrativeLevelForm
-from cosomis.mixins import PageMixin
+from cosomis.mixins import PageMixin, LoginRequiredApproveRequiredMixin
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -38,7 +36,7 @@ from .forms import (
 )
 
 
-class AdministrativeLevelsListView(PageMixin, LoginRequiredMixin, ListView):
+class AdministrativeLevelsListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView):
     """Display administrative level list"""
 
     model = AdministrativeLevel
@@ -79,7 +77,7 @@ class AdministrativeLevelsListView(PageMixin, LoginRequiredMixin, ListView):
 
 
 class AdministrativeLevelCreateView(
-    PageMixin, LoginRequiredMixin, AdminPermissionRequiredMixin, CreateView
+    PageMixin, LoginRequiredApproveRequiredMixin, AdminPermissionRequiredMixin, CreateView
 ):
     model = AdministrativeLevel
     template_name = "administrative_level/create.html"
@@ -120,7 +118,7 @@ class AdministrativeLevelCreateView(
         return super(AdministrativeLevelCreateView, self).get(request, *args, **kwargs)
 
 
-class AdministrativeLevelSearchListView(PageMixin, LoginRequiredMixin, ListView):
+class AdministrativeLevelSearchListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView):
     """Display administrative level list by parent choice"""
 
     model = AdministrativeLevel
@@ -161,7 +159,7 @@ class AdministrativeLevelSearchListView(PageMixin, LoginRequiredMixin, ListView)
 
 
 class AdministrativeLevelDetailView(
-    PageMixin, LoginRequiredMixin, DetailView
+    PageMixin, LoginRequiredApproveRequiredMixin, DetailView
 ):
     """Class to present the detail page of one village"""
 
@@ -311,7 +309,7 @@ class AdministrativeLevelDetailView(
         return coordinates
 
 
-class CommuneDetailView(PageMixin, LoginRequiredMixin, DetailView):
+class CommuneDetailView(PageMixin, LoginRequiredApproveRequiredMixin, DetailView):
 
     model = AdministrativeLevel
     template_name = "commune/commune_detail.html"
@@ -709,7 +707,7 @@ class BulkUploadInvestmentsView(PageMixin, IsInvestorMixin, SingleObjectMixin, F
 
 
 # Class that looks for the file in static/investments/upload_manual.md transforms it in pdf and returns in pdf
-class DownloadManualView(PageMixin, LoginRequiredMixin, DetailView):
+class DownloadManualView(PageMixin, LoginRequiredApproveRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         md_url = request.build_absolute_uri(static('investments/upload_manual.md'))
@@ -745,7 +743,7 @@ class DownloadManualView(PageMixin, LoginRequiredMixin, DetailView):
 
 
 # Attachments
-class AttachmentListView(PageMixin, LoginRequiredMixin, ListView):
+class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView):
     template_name = "attachments/attachments.html"
     context_object_name = "attachments"
     title = _("Gallery")

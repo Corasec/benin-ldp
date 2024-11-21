@@ -8,9 +8,8 @@ from django.urls import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from urllib.parse import urlencode
-from cosomis.mixins import PageMixin
+from cosomis.mixins import PageMixin, LoginRequiredApproveRequiredMixin
 
 from usermanager.models import User
 from administrativelevels.models import AdministrativeLevel, Category, Sector, Project
@@ -37,7 +36,7 @@ class ProfileTemplateView(IsInvestorMixin, PageMixin, generic.DetailView):
 
 
 class IndexListView(
-    LoginRequiredMixin, PageMixin, generic.edit.BaseFormView, generic.ListView
+    LoginRequiredApproveRequiredMixin, PageMixin, generic.edit.BaseFormView, generic.ListView
 ):
     template_name = "investments/list.html"
     queryset = Investment.objects.filter(

@@ -142,6 +142,13 @@ class UserCreationForm(forms.ModelForm):
         strip=False,
         help_text=_("Enter the same password as before, for verification."),
     )
+    username = forms.CharField(
+        label=_("Email"),
+        widget=forms.TextInput(attrs={
+            "autofocus": True, "placeholder": _("Email")
+        }),
+        help_text=_("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."),
+    )
 
     class Meta:
         model = UserModel
@@ -154,6 +161,8 @@ class UserCreationForm(forms.ModelForm):
             self.fields[self._meta.model.USERNAME_FIELD].widget.attrs[
                 "autofocus"
             ] = True
+            self.fields[self._meta.model.USERNAME_FIELD].label = _("Email")
+            self.fields[self._meta.model.USERNAME_FIELD].placeholder = _("Email")
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

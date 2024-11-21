@@ -1,6 +1,5 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
-from cosomis.mixins import PageMixin, AJAXRequestMixin
+from cosomis.mixins import PageMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin
 from django.utils.translation import gettext_lazy as _
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -14,7 +13,7 @@ from . import functions
 
 
 
-class DashboardTemplateView(PageMixin, LoginRequiredMixin, generic.TemplateView):
+class DashboardTemplateView(PageMixin, LoginRequiredApproveRequiredMixin, generic.TemplateView):
     template_name = 'dashboard_subprojects.html'
     active_level1 = 'dashboard_subprojects'
     title = _('Subprojects Dashboard')
@@ -91,7 +90,7 @@ class DashboardSubprojectsMixin:
         }
     
 
-class DashboardSubprojectsListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSubprojectsListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
 
@@ -305,7 +304,7 @@ class DashboardSubprojectsListView(DashboardSubprojectsMixin, AJAXRequestMixin, 
 
 
 
-class DashboardSubprojectsBySectorAmountListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSubprojectsBySectorAmountListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
 
@@ -405,7 +404,7 @@ class DashboardSubprojectsBySectorAmountListView(DashboardSubprojectsMixin, AJAX
 
 
 
-class DashboardSubprojectsSectorsAndStepsListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSubprojectsSectorsAndStepsListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'
@@ -505,7 +504,7 @@ class DashboardSubprojectsSectorsAndStepsListView(DashboardSubprojectsMixin, AJA
     
 
 
-class DashboardSubprojectsStepsAlreadyTrackListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSubprojectsStepsAlreadyTrackListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'
@@ -552,7 +551,7 @@ class DashboardSubprojectsStepsAlreadyTrackListView(DashboardSubprojectsMixin, A
     
 
 
-class DashboardSubprojectsCurrentStepsListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredMixin, generic.ListView):
+class DashboardSubprojectsCurrentStepsListView(DashboardSubprojectsMixin, AJAXRequestMixin, LoginRequiredApproveRequiredMixin, generic.ListView):
     template_name = 'tracking.html'
     context_object_name = 'queryset_results'
     table_class_style = 'table-bordered'
