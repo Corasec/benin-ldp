@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 import json
 import geojson
 import os
@@ -6,7 +7,7 @@ import subprocess
 from django.db.models import Subquery
 from django.views import generic
 from django.http import HttpResponse
-
+from openpyxl import Workbook
 from rest_framework import generics, response
 
 from cosomis.mixins import AJAXRequestMixin, JSONResponseMixin, LoginRequiredApproveRequiredMixin
@@ -110,15 +111,6 @@ class TaskDetailAjaxView(generic.TemplateView):
                 },  # This is now a properly formatted JSON string or a dict
             }
 
-            for attachment in task.attachments.all():
-                print('----')
-                print(attachment.id)
-                print(attachment.name)
-                print(attachment.type)
-                print(attachment.order)
-                print(attachment.url)
-                print('----')
-
         else:
             # Optionally handle the case where the task is not found
             context['error'] = 'Task not found'
@@ -161,40 +153,112 @@ class FillAttachmentSelectFilters(generics.GenericAPIView):
         })
 
 
+# class SectorCodesCSVView(LoginRequiredMixin, generic.View):
+#     queryset = Sector.objects.all()
+#
+#     def get(self, *args, **kwargs):
+#         response = HttpResponse(content_type='text/csv')
+#         response['Content-Disposition'] = 'attachment; filename="sectors_codes.csv"'
+#
+#         writer = csv.writer(response)
+#
+#         writer.writerow(['id', 'name', 'category'])
+#
+#         rows = self.queryset.values_list('id', 'name', 'category__name')
+#         for row in rows:
+#             writer.writerow(row)
+#
+#         return response
+
+
 class SectorCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
     queryset = Sector.objects.all()
 
     def get(self, *args, **kwargs):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="sectors_codes.csv"'
+        # Création d'un nouveau classeur Excel
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Sector Codes"
 
-        writer = csv.writer(response)
+        # Ajout des en-têtes
+        headers = ['ID', 'Name', 'Category']
+        sheet.append(headers)
 
-        writer.writerow(['id', 'name', 'category'])
-
+        # Récupération et ajout des données
         rows = self.queryset.values_list('id', 'name', 'category__name')
         for row in rows:
-            writer.writerow(row)
+            sheet.append([col if col is not None else '' for col in row])
 
+        # Préparation de la réponse HTTP
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename="sectors_codes_{datetime.now().strftime("%Y%m%d")}.xlsx"'
+        )
+
+        # Sauvegarde du classeur dans la réponse
+        workbook.save(response)
         return response
 
 
+# class VillagesCodesCSVView(LoginRequiredMixin, generic.View):
+#     queryset = AdministrativeLevel.objects.filter(type=AdministrativeLevel.VILLAGE)
+#
+#     def get(self, *args, **kwargs):
+#         response = HttpResponse(content_type='text/csv')
+#         response['Content-Disposition'] = 'attachment; filename="administrative_level_codes.csv"'
+#
+#         writer = csv.writer(response)
+#
+#         writer.writerow(['id', 'region', 'prefecture', 'commune', 'canton', 'village'])
+#
+#         rows = self.queryset.values_list('id', 'parent__parent__parent__parent__name', 'parent__parent__parent__name',
+#                                          'parent__parent__name', 'parent__name', 'name')
+#         for row in rows:
+#             writer.writerow(row)
+#
+#         return response
+
 class VillagesCodesCSVView(LoginRequiredApproveRequiredMixin, generic.View):
-    queryset = AdministrativeLevel.objects.filter(type=AdministrativeLevel.VILLAGE)
+    queryset = AdministrativeLevel.objects.filter(
+        type=AdministrativeLevel.VILLAGE
+    ).select_related(
+        'parent__parent__parent__parent', 'parent__parent__parent', 'parent__parent', 'parent'
+    )
 
     def get(self, *args, **kwargs):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="administrative_level_codes.csv"'
+        # Création d'un nouveau classeur Excel
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Villages Codes"
 
-        writer = csv.writer(response)
+        # Ajout des en-têtes
+        headers = ['ID', 'Région', 'Préfecture', 'Commune', 'Canton', 'Village']
+        sheet.append(headers)
 
-        writer.writerow(['id', 'region', 'prefecture', 'commune', 'canton', 'village'])
-
-        rows = self.queryset.values_list('id', 'parent__parent__parent__parent__name', 'parent__parent__parent__name',
-                                         'parent__parent__name', 'parent__name', 'name')
+        # Récupération et écriture des données
+        rows = self.queryset.values_list(
+            'id',
+            'parent__parent__parent__parent__name',
+            'parent__parent__parent__name',
+            'parent__parent__name',
+            'parent__name',
+            'name'
+        )
         for row in rows:
-            writer.writerow(row)
+            sheet.append([col if col is not None else '' for col in row])
 
+        # Préparation de la réponse HTTP
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename="villages_codes_{datetime.now().strftime("%Y%m%d")}.xlsx"'
+        )
+
+        # Sauvegarde du classeur dans la réponse
+        workbook.save(response)
         return response
 
 
@@ -214,10 +278,6 @@ class InitializeVillageCoordinatesView(LoginRequiredApproveRequiredMixin, generi
 
         with open(self.file_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
-
-            header = next(csv_reader)
-            print("Header:")
-            print(header)
 
             for row in csv_reader:
                 village = AdministrativeLevel.objects.filter(
@@ -300,10 +360,6 @@ class InitializeVillageCoordinatesView(LoginRequiredApproveRequiredMixin, generi
 
         with open(self.file_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
-
-            header = next(csv_reader)
-            print("Header:")
-            print(header)
 
             for row in csv_reader:
                 region_flag = False

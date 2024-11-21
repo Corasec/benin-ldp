@@ -72,7 +72,7 @@ class AdministrativeLevel(BaseModel):
     population_minorities = models.IntegerField(default=0)
     main_languages = models.CharField(max_length=50, blank=True, null=True)
     identified_priority = models.DateField(null=True, blank=True)
-
+    facilitator = models.CharField(max_length=50, blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     no_sql_db_id = models.CharField(null=True, blank=True, max_length=255)
@@ -275,6 +275,8 @@ class Project(BaseModel):
     end_date = models.DateField(null=True, blank=True)
     total_amount = models.PositiveBigIntegerField(default=0)
     sector = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
+    collaborators = models.TextField(null=True, blank=True, max_length=100)
+    source_of_financing = models.CharField(_("Source of financing"), null=True, blank=True, max_length=100)
 
 
 class Phase(BaseModel):

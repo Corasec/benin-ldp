@@ -458,7 +458,7 @@ msgstr "Personne âgé"
 #: administrativelevels/templates/components/administrative_level_overview.html:59
 #: administrativelevels/templates/prefecture/prefecture_detail.html:46
 #: administrativelevels/templates/region/region_detail.html:46
-msgid "Handicap"
+msgid "Persons with disabilities"
 msgstr "Personnes handicapées"
 
 #: administrativelevels/templates/administrative_level/detail/index.html:52
@@ -486,8 +486,8 @@ msgstr "Eleveurs"
 #: administrativelevels/templates/components/administrative_level_overview.html:86
 #: administrativelevels/templates/prefecture/prefecture_detail.html:58
 #: administrativelevels/templates/region/region_detail.html:58
-msgid "Minorities"
-msgstr "Minorités"
+msgid "Ethnic groups"
+msgstr "Groupes ethniques"
 
 #: administrativelevels/templates/administrative_level/detail/index.html:64
 #: administrativelevels/templates/canton/canton_detail.html:63
@@ -3226,8 +3226,27 @@ msgstr ""
 #~ msgid "# Sous-projets:"
 #~ msgstr "# Sous-projets"
 
-#~ msgid "The project does not have enough funds"
-#~ msgstr "Le projet ne dispose pas de suffisamment de fonds"
+msgid "The project does not have enough funds"
+msgstr "Le projet ne dispose pas de suffisamment de fonds"
 
-#~ msgid "This investment is already funded by the project"
-#~ msgstr "Cet investissement est déjà financé par le projet"
+
+msgid "This investment is already funded by the project"
+msgstr "Cet investissement est déjà financé par le projet"
+
+msgid "Youth"
+msgstr "Jeunes"
+
+msgid "Agriculturist"
+msgstr "Agriculteurs"
+
+msgid "Collaborator"
+msgstr "Collaborateurs"
+
+msgid "Are you sure do you want to submit the package?"
+msgstr "Êtes-vous sûr de vouloir soumettre le package?"
+
+msgid "Villages with uncompleted tasks"
+msgstr "Villages avec des tâches inachevées"
+
+msgid "Uncompleted tasks"
+msgstr "Tâches inachevées"

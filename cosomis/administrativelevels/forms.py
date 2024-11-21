@@ -34,6 +34,8 @@ class ProjectForm(forms.ModelForm):
             'end_date': _("End Date"),
             'total_amount': _("Total Amount"),
             'sector': _("Sector"),
+            'Source_of_financing': _("Source of financing"),
+            'collaborators': _("Collaborators")
         }
 
     def __init__(self, *args, **kwargs):

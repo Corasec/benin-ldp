@@ -46,7 +46,7 @@
                             <td class="border-0 p-0 pr-2 text-right">{{ object.population_elder }}</td>
                         </tr>
                         <tr>
-                            <td class="border-0 p-0 pl-2 text-left font-weight-bold">{% translate "Handicap" %}</td>
+                            <td class="border-0 p-0 pl-2 text-left font-weight-bold">{% translate "Persons with disabilities" %}</td>
                             <td class="border-0 p-0 pr-2 text-right">{{ object.population_handicap }}</td>
                         </tr>
                         <tr>
@@ -58,12 +58,8 @@
                             <td class="border-0 p-0 pr-2 text-right">{{ object.population_pastoralist }}</td>
                         </tr>
                         <tr>
-                            <td class="border-0 p-0 pl-2 text-left font-weight-bold">{% translate "Minorities" %}</td>
+                            <td class="border-0 p-0 pl-2 text-left font-weight-bold">{% translate "Ethnic groups" %}</td>
                             <td class="border-0 p-0 pr-2 text-right">{{ object.population_minorities }}</td>
-                        </tr>
-                        <tr>
-                            <td class="border-0 p-0 pl-2 text-left font-weight-bold">{% translate "Languages" %}</td>
-                            <td class="border-0 p-0 pr-2 text-right">{% if object.main_languages %}{{ object.main_languages }}{% else %}-{% endif %}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -200,10 +196,26 @@
                                         <th class="align-middle border-top-right-corner border-bottom-0" rowspan="2">{% translate 'Actions' %}</th>
                                     </tr>
                                     <tr>
-                                        <th class="bg-yellow rounded-0 border-sides-0 white-font">J</th>
-                                        <th class="bg-blue rounded-0 border-sides-0 white-font">F</th>
-                                        <th class="bg-orange rounded-0 border-sides-0 white-font">ME</th>
-                                        <th class="bg-green rounded-0 border-sides-0 white-font">AE</th>
+                                        <th class="bg-yellow rounded-0 border-sides-0 white-font pointer-event align-content-center"
+                                            title="{% translate 'Youth' %}"
+                                        >
+                                            <span>J</span>
+                                        </th>
+                                        <th class="bg-blue rounded-0 border-sides-0 white-font pointer-event align-content-center"
+                                            title="{% translate 'Women' %}"
+                                        >
+                                            <span>F</span>
+                                        </th>
+                                        <th class="bg-orange rounded-0 border-sides-0 white-font pointer-event align-content-center"
+                                            title="{% translate 'Ethnic minorities' %}"
+                                        >
+                                            <span>ME</span>
+                                        </th>
+                                        <th class="bg-green rounded-0 border-sides-0 white-font pointer-event align-content-center"
+                                            title="{% translate 'Agriculturist' %}"
+                                        >
+                                            <span>AE</span>
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody>
