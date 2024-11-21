@@ -232,7 +232,7 @@ class AdministrativeLevelDetailView(
         )
         context["mapbox_access_token"] = os.environ.get("MAPBOX_ACCESS_TOKEN")
 
-        context['children_coordinates'] = {'villages': self._get_villages_coordinates_from_administrative_level(self.object)}
+        context['children_coordinates'] = self._get_villages_coordinates_from_administrative_level(self.object)
 
         package = Package.objects.get_active_cart(
             user=self.request.user
@@ -701,8 +701,8 @@ class ProjectCreateView(PageMixin, IsInvestorMixin, CreateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse('administrativelevels:project-upload-investments', kwargs={'pk': self.object.pk})
-
+        #return reverse('administrativelevels:project-upload-investments', kwargs={'pk': self.object.pk})
+        return reverse('administrativelevels:projects')
 
 class BulkUploadInvestmentsView(PageMixin, IsInvestorMixin, SingleObjectMixin, FormView):
     form_class = BulkUploadInvestmentsForm
