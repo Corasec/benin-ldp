@@ -804,6 +804,7 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
         context["regions"] = AdministrativeLevel.objects.filter(
             type=AdministrativeLevel.REGION
         )
+        context['phases'] = Phase.objects.all().values_list('name', flat=True).distinct()
 
         query_params: dict = self.request.GET
 
@@ -846,24 +847,28 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
             current_filter_level = self.filter_hierarchy[index]
             next_filter_level = self.filter_hierarchy[index + 1] if index + 1 < len(self.filter_hierarchy) else None
             if current_filter_level == "task":
-                task = Task.objects.get(id=int(get_value))
-                resp[current_filter_level] = task.id
-                resp[next_filter_level] = task.activity.id
+                # task = Task.objects.get(id=int(get_value))
+                resp[current_filter_level] = get_value
+                resp[next_filter_level] = self.request.GET[next_filter_level]
             if current_filter_level == "activity":
-                activity = Activity.objects.get(id=int(get_value))
-                resp[current_filter_level] = activity.id
-                resp[next_filter_level] = activity.phase.id
+                # activity = Activity.objects.get(id=int(get_value))
+                resp[current_filter_level] = get_value
+                resp[next_filter_level] = self.request.GET[next_filter_level]
             if current_filter_level == "phase":
-                phase = Phase.objects.get(id=int(get_value))
-                resp[current_filter_level] = phase.id
-                resp[next_filter_level] = phase.village.id
+                # phase = Phase.objects.filter(name=get_value)
+                resp[current_filter_level] = get_value
+                if next_filter_level in self.request.GET:
+                    resp[next_filter_level] = int(self.request.GET[next_filter_level])
             if current_filter_level in [adm_type[0].lower() for adm_type in AdministrativeLevel.TYPE]:
-                adm_lvl = AdministrativeLevel.objects.get(id=int(get_value))
+                try:
+                    adm_lvl = AdministrativeLevel.objects.get(id=int(self.request.GET[current_filter_level]))
+                except TypeError:
+                    adm_lvl = AdministrativeLevel.objects.get(id=int(get_value))
                 resp[current_filter_level] = adm_lvl.id
                 if hasattr(adm_lvl, "parent") and adm_lvl.parent is not None and len(self.filter_hierarchy) > index + 1:
                     resp[next_filter_level] = adm_lvl.parent.id
 
-            if len(self.filter_hierarchy) > index + 1:
+            if len(self.filter_hierarchy) > index + 1 and 'village' in self.request.GET and self.request.GET['village'] is not None:
                 return _build_filter_hierarchy(index + 1, resp[next_filter_level])
             return resp
 
@@ -886,7 +891,7 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
             )
         elif "phase" in self.request.GET and self.request.GET["phase"] not in empty_list:
             queryset = queryset.filter(
-                task__activity__phase__id=self.request.GET["phase"]
+                task__activity__phase__name=self.request.GET["phase"]
             )
         else:
             adm_lvls = [adm_name[0].lower() for adm_name in AdministrativeLevel.TYPE]
@@ -896,7 +901,7 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
             if adm_type and self.request.GET[adm_type] not in empty_list:
                 administrative_levels = AdministrativeLevel.objects.get(id=self.request.GET[adm_type])
                 descendants = administrative_levels.get_all_descendants()
-                queryset = queryset.filter(adm__id__in=[decs.id for decs in descendants])
+                queryset = queryset.filter(adm__id__in=[decs.id for decs in descendants] + [administrative_levels.id])
 
         ordering = self.get_ordering()
         if ordering:

@@ -151,11 +151,11 @@ class FillAttachmentSelectFilters(generics.GenericAPIView):
             parent_obj = AdministrativeLevel.objects.get(id=request.POST['value'], type=AdministrativeLevel.VILLAGE)
             child_qs = Phase.objects.filter(village=parent_obj)
         elif select_type == 'phase':
-            parent_obj = Phase.objects.get(id=request.POST['value'])
-            child_qs = Activity.objects.filter(phase=parent_obj)
+            # parent_obj = Phase.objects.filter(id=request.POST['value'])
+            child_qs = Activity.objects.filter(phase__name=request.POST['value'])
         elif select_type == 'activity':
-            parent_obj = Activity.objects.get(id=request.POST['value'])
-            child_qs = Task.objects.filter(activity=parent_obj)
+            # parent_obj = Activity.objects.get(id=request.POST['value'])
+            child_qs = Task.objects.filter(activity__name=request.POST['value'])
 
         return response.Response({
             'values': [{'id': child.id, 'name': child.name} for child in child_qs]
