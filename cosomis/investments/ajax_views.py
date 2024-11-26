@@ -61,11 +61,16 @@ class InvestmentModelViewSet(ModelViewSet):
         qs = self.get_queryset()
         inv_ids = request.data['selected_ids'].split('-')
         if '' in inv_ids: inv_ids.remove('')
-        if request.data['project_id']:
-            project = Project.objects.filter(id=request.data['project_id']).first()
-            project_amount = project.total_amount
-            project_id = project.id
-        else:
+        try:
+            if request.data['project_id']:
+                project = Project.objects.filter(id=request.data['project_id']).first()
+                project_amount = project.total_amount
+                project_id = project.id
+            else:
+                project = None
+                project_amount = 0
+                project_id = None
+        except:
             project = None
             project_amount = 0
             project_id = None
@@ -81,7 +86,10 @@ class InvestmentModelViewSet(ModelViewSet):
         })
 
     def get_serializer_context(self):
-        project = Project.objects.filter(id=self.request.query_params['project_id']).first() if 'project_id' in self.request.query_params and self.request.query_params['project_id'] else None
+        try:
+            project = Project.objects.filter(id=self.request.query_params['project_id']).first() if 'project_id' in self.request.query_params and self.request.query_params['project_id'] else None
+        except:
+            project = None
         context = {
             'request': self.request,
             'format': self.format_kwarg,

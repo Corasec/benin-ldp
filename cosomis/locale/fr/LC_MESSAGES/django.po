@@ -1973,7 +1973,7 @@ msgstr "Identifié"
 msgid "Not approved"
 msgstr "Non approuvé"
 
-#: cosomis/constants.py:38 investments/models.py:105 investments/models.py:150
+#: cosomis/constants.py:38 investments/models.py:106 investments/models.py:151
 #: investments/templates/investments/investor/approvals_list.html:16
 #: investments/templates/investments/investor/approvals_list.html:83
 #: investments/templates/investments/moderator/approvals_list.html:138
@@ -2045,13 +2045,17 @@ msgstr "Français"
 msgid "Log in"
 msgstr "Connexion"
 
-#: cosomis/templates/403.html:43
+#: cosomis/templates/403.html:46
 msgid "Your user is still under validation"
 msgstr "Votre utilisateur est toujours en cours de validation"
 
-#: cosomis/templates/403.html:44
+#: cosomis/templates/403.html:47
 msgid "or you do not have permission to see this page."
 msgstr "ou vous n'avez pas la permission de voir cette page."
+
+#: cosomis/templates/403.html:57 cosomis/templates/layouts/navbar.html:146
+msgid "Logout"
+msgstr "Se déconnecter"
 
 #: cosomis/templates/common/400.html:10
 msgid "BAD REQUEST"
@@ -2133,10 +2137,6 @@ msgstr "Cycle du projet"
 #: cosomis/templates/layouts/navbar.html:67
 msgid "Welcome"
 msgstr "Bienvenu(e)"
-
-#: cosomis/templates/layouts/navbar.html:146
-msgid "Logout"
-msgstr "Se déconnecter"
 
 #: cosomis/templates/layouts/sidebar.html:38
 #| msgid "Fund a project"
@@ -2553,26 +2553,25 @@ msgstr "En suspens"
 msgid "SubProject"
 msgstr "Sous-projet"
 
-#: investments/models.py:61 investments/models.py:62
+#: investments/models.py:62 investments/models.py:63
 msgid "In days"
 msgstr ""
 
-#: investments/models.py:63 investments/models.py:65
+#: investments/models.py:64 investments/models.py:66
 #, fuzzy
 #| msgid "Percent"
 msgid "Percentage"
 msgstr "Pourcentage"
 
-#: investments/models.py:103
+#: investments/models.py:104
 #: investments/templates/investments/investor/approvals_list.html:79
 #: investments/templates/investments/moderator/approvals_list.html:134
 #: investments/templates/investments/moderator/package_review.html:364
-#, fuzzy
-#| msgid "VDP Submission"
+#| msgid "Pending Submission"
 msgid "Pending Submission"
-msgstr "VDP Soumission"
+msgstr "En attente de soumission"
 
-#: investments/models.py:104 investments/models.py:149
+#: investments/models.py:105 investments/models.py:150
 #: investments/templates/investments/investor/approvals_list.html:81
 #: investments/templates/investments/moderator/approvals_list.html:136
 #: investments/templates/investments/moderator/package_review.html:366
@@ -2580,7 +2579,7 @@ msgstr "VDP Soumission"
 msgid "Pending Approval"
 msgstr "En attente d'approbation"
 
-#: investments/models.py:106 investments/models.py:151
+#: investments/models.py:107 investments/models.py:152
 #: investments/templates/investments/investor/approvals_list.html:20
 #: investments/templates/investments/investor/approvals_list.html:85
 #: investments/templates/investments/moderator/approvals_list.html:140
@@ -2589,7 +2588,7 @@ msgstr "En attente d'approbation"
 msgid "Rejected"
 msgstr "Rejeté"
 
-#: investments/models.py:107
+#: investments/models.py:108
 #: investments/templates/investments/investor/approvals_list.html:87
 #: investments/templates/investments/moderator/approvals_list.html:142
 #: investments/templates/investments/moderator/package_review.html:372
@@ -2598,19 +2597,19 @@ msgstr "Rejeté"
 msgid "Under Execution"
 msgstr "En construction"
 
-#: investments/models.py:108
+#: investments/models.py:109
 #, fuzzy
 #| msgid "Approved"
 msgid "Partially Approved"
 msgstr "Approuvé"
 
-#: investments/models.py:123
+#: investments/models.py:124
 msgid "Source of the funding, e.g., a particular organization or grant"
 msgstr ""
 "Source de financement, par exemple une organisation ou une subvention "
 "particulière"
 
-#: investments/models.py:132
+#: investments/models.py:133
 msgid ""
 "User who reviews the status of the Package. This user must be a moderator."
 msgstr ""
@@ -2742,13 +2741,13 @@ msgstr ""
 #, fuzzy
 #| msgid "Last Updated"
 msgid "Last modified"
-msgstr "Dernière mise à jour"
+msgstr "Dernière modification"
 
 #: investments/templates/investments/investor/approvals_list.html:62
 #, fuzzy
 #| msgid "# Subprojects"
 msgid "# of projects"
-msgstr "# Sous-projets"
+msgstr "# de projets"
 
 #: investments/templates/investments/investor/approvals_list.html:63
 #, fuzzy
@@ -3038,7 +3037,7 @@ msgstr "Code Secret"
 
 #: usermanager/forms.py:131
 msgid "The two password fields didn’t match."
-msgstr ""
+msgstr "Les deux champs de mot de passe ne correspondent pas."
 
 #: usermanager/forms.py:140
 msgid "Password confirmation"
@@ -3046,21 +3045,23 @@ msgstr "Confirmation du mot de passe"
 
 #: usermanager/forms.py:143
 msgid "Enter the same password as before, for verification."
-msgstr ""
+msgstr "Entrez le même mot de passe que précédemment, pour vérification."
 
 #: usermanager/forms.py:150
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
+msgstr "Requis. 150 caractères ou moins. Lettres, chiffres et @/./+/-/_ uniquement."
 
 #: usermanager/forms.py:201
 msgid ""
 "Raw passwords are not stored, so there is no way to see this user’s "
 "password, but you can change the password using <a href=\"{}\">this form</a>."
 msgstr ""
+"Les mots de passe bruts ne sont pas stockés, il n’est donc pas possible de voir ceux de cet utilisateur."
+"mot de passe, mais vous pouvez changer le mot de passe en utilisant <a href="">ce formulaire."
 
 #: usermanager/models.py:89
 msgid "email address"
-msgstr ""
+msgstr "Adresse e-mail"
 
 #: usermanager/permissions.py:32 usermanager/permissions.py:51
 #: usermanager/permissions.py:75 usermanager/permissions.py:96
