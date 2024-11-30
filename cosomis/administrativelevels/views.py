@@ -862,7 +862,7 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
             if current_filter_level in [adm_type[0].lower() for adm_type in AdministrativeLevel.TYPE]:
                 try:
                     adm_lvl = AdministrativeLevel.objects.get(id=int(self.request.GET[current_filter_level]))
-                except TypeError:
+                except:
                     adm_lvl = AdministrativeLevel.objects.get(id=int(get_value))
                 resp[current_filter_level] = adm_lvl.id
                 if hasattr(adm_lvl, "parent") and adm_lvl.parent is not None and len(self.filter_hierarchy) > index + 1:
