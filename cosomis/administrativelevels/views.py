@@ -862,7 +862,7 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
             if current_filter_level in [adm_type[0].lower() for adm_type in AdministrativeLevel.TYPE]:
                 try:
                     adm_lvl = AdministrativeLevel.objects.get(id=int(self.request.GET[current_filter_level]))
-                except TypeError:
+                except:
                     adm_lvl = AdministrativeLevel.objects.get(id=int(get_value))
                 resp[current_filter_level] = adm_lvl.id
                 if hasattr(adm_lvl, "parent") and adm_lvl.parent is not None and len(self.filter_hierarchy) > index + 1:
@@ -944,7 +944,7 @@ def attachment_download_zip(self, adm_id: int):
     buffer = BytesIO()
     zip_file = zipfile.ZipFile(buffer, "w")
     for id in ids:
-        url = Attachment.objects.get(id=int(id)).url
+        url = Attachment.objects.get(id=int(id)).url.split("?")[0]
         response = requests.get(url)
         if response.status_code == 200:
             content_disposition = response.headers.get("content-disposition")

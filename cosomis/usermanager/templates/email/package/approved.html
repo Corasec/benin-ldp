@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Update Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #0073e6;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 20px;
+            color: #333;
+        }
+
+        .content h2 {
+            font-size: 20px;
+            color: #0073e6;
+        }
+
+        .content p {
+            line-height: 1.6;
+        }
+
+        .footer {
+            background-color: #f4f4f4;
+            text-align: center;
+            color: #999;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0073e6;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <h1>Status Update</h1>
+    </div>
+    <div class="content">
+        <h2>Package Status Update</h2>
+        <p>Dear {{ user_name }},</p>
+        <p>We are pleased to inform you that the status of your package submitted on <strong>{{ package_submission_date }}</strong> has been updated.</p>
+        <p><strong>Previous Status:</strong> Partially Approved</p>
+        <p><strong>New Status:</strong> Approved</p>
+        <p>All items in your package have been successfully approved. Your package is now ready for the next steps, and we will keep you updated as it progresses further.</p>
+        <p>Thank you for choosing us. If you have any questions or need assistance, feel free to reach out.</p>
+        <a href="{{ package_tracking_url }}" class="button">Track Your Package</a>
+    </div>
+    <div class="footer">
+        <p>&copy; {{ current_year }} Your Company. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

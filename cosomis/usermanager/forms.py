@@ -107,6 +107,9 @@ class EmailAuthenticationForm(AuthenticationForm):
             self.user_cache = authenticate(
                 self.request, username=username, password=password
             )
+            print('-----')
+            print(self.user_cache)
+            print('-----')
             if self.user_cache is None:
                 raise self.get_invalid_login_error()
             else:
