@@ -24,7 +24,11 @@ function loadGeoJsonMap(
                 let parsed = JSON.parse(input);
 
                 // Check if parsed is actually an array of arrays
-                return parsed.villages;
+                 if (Array.isArray(parsed)) {
+                    return parsed;
+                 }else{
+                    return [parsed];
+                 }
             } catch (error) {
                 console.error("Invalid input format:", error.message);
                 return null;

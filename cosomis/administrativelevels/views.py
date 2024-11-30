@@ -231,9 +231,7 @@ class AdministrativeLevelDetailView(
         )
         context["mapbox_access_token"] = os.environ.get("MAPBOX_ACCESS_TOKEN")
 
-        context['children_coordinates'] = {
-            'villages': self._get_villages_coordinates_from_administrative_level(self.object)
-        }
+        context['children_coordinates'] = self._get_villages_coordinates_from_administrative_level(self.object)
 
         package = Package.objects.get_active_cart(
             user=self.request.user
@@ -307,11 +305,11 @@ class AdministrativeLevelDetailView(
         coordinates = list()
         if administrative_level.type == AdministrativeLevel.VILLAGE:
             if administrative_level.longitude is not None and administrative_level.latitude is not None:
-                return [{
+                return {
                     "name": administrative_level.name,
                     "id": administrative_level.id,
                     "coordinates": [float(administrative_level.longitude), float(administrative_level.latitude)]
-                }]
+                }
         for child in administrative_level.children.all():
             if child.type == AdministrativeLevel.VILLAGE:
                 if child.longitude is not None and child.latitude is not None:
