@@ -133,6 +133,16 @@ DATABASES = {
 MAX_RESPONSE_DAYS = 3
 
 
+# Email configuration
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Example for Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'pursldp@gmail.com'
+EMAIL_HOST_PASSWORD = 'rzfayjwictywsyfj'
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 

@@ -587,6 +587,7 @@ class InvestorApprovesListView(IsInvestorMixin, PageMixin, generic.ListView):
             context.update(self.extra_context)
         return context
 
+
 class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
     template_name = "investments/moderator/approvals_list.html"
     package_model = Package
@@ -659,6 +660,7 @@ class ModeratorApprovalsListView(IsModeratorMixin, PageMixin, generic.ListView):
             is_approved=None, is_moderator=False
         ).order_by("date_joined")
         return queryset
+
 
 class ModeratorPackageReviewView(
     IsModeratorMixin, PageMixin, generic.FormView, generic.DetailView

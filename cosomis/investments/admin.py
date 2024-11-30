@@ -9,6 +9,10 @@ class InvestmentAdmin(admin.ModelAdmin):
         return obj.administrative_level.name
     get_administrative_level_name.short_description = 'Administrative Level'
 
+
+class PackageAdmin(admin.ModelAdmin):
+    list_display = ("status",)
+
 admin.site.register(Investment, InvestmentAdmin)
-admin.site.register(Package)
+admin.site.register(Package, PackageAdmin)
 admin.site.register(Attachment)
