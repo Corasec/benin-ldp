@@ -139,7 +139,7 @@ function loadGeoJsonMap(
         // .setLngLat(admin_level_coordinates)
         // .addTo(mymap)
 
-        admin_level_coordinates = (parseListOfLists(admin_level_coordinates));
+        admin_level_coordinates = parseListOfLists(admin_level_coordinates);
         admin_level_coordinates.forEach( coord => {
             const popup = new mapboxgl.Popup({ offset: 25 }).setText(coord.name);
             let marker = new mapboxgl.Marker()

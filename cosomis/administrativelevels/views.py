@@ -316,7 +316,7 @@ class AdministrativeLevelDetailView(
                     coordinates.append(self._get_villages_coordinates_from_administrative_level(child))
             else:
                 coordinates += self._get_villages_coordinates_from_administrative_level(child)
-        return coordinates
+        return {'villages': coordinates}
 
 
 class CommuneDetailView(PageMixin, LoginRequiredApproveRequiredMixin, DetailView):

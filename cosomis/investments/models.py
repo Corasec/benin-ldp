@@ -140,6 +140,7 @@ class Package(BaseModel):  # investments module (orden de compra(cart de invesme
             estimated_final_cost=models.Sum("estimated_cost")
         )["estimated_final_cost"]
 
+
 class PackageFundedInvestment(BaseModel):
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
     investment = models.ForeignKey(Investment, on_delete=models.CASCADE)
@@ -192,6 +193,7 @@ class PackageFundedInvestment(BaseModel):
             self.package.status = self.package.PARTIALLY_APPROVED
 
         self.package.save()
+
 
 class Attachment(BaseModel):
     """
