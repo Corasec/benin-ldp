@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
-from administrativelevels.models import AdministrativeLevel, Sector, Project
+from administrativelevels.models import AdministrativeLevel, Sector, Project, GeoSegment
 from .models import Investment, Package
 from .serializers import InvestmentSerializer
 
@@ -193,7 +193,40 @@ class InvestmentModelViewSet(ModelViewSet):
                     project_status=Investment.FUNDED
                 )
 
+        queryset = self._climate_filters(queryset)
+
         return queryset
+
+    def _climate_filters(self, base_queryset):
+        apply_filter = False
+        geoseg_queryset = GeoSegment.objects.all()
+        if "temperature-max-filter" in self.request.GET and self.request.GET[
+            "temperature-max-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(tmmx_avg_2020_diff__lte=self.request.GET["temperature-max-filter"])
+            apply_filter = True
+        if "temperature-min-filter" in self.request.GET and self.request.GET[
+            "temperature-min-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(tmmx_avg_2020_diff__gte=self.request.GET["temperature-min-filter"])
+            apply_filter = True
+
+        if "precipitation-min-filter" in self.request.GET and self.request.GET[
+            "precipitation-min-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(pr_avg_2020_diff__lte=self.request.GET["precipitation-min-filter"])
+            apply_filter = True
+        if "precipitation-max-filter" in self.request.GET and self.request.GET[
+            "precipitation-max-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(pr_avg_2020_diff__gte=self.request.GET["precipitation-max-filter"])
+            apply_filter = True
+
+        if "land-type-filter" in self.request.GET and self.request.GET[
+            "land-type-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(lc_gencat_20=self.request.GET["land-type-filter"])
+            apply_filter = True
+
+        if apply_filter:
+            return base_queryset.filter(administrative_level__geo_segment__id__in=Subquery(geoseg_queryset.values("id")))
+        else:
+            return base_queryset
 
 
 class StatisticsView(View):
