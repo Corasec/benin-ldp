@@ -45,22 +45,23 @@ class AdministrativeLevel(BaseModel):
         (PREFECTURE, _('Prefecture')),
         (REGION, _('Region'))
     )
-    parent = models.ForeignKey('AdministrativeLevel', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Parent"), related_name='children')
-    geographical_unit = models.ForeignKey('GeographicalUnit', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Geographical unit"))
-    default_image = models.ForeignKey('investments.Attachment', on_delete=models.SET_NULL, null=True, blank=True)
-    frontalier = models.BooleanField(default=True, verbose_name=_("Frontalier"))
-    rural = models.BooleanField(default=True, verbose_name=_("Rural"))
 
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Latitude"))
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Longitude"))
-    # geo_segment = models.ForeignKey('GeoSegment', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Geo segment"))
-    code_loc = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Code location"))
+    # system properties
+    parent = models.ForeignKey('AdministrativeLevel', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Parent"), related_name='children')
+    type = models.CharField(max_length=255, verbose_name=_("Type"), choices=TYPE, default=VILLAGE)
+    default_image = models.ForeignKey('investments.Attachment', on_delete=models.SET_NULL, null=True, blank=True)
+    facilitator = models.CharField(max_length=50, blank=True, null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    no_sql_db_id = models.CharField(null=True, blank=True, max_length=255)
+
+    # LDP properties
     name = models.CharField(max_length=255, verbose_name=_("Name"))
     rank = models.PositiveIntegerField(null=True, blank=True)
-    # adm_0_id to adm_n_id
+    rural = models.BooleanField(default=True, verbose_name=_("Rural"))
+    frontalier = models.BooleanField(default=True, verbose_name=_("Frontalier"))
     status_color = models.CharField(max_length=20, choices=STATUS_COLORS, default=LIME_GREEN)
     status_description = models.CharField(max_length=15, choices=STATUS_DESCRIPTION, default=NORMAL)
-    type = models.CharField(max_length=255, verbose_name=_("Type"), choices=TYPE, default=VILLAGE)
     total_population = models.IntegerField(default=0)
     population_men = models.IntegerField(default=0)
     population_women = models.IntegerField(default=0)
@@ -72,10 +73,14 @@ class AdministrativeLevel(BaseModel):
     population_minorities = models.IntegerField(default=0)
     main_languages = models.CharField(max_length=50, blank=True, null=True)
     identified_priority = models.DateField(null=True, blank=True)
-    facilitator = models.CharField(max_length=50, blank=True, null=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
-    no_sql_db_id = models.CharField(null=True, blank=True, max_length=255)
+
+    # climate properties
+
+    geographical_unit = models.ForeignKey('GeographicalUnit', null=True, blank=True, on_delete=models.CASCADE, verbose_name=_("Geographical unit"))
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Latitude"))
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, verbose_name=_("Longitude"))
+    geo_segment = models.ForeignKey('GeoSegment', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Geo segment"))
+    code_loc = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Code location"))
     
     class Meta:
         unique_together = ['name', 'parent', 'type']
@@ -130,18 +135,6 @@ class AdministrativeLevel(BaseModel):
     def get_list_geographical_unit(self):
         """Method to get the list of the all Geographical Unit that the administrative is linked"""
         return self.geographicalunit_set.get_queryset()
-
-    @property
-    def geo_segment(self):
-        try:
-            return GeoSegment.objects.filter(
-                models.Q(latitude_northwest__gte=self.latitude) &
-                models.Q(latitude_southwest__lte=self.latitude) &
-                models.Q(longitude_northwest__lte=self.longitude) &
-                models.Q(longitude_northeast__gte=self.longitude)
-            ).first()
-        except:
-            return None
 
 
 class GeographicalUnit(BaseModel):

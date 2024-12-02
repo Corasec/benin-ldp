@@ -12,7 +12,7 @@ from urllib.parse import urlencode
 from cosomis.mixins import PageMixin, LoginRequiredApproveRequiredMixin
 
 from usermanager.models import User
-from administrativelevels.models import AdministrativeLevel, Category, Sector, Project
+from administrativelevels.models import AdministrativeLevel, Category, Sector, Project, GeoSegment
 
 from usermanager.permissions import IsInvestorMixin, IsModeratorMixin
 
@@ -143,6 +143,8 @@ class IndexListView(
             {"id": 2, "name": _("Priorities 1 and 2")},
             {"id": 3, "name": _("All priorities")}
         ]
+
+        kwargs["land_types"] = ['Grassland', 'Cropland', 'Savanna', 'Cropland Mosaic', 'Urban/Built-Up Land', 'Water']
 
         kwargs["query_strings"] = self.get_query_strings_context()
         kwargs["query_strings_raw"] = self.request.GET.copy()

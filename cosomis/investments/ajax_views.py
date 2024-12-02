@@ -10,7 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
-from administrativelevels.models import AdministrativeLevel, Sector, Project
+from administrativelevels.models import AdministrativeLevel, Sector, Project, GeoSegment
 from .models import Investment, Package
 from .serializers import InvestmentSerializer
 
@@ -193,7 +193,40 @@ class InvestmentModelViewSet(ModelViewSet):
                     project_status=Investment.FUNDED
                 )
 
+        queryset = self._climate_filters(queryset)
+
         return queryset
+
+    def _climate_filters(self, base_queryset):
+        apply_filter = False
+        geoseg_queryset = GeoSegment.objects.all()
+        if "temperature-max-filter" in self.request.GET and self.request.GET[
+            "temperature-max-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(tmmx_avg_2020_diff__lte=self.request.GET["temperature-max-filter"])
+            apply_filter = True
+        if "temperature-min-filter" in self.request.GET and self.request.GET[
+            "temperature-min-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(tmmx_avg_2020_diff__gte=self.request.GET["temperature-min-filter"])
+            apply_filter = True
+
+        if "precipitation-min-filter" in self.request.GET and self.request.GET[
+            "precipitation-min-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(pr_avg_2020_diff__lte=self.request.GET["precipitation-min-filter"])
+            apply_filter = True
+        if "precipitation-max-filter" in self.request.GET and self.request.GET[
+            "precipitation-max-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(pr_avg_2020_diff__gte=self.request.GET["precipitation-max-filter"])
+            apply_filter = True
+
+        if "land-type-filter" in self.request.GET and self.request.GET[
+            "land-type-filter"] not in ["", None]:
+            geoseg_queryset = geoseg_queryset.filter(lc_gencat_20=self.request.GET["land-type-filter"])
+            apply_filter = True
+
+        if apply_filter:
+            return base_queryset.filter(administrative_level__geo_segment__id__in=Subquery(geoseg_queryset.values("id")))
+        else:
+            return base_queryset
 
 
 class StatisticsView(View):
@@ -206,6 +239,7 @@ class StatisticsView(View):
         village_id = request.GET.get('village_id', None)
         project_status = request.GET.get('project-status-filter', None)
         organization = request.GET.get('organization', None)
+        print(organization)
         sector = request.GET.get('sector', None)
         sector_type = request.GET.get('type', None)
         sector_type_list = []
@@ -228,7 +262,7 @@ class StatisticsView(View):
         if project_status and project_status is not None:
             filters &= Q(project_status=project_status)
         if organization and organization is not None:
-            filters &= Q(packages__in=(Subquery(Package.objects.filter(project__owner__organization=organization).values('funded_investments'))))
+            filters &= Q(funded_by__organization__id=organization)
         if sector and sector is not None:
             sector_type_list = list(Sector.objects.filter(category=sector).values('id', 'name'))
             sector_filter_active = True
