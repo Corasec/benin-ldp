@@ -239,6 +239,7 @@ class StatisticsView(View):
         village_id = request.GET.get('village_id', None)
         project_status = request.GET.get('project-status-filter', None)
         organization = request.GET.get('organization', None)
+        print(organization)
         sector = request.GET.get('sector', None)
         sector_type = request.GET.get('type', None)
         sector_type_list = []
@@ -261,7 +262,7 @@ class StatisticsView(View):
         if project_status and project_status is not None:
             filters &= Q(project_status=project_status)
         if organization and organization is not None:
-            filters &= Q(packages__in=(Subquery(Package.objects.filter(project__owner__organization=organization).values('funded_investments'))))
+            filters &= Q(funded_by__organization__id=organization)
         if sector and sector is not None:
             sector_type_list = list(Sector.objects.filter(category=sector).values('id', 'name'))
             sector_filter_active = True
