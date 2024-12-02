@@ -239,7 +239,6 @@ class StatisticsView(View):
         village_id = request.GET.get('village_id', None)
         project_status = request.GET.get('project-status-filter', None)
         organization = request.GET.get('organization', None)
-        print(organization)
         sector = request.GET.get('sector', None)
         sector_type = request.GET.get('type', None)
         sector_type_list = []
