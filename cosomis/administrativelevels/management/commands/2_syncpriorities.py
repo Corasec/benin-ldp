@@ -1,10 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 import time
 from no_sql_client import NoSQLClient
-from cloudant.result import Result
-from cloudant.document import Document
 from investments.models import Investment
-from administrativelevels.models import AdministrativeLevel, Category, Sector
+from administrativelevels.models import AdministrativeLevel, Sector
 
 
 class Command(BaseCommand):
@@ -31,8 +29,8 @@ class Command(BaseCommand):
             if self.check_for_valid_facilitator(db_name):
                 db = self.nsc.get_db(db_name).get_query_result({
                     "type": "task",
-                    "phase_name": "PLANIFICATION",
-                    "name": "Soutenir la communauté dans la sélection des priorités par sous-composante (1.1, 1.2 et 1.3) à soumettre à la discussion du CCD lors de la réunion cantonale d'arbitrage"
+                    "phase_name": "Diagnostic et planification participative",
+                    "name": "Quatrième Assemblée Générale Villageoise -Pratique de l’Évaluation Participative des Besoins (EPB) - Soutenir la communauté dans la sélection des priorités par sous-composante à soumettre à la discussion au niveau arrondissement",
                 })
                 for document in db:
                     update_or_create_priorities_document(document)
@@ -47,29 +45,30 @@ def update_or_create_priorities_document(priorities_document):
     # TODO Complete Sector Allocation
     # Extract priorities from the priorities document
     if 'form_response' in priorities_document:
-        if priorities_document.get('form_response') and 'sousComposante11' in priorities_document['form_response'][0]:
+        if priorities_document.get('form_response') and 'priorisationSC11' in priorities_document['form_response'][0]:
             for idx, priority in enumerate(
-                    priorities_document['form_response'][0]['sousComposante11']['prioritesDuVillage']):
+                    priorities_document['form_response'][0]['priorisationSC11']):
                 try:
                     exist = Investment.objects.filter(
-                        title=priority["priorite"],
+                        title=priority["besoin"],
                         administrative_level=administrative_level,
                         ranking=idx + 1,
-                        description=priority["siAutreVeuillezDecrire"]
+                        description=priority["groupe"]
                     ).exists()
                     if not exist:
                         Investment.objects.create(
                             ranking=idx + 1,
-                            title=priority["priorite"],
-                            description=priority["siAutreVeuillezDecrire"],
-                            estimated_cost=priority.get("coutEstime"),
-                            sector=Sector.objects.get(name=priority["priorite"]),
+                            title=priority["besoin"],
+                            description=priority["groupe"],
+                            estimated_cost=priority.get("coutEstime", 0),
+                            sector=Sector.objects.get(name=priority["besoin"]),
                             delays_consumed=0,
                             duration=0,
                             financial_implementation_rate=0,
                             physical_execution_rate=0,
                             administrative_level=administrative_level,
-                            start_date=priorities_document['form_response'][0]['dateDeLaReunion']
+                            climate_contribution= None if priority.get('adaptationClimatique') is None else priority.get('adaptationClimatique')
+                            # start_date=priorities_document['form_response'][0]['dateDeLaReunion']
                             # beneficiaries= priority.get("nombreEstimeDeBeneficiaires"),
                         )
                 except Exception as e:

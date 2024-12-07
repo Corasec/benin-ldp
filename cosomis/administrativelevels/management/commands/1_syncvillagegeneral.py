@@ -1,8 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-import time
+from django.core.management.base import BaseCommand
 from no_sql_client import NoSQLClient
-from cloudant.result import Result
-from cloudant.document import Document
 from administrativelevels.models import AdministrativeLevel
 
 
@@ -18,8 +15,7 @@ class Command(BaseCommand):
         self.nsc = NoSQLClient()
         db = self.nsc.get_db('administrative_levels')
         selector = {
-            "type": "administrative_level",
-            "administrative_level": "Country"
+            "type": "administrative_level"
         }
         docs = db.get_query_result(selector)
         for document in docs:
@@ -50,6 +46,7 @@ def create_or_update_adm(administrative_level_data):
     adm_name = administrative_level_data.get('name')
     adm_parent_id = administrative_level_data.get('parent_id')
     adm_type = administrative_level_data.get('administrative_level')
+
     # Other fields can be added as needed
 
     # Check if an AdministrativeLevel with the given adm_id exists
@@ -60,7 +57,11 @@ def create_or_update_adm(administrative_level_data):
         adm_level.type = adm_type
         if adm_parent_id:
             # Set the parent if a parent_id is provided, otherwise leave it unchanged
-            parent = AdministrativeLevel.objects.get(no_sql_db_id=adm_parent_id)
+            parent = None
+            try:
+                parent = AdministrativeLevel.objects.get(no_sql_db_id=adm_parent_id)
+            except AdministrativeLevel.DoesNotExist:
+                pass
             adm_level.parent = parent
         # You can add more fields to update as necessary
         adm_level.save()
@@ -69,13 +70,16 @@ def create_or_update_adm(administrative_level_data):
         parent = None
         if adm_parent_id:
             # Set the parent if a parent_id is provided, otherwise leave it unchanged
-            parent = AdministrativeLevel.objects.get(no_sql_db_id=adm_parent_id)
+            try:
+                parent = AdministrativeLevel.objects.get(no_sql_db_id=adm_parent_id)
+            except AdministrativeLevel.DoesNotExist:
+                pass
         adm_level = AdministrativeLevel(
             no_sql_db_id=adm_id,
             name=adm_name,
             # Assuming the 'parent' field is a ForeignKey to another AdministrativeLevel
             parent=parent,
-            type=adm_type,
+            type='country' if adm_type is None else adm_type,
             # Set other fields with defaults or extract from administrative_level_data
         )
         adm_level.save()
