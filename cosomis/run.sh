@@ -27,17 +27,18 @@ case "$1" in
     ;;
 
     serve )
+        python ./manage.py migrate
         gunicorn cosomis.wsgi:application \
         --bind 0.0.0.0:9000 \
         --workers 4
     ;;
 
     test )
-      pytest --cov=app --cov-report=xml
+        pytest --cov=app --cov-report=xml
     ;;
 
     * )
-      show_help
+        show_help
     ;;
 
 esac
