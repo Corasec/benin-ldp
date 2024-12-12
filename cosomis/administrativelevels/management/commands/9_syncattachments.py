@@ -1,7 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from no_sql_client import NoSQLClient
-from cloudant.result import Result
-from cloudant.document import Document
 from administrativelevels.models import AdministrativeLevel, Task
 from investments.models import Attachment
 
@@ -58,7 +56,7 @@ def get_attachments_from_database(task_documents):
                 task_order = 0
             if attachment_uri:
                 extracted_attachments.append({
-                    "type": "photo" if "photo" in attachment['name'].lower() else "document",
+                    "type": "photo" if "image" in attachment['name'].lower() else "document",
                     "url": attachment_uri,
                     "phase": document.get('phase_name', ""),
                     "activity": document.get('activity_name', ""),
