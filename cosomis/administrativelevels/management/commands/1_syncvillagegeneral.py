@@ -80,7 +80,9 @@ def create_or_update_adm(administrative_level_data):
             # Assuming the 'parent' field is a ForeignKey to another AdministrativeLevel
             parent=parent,
             type='country' if adm_type is None else adm_type,
-            # Set other fields with defaults or extract from administrative_level_data
+            # Set other fields with defaults or extract from administrative_level_data,
+            longitude=administrative_level_data.get('longitude'),
+            latitude=administrative_level_data.get('latitude')
         )
         adm_level.save()
 
