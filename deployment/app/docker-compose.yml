@@ -1,0 +1,29 @@
+version: '3'
+services:
+  django-app:
+    image: cosobenin/ldp-app:latest
+    restart: always
+    ports:
+      - '9000:9000'
+    network_mode: "host"
+    env_file:
+      - ./env_vars.env
+    volumes:
+      - static-content:/usr/appserver/static
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+      - '80:80'
+      - '443:443'
+    network_mode: "host"
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - static-content:/var/www/app/static
+    depends_on:
+      - django-app
+
+volumes:
+  static-content:
