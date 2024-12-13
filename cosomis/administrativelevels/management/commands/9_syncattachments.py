@@ -23,20 +23,19 @@ class Command(BaseCommand):
         self.nsc = NoSQLClient()
         facilitator_dbs = self.nsc.list_all_databases('facilitator')
         for db_name in facilitator_dbs:
-            if self.check_for_valid_facilitator(db_name):
-                extracted_attachments = []
-                db = self.nsc.get_db(db_name)
-                task_documents = db.get_query_result({
+
+            db = self.nsc.get_db(db_name)
+            task_documents = db.get_query_result({
                     "type": "task"
                 })
-                adm_id = None
-                for doc in task_documents:
-                    adm_id = doc['administrative_level_id']
-                    break
-                extracted_attachments = get_attachments_from_database(task_documents)
-                if adm_id:
-                    adm = AdministrativeLevel.objects.get(no_sql_db_id=adm_id)
-                    save_attachments_to_purs_test(adm, extracted_attachments)
+            adm_id = None
+            for doc in task_documents:
+                adm_id = doc['administrative_level_id']
+                break
+            extracted_attachments = get_attachments_from_database(task_documents)
+            if adm_id:
+                adm = AdministrativeLevel.objects.get(no_sql_db_id=adm_id)
+                save_attachments_to_purs_test(adm, extracted_attachments)
         self.stdout.write(self.style.SUCCESS('Successfully extracted attachments!'))
 
 
