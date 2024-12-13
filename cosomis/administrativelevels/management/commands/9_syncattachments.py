@@ -55,7 +55,7 @@ def get_attachments_from_database(task_documents):
                 task_order = 0
             if attachment_uri:
                 extracted_attachments.append({
-                    "type": "photo" if "image" in attachment['name'].lower() else "document",
+                    "type": "photo" if ("jpg" in attachment_uri or "png" in attachment_uri) else "document",
                     "url": attachment_uri,
                     "phase": document.get('phase_name', ""),
                     "activity": document.get('activity_name', ""),
