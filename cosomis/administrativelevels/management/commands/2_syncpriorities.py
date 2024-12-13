@@ -25,15 +25,16 @@ class Command(BaseCommand):
         # Your command logic here
         self.nsc = NoSQLClient()
         facilitator_dbs = self.nsc.list_all_databases('facilitator')
+
         for db_name in facilitator_dbs:
-            if self.check_for_valid_facilitator(db_name):
-                db = self.nsc.get_db(db_name).get_query_result({
+            db = self.nsc.get_db(db_name).get_query_result({
                     "type": "task",
                     "phase_name": "Diagnostic et planification participative",
-                    "name": "Quatrième Assemblée Générale Villageoise -Pratique de l’Évaluation Participative des Besoins (EPB) - Soutenir la communauté dans la sélection des priorités par sous-composante à soumettre à la discussion au niveau arrondissement",
+                    "name": "Quatrième Assemblée Générale Villageoise -Pratique de l’Évaluation Participative des Besoins (EPB) - Soutenir la communauté dans la sélection des priorités par sous-composante à soumettre à la discussion au niveau arrondissement"
                 })
-                for document in db:
-                    update_or_create_priorities_document(document)
+
+            for document in db:
+                update_or_create_priorities_document(document)
         self.stdout.write(self.style.SUCCESS('Successfully executed mycommand!'))
 
 
@@ -56,22 +57,24 @@ def update_or_create_priorities_document(priorities_document):
                         description=priority["groupe"]
                     ).exists()
                     if not exist:
+                        sector = Sector.objects.get_or_create(name=priority["besoin"], description=priority["groupe"], category_id=10)
                         Investment.objects.create(
                             ranking=idx + 1,
                             title=priority["besoin"],
                             description=priority["groupe"],
                             estimated_cost=priority.get("coutEstime", 0),
-                            sector=Sector.objects.get(name=priority["besoin"]),
+                            sector_id=sector[0].id,
                             delays_consumed=0,
                             duration=0,
                             financial_implementation_rate=0,
                             physical_execution_rate=0,
                             administrative_level=administrative_level,
-                            climate_contribution= None if priority.get('adaptationClimatique') is None else priority.get('adaptationClimatique')
+                            climate_contribution=False if priority.get('adaptationClimatique') is None else True,
+                            climate_contribution_text='' if priority.get('adaptationClimatique') is None else priority.get('adaptationClimatique')
                             # start_date=priorities_document['form_response'][0]['dateDeLaReunion']
                             # beneficiaries= priority.get("nombreEstimeDeBeneficiaires"),
                         )
                 except Exception as e:
-                    print(e, "Error creating investment", priority["priorite"], administrative_level)
+                    print(e, "Error creating investment", priority["besoin"], administrative_level)
     # Otherwise, create a new one
     time.sleep(1)
