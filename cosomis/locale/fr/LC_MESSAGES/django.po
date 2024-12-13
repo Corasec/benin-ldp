@@ -3309,3 +3309,14 @@ msgstr "Connectez-vous pour démarrer votre session"
 
 #~ msgid "This investment is already funded by the project"
 #~ msgstr "Cet investissement est déjà financé par le projet"
+
+msgid "City"
+msgstr "Arrondissement"
+
+msgid "Country"
+msgstr "Pays"
+
+msgid "Department"
+msgstr "Département"
+
+
