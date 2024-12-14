@@ -247,16 +247,16 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="form-label">
-                                        <label for="id_region">{% translate 'Region' %}</label>
+                                        <label for="id_country">{% translate 'Country' %}</label>
                                     </div>
                                     <div class="form-select-row">
-                                        <select class="form-control" name="region" id="id_region" style="width: 100%;">
+                                        <select class="form-control" name="country" id="id_country" style="width: 100%;">
                                             <option selected value="">---</option>
-                                            {% for region in regions %}
-                                                {% if 'region' in filter_hierarchy_query_strings and filter_hierarchy_query_strings.region == region.id %}
-                                                    <option value="{{ region.id }}" selected>{{ region.name }}</option>
+                                            {% for country in countries %}
+                                                {% if 'country' in filter_hierarchy_query_strings and filter_hierarchy_query_strings.country == country.id %}
+                                                    <option value="{{ country.id }}" selected>{{ country.name }}</option>
                                                 {% else %}
-                                                    <option value="{{ region.id }}">{{ region.name }}</option>
+                                                    <option value="{{ country.id }}">{{ country.name }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
@@ -264,10 +264,10 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="form-label">
-                                        <label for="id_prefecture">{% translate 'Prefecture' %}</label>
+                                        <label for="department">{% translate 'Department' %}</label>
                                     </div>
                                     <div class="form-select-row">
-                                        <select class="form-control" name="prefecture" id="id_prefecture" style="width: 100%;" disabled>
+                                        <select class="form-control" name="department" id="id_department" style="width: 100%;" disabled>
                                             <option selected value="">---</option>
                                         </select>
                                     </div>
@@ -284,10 +284,10 @@
                                 </div>
                                 <div class="form-group">
                                     <div class="form-label">
-                                        <label for="id_canton">{% translate 'Canton' %}</label>
+                                        <label for="id_city">{% translate 'City' %}</label>
                                     </div>
                                     <div class="form-select-row">
-                                        <select class="form-control" name="canton" id="id_canton" style="width: 100%;" disabled>
+                                        <select class="form-control" name="city" id="id_city" style="width: 100%;" disabled>
                                             <option selected value="">---</option>
                                         </select>
                                     </div>
@@ -353,8 +353,8 @@
         $(document).ready(function () {
             
             let current_page = "{{ request.path }}";
-            let query_string = {{ filter_hierarchy_query_strings|safe }};
-            const filter_inputs = [$('#id_region'), $('#id_prefecture'), $('#id_commune'), $('#id_canton'), 
+            let query_string = "{{ filter_hierarchy_query_strings|safe }}";
+            const filter_inputs = [$('#id_country'), $('#id_department'), $('#id_commune'), $('#id_city'),
                 $('#id_village'), $('#id_phase'), $('#id_activity'), $('#id_task')]
 
             $('input[type=checkbox]').click(function (event) {

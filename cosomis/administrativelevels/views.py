@@ -801,8 +801,8 @@ class AttachmentListView(PageMixin, LoginRequiredApproveRequiredMixin, ListView)
     def get_context_data(self, **kwargs):
         context = super(AttachmentListView, self).get_context_data(**kwargs)
 
-        context["regions"] = AdministrativeLevel.objects.filter(
-            type=AdministrativeLevel.REGION
+        context["countries"] = AdministrativeLevel.objects.filter(
+            type=AdministrativeLevel.COUNTRY
         )
 
         query_params: dict = self.request.GET

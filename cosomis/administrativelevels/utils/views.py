@@ -135,20 +135,20 @@ class FillAttachmentSelectFilters(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         select_type = request.POST['type']
         child_qs = list()
-        if select_type == 'region':
-            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.REGION)
-            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.PREFECTURE)
-        elif select_type == 'prefecture':
-            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.PREFECTURE)
-            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.COMMUNE)
+        if select_type == 'country':
+            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.COUNTRY)
+            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.DEPARTMENTS)
+        elif select_type == 'department':
+            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.DEPARTMENTS)
+            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.COMMUNE.lower())
         elif select_type == 'commune':
-            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.COMMUNE)
-            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.CANTON)
-        elif select_type == 'canton':
-            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.CANTON)
-            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.VILLAGE)
+            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.COMMUNE.lower())
+            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.CITY)
+        elif select_type == 'city':
+            parent_qs = AdministrativeLevel.objects.filter(id=request.POST['value'], type=AdministrativeLevel.CITY)
+            child_qs = AdministrativeLevel.objects.filter(parent=Subquery(parent_qs.values('id')), type=AdministrativeLevel.VILLAGE.lower())
         elif select_type == 'village':
-            parent_obj = AdministrativeLevel.objects.get(id=request.POST['value'], type=AdministrativeLevel.VILLAGE)
+            parent_obj = AdministrativeLevel.objects.get(id=request.POST['value'], type=AdministrativeLevel.VILLAGE.lower())
             child_qs = Phase.objects.filter(village=parent_obj)
         elif select_type == 'phase':
             parent_obj = Phase.objects.get(id=request.POST['value'])

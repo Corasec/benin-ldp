@@ -39,7 +39,7 @@ class AdministrativeLevel(BaseModel):
     PREFECTURE = 'Prefecture'
     CITY = "arrondissement"
     COUNTRY = "country"
-    DEPARTMENTS = "departement"
+    DEPARTMENTS = "département"
 
     TYPE = (  # Keep this order, is important for the gallery
         (VILLAGE, _('Village')),
