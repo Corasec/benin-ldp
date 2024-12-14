@@ -254,7 +254,9 @@ class StatisticsView(View):
         # Subprojects by sector and minority groups
         minority_groups = [
             'endorsed_by_youth',
-            'endorsed_by_women'
+            'endorsed_by_women',
+            'endorsed_by_agriculturist',
+            'endorsed_by_pastoralist'
         ]
 
         # Sector priorities

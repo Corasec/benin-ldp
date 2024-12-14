@@ -234,6 +234,12 @@
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link own-bg-green-color" id="pills-women-tab" data-toggle="pill" data-target="#pills-women" type="button" role="tab" aria-controls="pills-women" aria-selected="false">{% translate 'women' %}</button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link own-bg-green-color mx-2" id="pills-youth-tab" data-toggle="pill" data-target="#pills-youth" type="button" role="tab" aria-controls="pills-youth" aria-selected="false">{% translate 'youth' %}</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link own-bg-green-color" id="pills-ethnic-minorities-tab" data-toggle="pill" data-target="#pills-ethnic-minorities" type="button" role="tab" aria-controls="pills-ethnic-minorities" aria-selected="false">{% translate 'ethnic minorities' %}</button>
+                                </li>
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
                                 <div class="tab-pane fade show active ml-2" id="pills-agriculturist" role="tabpanel" aria-labelledby="pills-agriculturist-tab">
@@ -562,7 +568,9 @@
                 this.prioritiesChart = null;
                 this.minorityCharts = {
                     'endorsed_by_agriculturist': {chart: null, legendId: 'agriculturistLegend', canvasId: 'agriculturistChart', noDataMessageId: 'noDataMessageAgriculturist'},
-                    'endorsed_by_women': {chart: null, legendId: 'womenLegend', canvasId: 'womenChart', noDataMessageId: 'noDataMessageWomen'}
+                    'endorsed_by_women': {chart: null, legendId: 'womenLegend', canvasId: 'womenChart', noDataMessageId: 'noDataMessageWomen'},
+                    'endorsed_by_youth': {chart: null, legendId: 'youthLegend', canvasId: 'youthChart', noDataMessageId: 'noDataMessageYouth'},
+                    'endorsed_by_pastoralist': {chart: null, legendId: 'ethnicMinoritiesLegend', canvasId: 'ethnicMinoritiesChart', noDataMessageId: 'noDataMessageEthnicMinorities'}
                 };
                 this.fundedPrioritiesChart = null;
             }
