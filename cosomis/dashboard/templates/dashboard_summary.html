@@ -70,28 +70,28 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="region-select-id">{% translate 'Region' %}</label>
-                                        <select class="form-control" name="region-filter" empty-option="{% translate 'Region' %}" style="width: 100%;" id="region-select-id">
-                                            <option selected value="">{% translate 'Region' %}</option>
-                                            {% for region in regions %}
-                                                <option value="{{ region.id }}" {% if query_strings_raw|get_item:'region-filter' == region.id %}selected{% endif %}>{{ region.name }}</option>
+                                        <label for="country-select-id">{% translate 'Country' %}</label>
+                                        <select class="form-control" name="country-filter" empty-option="{% translate 'Country' %}" style="width: 100%;" id="country-select-id">
+                                            <option selected value="">{% translate 'Country' %}</option>
+                                            {% for country in countries %}
+                                                <option value="{{ country.id }}" {% if query_strings_raw|get_item:'country-filter' == country.id %}selected{% endif %}>{{ country.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </div>
                                 <div class="horizontal-form">
                                     <div class="form-group">
-                                        <label for="prefecture-select-id">{% translate 'Prefecture' %}</label>
-                                        <select class="form-control" name="prefecture-filter" id="prefecture-select-id" empty-option="{% translate 'Prefecture' %}" style="width: 100%;" {% if not 'region-filter' in query_strings_raw %}disabled{% endif %}>
-                                            <option selected value="">{% translate 'Prefecture' %}</option>
-                                            {% for prefecture in prefectures %}
-                                                <option value="{{ prefecture.id }}" {% if query_strings_raw|get_item:'prefecture-filter' == prefecture.id %}selected{% endif %}>{{ prefecture.name }}</option>
+                                        <label for="department-select-id">{% translate 'Department' %}</label>
+                                        <select class="form-control" name="department-filter" id="department-select-id" empty-option="{% translate 'Department' %}" style="width: 100%;" {% if not 'country-filter' in query_strings_raw %}disabled{% endif %}>
+                                            <option selected value="">{% translate 'Department' %}</option>
+                                            {% for department in departments %}
+                                                <option value="{{ department.id }}" {% if query_strings_raw|get_item:'department-filter' == department.id %}selected{% endif %}>{{ department.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="commune-select-id">{% translate 'Commune' %}</label>
-                                        <select class="form-control" name="commune-filter" id="commune-select-id" empty-option="{% translate 'Commune' %}" style="width: 100%;" {% if not 'prefecture-filter' in query_strings_raw %}disabled{% endif %}>
+                                        <select class="form-control" name="commune-filter" id="commune-select-id" empty-option="{% translate 'Commune' %}" style="width: 100%;" {% if not 'department-filter' in query_strings_raw %}disabled{% endif %}>
                                             <option selected value="">{% translate 'Commune' %}</option>
                                             {% for commune in communes %}
                                                 <option value="{{ commune.id }}" {% if query_strings_raw|get_item:'commune-filter' == commune.id %}selected{% endif %}>{{ commune.name }}</option>
@@ -99,17 +99,17 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="canton-select-id">{% translate 'Canton' %}</label>
-                                        <select class="form-control" name="canton-filter" id="canton-select-id" empty-option="{% translate 'Canton' %}" style="width: 100%;" {% if not 'commune-filter' in query_strings_raw %}disabled{% endif %}>
-                                            <option selected value="">{% translate 'Canton' %}</option>
-                                            {% for canton in cantons %}
-                                                <option value="{{ canton.id }}" {% if query_strings_raw|get_item:'canton-filter' == canton.id %}selected{% endif %}>{{ canton.name }}</option>
+                                        <label for="city-select-id">{% translate 'City' %}</label>
+                                        <select class="form-control" name="city-filter" id="city-select-id" empty-option="{% translate 'City' %}" style="width: 100%;" {% if not 'commune-filter' in query_strings_raw %}disabled{% endif %}>
+                                            <option selected value="">{% translate 'City' %}</option>
+                                            {% for city in cities %}
+                                                <option value="{{ city.id }}" {% if query_strings_raw|get_item:'city-filter' == city.id %}selected{% endif %}>{{ city.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="village-select-id">{% translate 'Village' %}</label>
-                                        <select class="form-control" name="village-filter" id="village-select-id" empty-option="{% translate 'Village' %}" style="width: 100%;" {% if not 'canton-filter' in query_strings_raw %}disabled{% endif %}>
+                                        <select class="form-control" name="village-filter" id="village-select-id" empty-option="{% translate 'Village' %}" style="width: 100%;" {% if not 'city-filter' in query_strings_raw %}disabled{% endif %}>
                                             <option selected value="">{% translate 'Village' %}</option>
                                             {% for village in villages %}
                                                 <option value="{{ village.id }}" {% if query_strings_raw|get_item:'village-filter' == village.id %}selected{% endif %}>{{ village.name }}</option>
@@ -233,12 +233,6 @@
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link own-bg-green-color" id="pills-women-tab" data-toggle="pill" data-target="#pills-women" type="button" role="tab" aria-controls="pills-women" aria-selected="false">{% translate 'women' %}</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link own-bg-green-color mx-2" id="pills-youth-tab" data-toggle="pill" data-target="#pills-youth" type="button" role="tab" aria-controls="pills-youth" aria-selected="false">{% translate 'youth' %}</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link own-bg-green-color" id="pills-ethnic-minorities-tab" data-toggle="pill" data-target="#pills-ethnic-minorities" type="button" role="tab" aria-controls="pills-ethnic-minorities" aria-selected="false">{% translate 'ethnic minorities' %}</button>
                                 </li>
                             </ul>
                             <div class="tab-content" id="pills-tabContent">
@@ -431,17 +425,17 @@
             const statisticsComponent = new StatisticsComponent(map);
             initializeDashboard(statisticsComponent);
 
-            const regionOptions = $('#region-select-id').html();
+            const countryOptions = $('#country-select-id').html();
 
             $('#adm-reset-hidden-id').on('click', function() {
-                resetFilters(regionOptions, statisticsComponent);
+                resetFilters(countryOptions, statisticsComponent);
             });
 
             statisticsComponent.fetchAndDisplayStatistics();
         });
 
         function initializeDashboard(statisticsComponent) {
-            ['region', 'prefecture', 'commune', 'canton', 'village'].forEach(level => {
+            ['country', 'department', 'commune', 'city', 'village'].forEach(level => {
                 $(`#${level}-select-id`).on('change', debounce(function() {
                     const selectedValue = $(this).val();
                     const nextLevel = getNextLevel(level);
@@ -475,13 +469,13 @@
             });
 
             function getNextLevel(level) {
-                const levels = ['region', 'prefecture', 'commune', 'canton', 'village'];
+                const levels = ['country', 'department', 'commune', 'city', 'village'];
                 const currentIndex = levels.indexOf(level);
                 return levels[currentIndex + 1] || '';
             }
 
             function getFollowingLevels(level) {
-                const levels = ['region', 'prefecture', 'commune', 'canton', 'village'];
+                const levels = ['country', 'department', 'commune', 'city', 'village'];
                 const currentIndex = levels.indexOf(level);
                 return levels.slice(currentIndex + 1).map(lvl => $(`#${lvl}-select-id`));
             }
@@ -528,18 +522,18 @@
             }
         }
 
-        function resetFilters(regionOptions, statisticsComponent) {
+        function resetFilters(countryOptions, statisticsComponent) {
             const form = $('#adm-filter-form')[0];
             filter_values = {};
             form.reset();
 
-            ['prefecture', 'commune', 'canton', 'village'].forEach(level => {
+            ['department', 'commune', 'city', 'village'].forEach(level => {
                 const selectElement = $(`#${level}-select-id`);
                 resetSelect(selectElement);
             });
 
-            const regionSelect = $('#region-select-id');
-            regionSelect.prop('disabled', false).html(regionOptions);
+            const countrySelect = $('#country-select-id');
+            countrySelect.prop('disabled', false).html(countryOptions);
 
             // Reset the "Project Status" select
             const projectStatusSelect = $('#project-status-select-id');
@@ -568,9 +562,7 @@
                 this.prioritiesChart = null;
                 this.minorityCharts = {
                     'endorsed_by_agriculturist': {chart: null, legendId: 'agriculturistLegend', canvasId: 'agriculturistChart', noDataMessageId: 'noDataMessageAgriculturist'},
-                    'endorsed_by_women': {chart: null, legendId: 'womenLegend', canvasId: 'womenChart', noDataMessageId: 'noDataMessageWomen'},
-                    'endorsed_by_youth': {chart: null, legendId: 'youthLegend', canvasId: 'youthChart', noDataMessageId: 'noDataMessageYouth'},
-                    'endorsed_by_pastoralist': {chart: null, legendId: 'ethnicMinoritiesLegend', canvasId: 'ethnicMinoritiesChart', noDataMessageId: 'noDataMessageEthnicMinorities'}
+                    'endorsed_by_women': {chart: null, legendId: 'womenLegend', canvasId: 'womenChart', noDataMessageId: 'noDataMessageWomen'}
                 };
                 this.fundedPrioritiesChart = null;
             }

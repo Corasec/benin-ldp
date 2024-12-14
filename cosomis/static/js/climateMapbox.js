@@ -93,10 +93,10 @@ function loadGeoJsonMap(
             if (type === 'commune') {
                 shapefileId = 'leokooshi.16r4x6dm';
                 sourceLayer = 'communes_togo-c1mb3n';
-            } else if (type === 'canton') {
+            } else if (type === 'city') {
                 shapefileId = 'leokooshi.76xl2wnj';
                 sourceLayer = 'canton_togo-207yxg';
-            } else if (type === 'prefecture') {
+            } else if (type === 'department') {
                 shapefileId = 'leokooshi.d175fn96';
                 sourceLayer = 'prefecture_togo-da9iqd';
             }
