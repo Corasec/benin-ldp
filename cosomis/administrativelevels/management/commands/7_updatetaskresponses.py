@@ -1,7 +1,7 @@
 import json
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from no_sql_client import NoSQLClient
-from administrativelevels.models import AdministrativeLevel, Task, Activity, Phase
+from administrativelevels.models import Task
 
 
 def parse_fields(fields, field_types, response):

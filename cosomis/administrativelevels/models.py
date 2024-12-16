@@ -32,20 +32,25 @@ class AdministrativeLevel(BaseModel):
         (BLOCKED, _('Blocked'))
     )
 
-    VILLAGE = 'Village'
+    # TODO: To delete
     CANTON = 'Canton'
-    COMMUNE = 'Commune'
     REGION = 'Region'
     PREFECTURE = 'Prefecture'
     CITY = "arrondissement"
     COUNTRY = "country"
     DEPARTMENTS = "departement"
 
+    VILLAGE = 'cillage'
+    COMMUNE = 'commune'
+    CITY = "arrondissement"
+    COUNTRY = "country"
+    DEPARTMENTS = "département"
+
     TYPE = (  # Keep this order, is important for the gallery
         (VILLAGE, _('Village')),
         (CITY, _('Arrondissement')),
         (COMMUNE, _('Commune')),
-        (DEPARTMENTS, _('Departement')),
+        (DEPARTMENTS, _('Department')),
         (COUNTRY, _('Country'))
     )
 
@@ -112,17 +117,11 @@ class AdministrativeLevel(BaseModel):
     def is_village(self):
         return self.type.lower() == self.VILLAGE.lower()
 
-    def is_canton(self):
-        return self.type.lower() == self.CANTON.lower()
-
     def is_commune(self):
         return self.type.lower() == self.COMMUNE.lower()
 
     def is_region(self):
         return self.type.lower() == self.REGION.lower()
-
-    def is_prefecture(self):
-        return self.type.lower() == self.PREFECTURE.lower()
 
     @property
     def children(self):

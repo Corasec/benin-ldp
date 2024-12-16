@@ -1,10 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-import time
-from no_sql_client import NoSQLClient
-from cloudant.result import Result
-from cloudant.document import Document
-from investments.models import Investment
-from administrativelevels.models import AdministrativeLevel, Task, Activity, Phase
+from django.core.management.base import BaseCommand
+from administrativelevels.models import AdministrativeLevel, Task, Activity
 
 
 class Command(BaseCommand):

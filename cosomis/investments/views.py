@@ -96,30 +96,30 @@ class IndexListView(
 
     def get_context_data(self, **kwargs):
         adm_queryset = AdministrativeLevel.objects.all()
-        kwargs["regions"] = adm_queryset.filter(type=AdministrativeLevel.REGION)
+        kwargs["countries"] = adm_queryset.filter(type=AdministrativeLevel.COUNTRY)
 
-        kwargs["prefectures"] = adm_queryset.filter(type=AdministrativeLevel.PREFECTURE)
-        if "region-filter" in self.request.GET:
-            kwargs["prefectures"] = kwargs["prefectures"].filter(
-                parent__id=self.request.GET["region-filter"]
+        kwargs["departments"] = adm_queryset.filter(type=AdministrativeLevel.DEPARTMENTS)
+        if "country-filter" in self.request.GET:
+            kwargs["departments"] = kwargs["departments"].filter(
+                parent__id=self.request.GET["country-filter"]
             )
 
         kwargs["communes"] = adm_queryset.filter(type=AdministrativeLevel.COMMUNE)
-        if "prefecture-filter" in self.request.GET:
+        if "department-filter" in self.request.GET:
             kwargs["communes"] = kwargs["communes"].filter(
-                parent__id=self.request.GET["prefecture-filter"]
+                parent__id=self.request.GET["department-filter"]
             )
 
-        kwargs["cantons"] = adm_queryset.filter(type=AdministrativeLevel.CANTON)
+        kwargs["cities"] = adm_queryset.filter(type=AdministrativeLevel.CITY)
         if "commune-filter" in self.request.GET:
-            kwargs["cantons"] = kwargs["cantons"].filter(
+            kwargs["cities"] = kwargs["cities"].filter(
                 parent__id=self.request.GET["commune-filter"]
             )
 
         kwargs["villages"] = adm_queryset.filter(type=AdministrativeLevel.VILLAGE)
-        if "cantons-filter" in self.request.GET:
+        if "city-filter" in self.request.GET:
             kwargs["villages"] = kwargs["villages"].filter(
-                parent__id=self.request.GET["cantons-filter"]
+                parent__id=self.request.GET["city-filter"]
             )
 
         kwargs["categories"] = Category.objects.all()
@@ -131,11 +131,6 @@ class IndexListView(
         kwargs["subpopulations"] = [
             {"id": "endorsed_by_youth", "name": _("Endorsed by youth")},
             {"id": "endorsed_by_women", "name": _("Endorsed by women")},
-            {"id": "endorsed_by_agriculturist", "name": _("Endorsed by agriculturist")},
-            {
-                "id": "endorsed_by_pastoralist",
-                "name": _("Endorsed by ethnic minorities"),
-            },
         ]
 
         kwargs["priorities"] = [

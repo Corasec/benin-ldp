@@ -1,7 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from no_sql_client import NoSQLClient
-from cloudant.result import Result
-from cloudant.document import Document
 from administrativelevels.models import AdministrativeLevel, Task
 from investments.models import Attachment
 
@@ -25,20 +23,19 @@ class Command(BaseCommand):
         self.nsc = NoSQLClient()
         facilitator_dbs = self.nsc.list_all_databases('facilitator')
         for db_name in facilitator_dbs:
-            if self.check_for_valid_facilitator(db_name):
-                extracted_attachments = []
-                db = self.nsc.get_db(db_name)
-                task_documents = db.get_query_result({
+
+            db = self.nsc.get_db(db_name)
+            task_documents = db.get_query_result({
                     "type": "task"
                 })
-                adm_id = None
-                for doc in task_documents:
-                    adm_id = doc['administrative_level_id']
-                    break
-                extracted_attachments = get_attachments_from_database(task_documents)
-                if adm_id:
-                    adm = AdministrativeLevel.objects.get(no_sql_db_id=adm_id)
-                    save_attachments_to_purs_test(adm, extracted_attachments)
+            adm_id = None
+            for doc in task_documents:
+                adm_id = doc['administrative_level_id']
+                break
+            extracted_attachments = get_attachments_from_database(task_documents)
+            if adm_id:
+                adm = AdministrativeLevel.objects.get(no_sql_db_id=adm_id)
+                save_attachments_to_purs_test(adm, extracted_attachments)
         self.stdout.write(self.style.SUCCESS('Successfully extracted attachments!'))
 
 
@@ -58,7 +55,7 @@ def get_attachments_from_database(task_documents):
                 task_order = 0
             if attachment_uri:
                 extracted_attachments.append({
-                    "type": "photo" if "photo" in attachment['name'].lower() else "document",
+                    "type": "photo" if ("jpg" in attachment_uri or "png" in attachment_uri) else "document",
                     "url": attachment_uri,
                     "phase": document.get('phase_name', ""),
                     "activity": document.get('activity_name', ""),

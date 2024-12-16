@@ -23,13 +23,13 @@ class FillAdmLevelsSelectFilters(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         adm_obj = AdministrativeLevel.objects.get(id=request.POST['value'])
         opt_qs = AdministrativeLevel.objects.filter(parent=adm_obj)
-        if adm_obj.type == AdministrativeLevel.REGION:
-            opt_qs = opt_qs.filter(type=AdministrativeLevel.PREFECTURE)
-        elif adm_obj.type == AdministrativeLevel.PREFECTURE:
+        if adm_obj.type == AdministrativeLevel.COUNTRY:
+            opt_qs = opt_qs.filter(type=AdministrativeLevel.DEPARTMENTS)
+        elif adm_obj.type == AdministrativeLevel.DEPARTMENTS:
             opt_qs = opt_qs.filter(type=AdministrativeLevel.COMMUNE)
         elif adm_obj.type == AdministrativeLevel.COMMUNE:
-            opt_qs = opt_qs.filter(type=AdministrativeLevel.CANTON)
-        elif adm_obj.type == AdministrativeLevel.CANTON:
+            opt_qs = opt_qs.filter(type=AdministrativeLevel.CITY)
+        elif adm_obj.type == AdministrativeLevel.CITY:
             opt_qs = opt_qs.filter(type=AdministrativeLevel.VILLAGE)
 
         return Response({
@@ -232,10 +232,10 @@ class InvestmentModelViewSet(ModelViewSet):
 class StatisticsView(View):
     def get(self, request, *args, **kwargs):
         # Retrieve filter parameters
-        region_id = request.GET.get('region_id', None)
-        prefecture_id = request.GET.get('prefecture_id', None)
+        country_id = request.GET.get('country_id', None)
+        department_id = request.GET.get('department_id', None)
         commune_id = request.GET.get('commune_id', None)
-        canton_id = request.GET.get('canton_id', None)
+        city_id = request.GET.get('city_id', None)
         village_id = request.GET.get('village_id', None)
         project_status = request.GET.get('project-status-filter', None)
         organization = request.GET.get('organization', None)
@@ -249,14 +249,14 @@ class StatisticsView(View):
         filters = Q()
         if village_id and village_id is not None:
             filters &= Q(administrative_level__id=village_id)
-        elif canton_id and canton_id is not None:
-            filters &= Q(administrative_level__parent__id=canton_id)
+        elif city_id and city_id is not None:
+            filters &= Q(administrative_level__parent__id=city_id)
         elif commune_id and commune_id is not None:
             filters &= Q(administrative_level__parent__parent__id=commune_id)
-        elif prefecture_id and prefecture_id is not None:
-            filters &= Q(administrative_level__parent__parent__parent__id=prefecture_id)
-        elif region_id and region_id is not None:
-            filters &= Q(administrative_level__parent__parent__parent__parent__id=region_id)
+        elif department_id and department_id is not None:
+            filters &= Q(administrative_level__parent__parent__parent__id=department_id)
+        elif country_id and country_id is not None:
+            filters &= Q(administrative_level__parent__parent__parent__parent__id=country_id)
 
         if project_status and project_status is not None:
             filters &= Q(project_status=project_status)
