@@ -98,14 +98,14 @@
         }
 
 
-        var administrative_level_ids = ["id_region", "id_prefecture", "id_commune", "id_canton"];
+        var administrative_level_ids = ["id_country", "id_department", "id_commune", "id_city"];
         var administrative_level_ids_length = administrative_level_ids.length;
          document.getElementById("seeVillage").style.display = "none";
          document.getElementById("villages_title").style.display = "none"
           // Parcourir les identifiants et griser les champs sauf id_region
           administrative_level_ids.forEach(function(id) {
             var element = document.getElementById(id);
-            if (id !== "id_region") {
+            if (id !== "id_country") {
               element.disabled = true; // Désactive le champ
 
             }
@@ -137,16 +137,16 @@
                                 }catch(e){
                                     //id don't exist
                                 }
-                                if (elt_id == "id_region") {
-                                    set_datas($(`#id_prefecture`), data);
+                                if (elt_id == "id_country") {
+                                    set_datas($(`#id_department`), data);
                                 }
-                                else if (elt_id == "id_prefecture") {
+                                else if (elt_id == "id_department") {
                                     set_datas($(`#id_commune`), data);
                                 }
                                 else if (elt_id == "id_commune") {
-                                    set_datas($(`#id_canton`), data);
+                                    set_datas($(`#id_city`), data);
                                 }
-                                else if (elt_id == "id_canton") {
+                                else if (elt_id == "id_city") {
                                     let container = $("#search_results")
                                     container.html('');
                                     let container_txt_html = "";
@@ -162,7 +162,7 @@
 
 
                                         if ( container_txt_html !== ""){
-                                            {#document.getElementById("seeVillage").style.display = "block";#}
+                                            document.getElementById("seeVillage").style.display = "block";
                                             document.getElementById("villages_title").style.display = "block";
                                         }
 
@@ -229,14 +229,14 @@
 {% block select2 %}
 <script src="{% static '\admin\js\vendor\select2\i18n\fr.js' %}"></script>
 <script type="text/javascript">
-    $("#id_region").select2({
+    $("#id_country").select2({
         language: '{{ current_language }}',
-        placeholder: "{% translate 'Region' %}",
+        placeholder: "{% translate 'Pays' %}",
         allowClear: true,
         width: 'inherit'
     });
-    $("#id_prefecture").select2({
-        placeholder: "{% translate 'Prefecture' %}",
+    $("#id_department").select2({
+        placeholder: "{% translate 'Departement' %}",
         language: '{{ current_language }}',
         allowClear: true,
         width: 'inherit'
@@ -247,8 +247,8 @@
         allowClear: true,
         width: 'inherit'
     });
-    $("#id_canton").select2({
-        placeholder: "{% translate 'Canton' %}",
+    $("#id_city").select2({
+        placeholder: "{% translate 'City' %}",
         language: '{{ current_language }}',
         allowClear: true,
         width: 'inherit'
