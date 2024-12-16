@@ -27,8 +27,8 @@ class Command(BaseCommand):
             if self.check_for_valid_facilitator(db_name):
                 db = self.nsc.get_db(db_name).get_query_result({
                     "type": "task",
-                    "phase_name": "VISITES PREALABLES",
-                    "name": "Etablissement du profil du village",
+                    "phase_name": "Préparation",
+                    "name": "Première réunion au niveau  communale (à la Mairie) - Présentation de l'équipe et du projet COSO aux autorités",
                 })
                 for document in db:
                     update_or_create_adm_document(self.nsc, document)
@@ -88,28 +88,8 @@ def extract_population_data(form_response):
     }
 
     for entry in form_response:
-        if "population" in entry:
-            extracted_population_data["total_population"] = entry["population"].get("populationTotaleDuVillage", 0)
-            extracted_population_data["population_men"] = entry["population"].get("populationNombreDeHommes", 0)
-            extracted_population_data["population_women"] = entry["population"].get("populationNombreDeFemmes", 0)
-            extracted_population_data["population_minorities"] = entry["population"].get("populationEthniquesDansVillage", 0)
-
-        elif "personnesVulnerables" in entry and entry["personnesVulnerables"] is not None:
-            persons_vulnerable = entry["personnesVulnerables"]
-
-            if "populationEnfants" in persons_vulnerable and persons_vulnerable["populationEnfants"] is not None:
-                extracted_population_data["population_young"] = persons_vulnerable["populationEnfants"].get(
-                    "enfantsTotal", 0)
-
-            if "populationPersonnesAgees" in persons_vulnerable and persons_vulnerable[
-                "populationPersonnesAgees"] is not None:
-                extracted_population_data["population_elder"] = persons_vulnerable["populationPersonnesAgees"].get(
-                    "populationPersonnesAgeesTotal", 0)
-
-            if "populationPersonnesHandicape" in persons_vulnerable and persons_vulnerable[
-                "populationPersonnesHandicape"] is not None:
-                extracted_population_data["population_handicap"] = persons_vulnerable[
-                    "populationPersonnesHandicape"].get("populationPersonnesHandicapeTotal", 0)
+        extracted_population_data["population_men"] = entry.get("totalHommes", 0)
+        extracted_population_data["population_women"] = entry.get("totalFemmes", 0)
 
     print('here is the result:', extracted_population_data)
     return extracted_population_data

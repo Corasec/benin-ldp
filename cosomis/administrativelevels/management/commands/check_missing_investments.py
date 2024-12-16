@@ -33,8 +33,8 @@ class Command(BaseCommand):
             if self.check_for_valid_facilitator(db_name):
                 db = self.nsc.get_db(db_name).get_query_result({
                     "type": "task",
-                    "phase_name": "PLANIFICATION",
-                    "name": "Soutenir la communauté dans la sélection des priorités par sous-composante (1.1, 1.2 et 1.3) à soumettre à la discussion du CCD lors de la réunion cantonale d'arbitrage"
+                    "phase_name": "Diagnostic et planification participative",
+                    "name": "Quatrième Assemblée Générale Villageoise -Pratique de l’Évaluation Participative des Besoins (EPB) - Soutenir la communauté dans la sélection des priorités par sous-composante à soumettre à la discussion au niveau arrondissement",
                 })
 
                 # Check for villages missing investments
