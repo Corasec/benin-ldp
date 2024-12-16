@@ -29,41 +29,39 @@ class DashboardSummaryView(LoginRequiredApproveRequiredMixin, generic.TemplateVi
         filters_context = {}
         adm_queryset = AdministrativeLevel.objects.all()
 
-        filters_context["regions"] = adm_queryset.filter(type=AdministrativeLevel.REGION)
-        filters_context["prefectures"] = adm_queryset.filter(type=AdministrativeLevel.PREFECTURE)
+        filters_context["countries"] = adm_queryset.filter(type=AdministrativeLevel.COUNTRY)
+        filters_context["departments"] = adm_queryset.filter(type=AdministrativeLevel.DEPARTMENTS)
         filters_context["communes"] = adm_queryset.filter(type=AdministrativeLevel.COMMUNE)
-        filters_context["cantons"] = adm_queryset.filter(type=AdministrativeLevel.CANTON)
+        filters_context["cities"] = adm_queryset.filter(type=AdministrativeLevel.CITY)
         filters_context["villages"] = adm_queryset.filter(type=AdministrativeLevel.VILLAGE)
         filters_context["organizations"] = Organization.objects.all()
         filters_context["sectors"] = Category.objects.all()
         filters_context["types"] = Investment.INVESTMENT_STATUS_CHOICES
 
-        if "region-filter" in self.request.GET:
-            filters_context["prefectures"] = filters_context["prefectures"].filter(
-                parent__id=self.request.GET["region-filter"]
+        if "country-filter" in self.request.GET:
+            filters_context["departments"] = filters_context["departments"].filter(
+                parent__id=self.request.GET["country-filter"]
             )
 
-        if "prefecture-filter" in self.request.GET:
+        if "department-filter" in self.request.GET:
             filters_context["communes"] = filters_context["communes"].filter(
-                parent__id=self.request.GET["prefecture-filter"]
+                parent__id=self.request.GET["department-filter"]
             )
 
         if "commune-filter" in self.request.GET:
-            filters_context["cantons"] = filters_context["cantons"].filter(
+            filters_context["cities"] = filters_context["cities"].filter(
                 parent__id=self.request.GET["commune-filter"]
             )
 
-        if "canton-filter" in self.request.GET:
+        if "city-filter" in self.request.GET:
             filters_context["villages"] = filters_context["villages"].filter(
-                parent__id=self.request.GET["canton-filter"]
+                parent__id=self.request.GET["city-filter"]
             )
 
         filters_context["query_strings_raw"] = self.request.GET.copy()
 
         filters_context["subpopulations"] = [
             {"id": "endorsed_by_youth", "name": _("Endorsed by youth")},
-            {"id": "endorsed_by_women", "name": _("Endorsed by women")},
-            {"id": "endorsed_by_agriculturist", "name": _("Endorsed by agriculturist")},
-            {"id": "endorsed_by_pastoralist", "name": _("Endorsed by ethnic minorities")},
+            {"id": "endorsed_by_women", "name": _("Endorsed by women")}
         ]
         return filters_context
