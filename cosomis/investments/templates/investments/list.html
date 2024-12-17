@@ -83,7 +83,7 @@
                                         <div class="col-4">
                                             <div class="form-group">
                                                 <label for="sector-select-id">{% translate 'Type' %}</label>
-                                                <select class="form-control" name="sector-filter" id="sector-select-id" empty-option="{% translate 'Sector' %}" style="width: 100%;" {% if not 'category-filter' in query_strings_raw %}disabled{% endif %}>
+                                                <select class="form-control" name="sector-filter" id="sector-select-id" empty-option="{% translate 'Type' %}" style="width: 100%;" {% if not 'category-filter' in query_strings_raw %}disabled{% endif %}>
                                                     <option selected value="">{% translate 'Type' %}</option>
                                                     {% for sector in sectors %}
                                                         {% if 'sector-filter' in query_strings_raw %}

@@ -16,10 +16,10 @@ urlpatterns = [
          name='attachment_download_zip'),
 
     path('village/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='village_detail'),
-    path('canton/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='canton_detail'),
+    path('city/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='city_detail'),
     path('commune/<int:pk>/', views.CommuneDetailView.as_view(), name='commune_detail'),
-    path('region/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='region_detail'),
-    path('prefecture/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='prefecture_detail'),
+    path('department/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='department_detail'),
+    path('country/<int:pk>/', views.AdministrativeLevelDetailView.as_view(), name='country_detail'),
 
     # The path of the detail of village
     path('attachments/', views.AttachmentListView.as_view(), name='attachments'),  # The path of the attachments list

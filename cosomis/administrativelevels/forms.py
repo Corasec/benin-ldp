@@ -182,15 +182,10 @@ class VillageSearchForm(forms.Form):
         required=False,
         label=_("Commune"),
     )
-    # prefecture = forms.ModelChoiceField(
-    #     queryset=AdministrativeLevel.objects.filter(type="Prefecture"),
-    #     required=False,
-    #     label=_("Prefecture"),
-    # )
     city = forms.ModelChoiceField(
         queryset=AdministrativeLevel.objects.filter(type=AdministrativeLevel.CITY),
         required=False,
-        label=_("Arrondissement"),
+        label=_("City"),
     )
 
 class FinancialPartnerForm(forms.Form):
