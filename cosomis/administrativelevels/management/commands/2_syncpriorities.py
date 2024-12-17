@@ -1,9 +1,10 @@
+import json
 from django.core.management.base import BaseCommand
 import time
 from no_sql_client import NoSQLClient
 from investments.models import Investment
-from administrativelevels.models import AdministrativeLevel, Sector
-
+from administrativelevels.models import AdministrativeLevel, Sector, Category
+from django.conf import settings
 
 class Command(BaseCommand):
     help = 'Description of your command'
@@ -22,6 +23,27 @@ class Command(BaseCommand):
         return False
 
     def handle(self, *args, **options):
+        # Create initial categories & sectors
+        try:
+            config_data_file = open(settings.BASE_DIR / 'config_data/categories_sectors.json')   
+            categories = json.load(config_data_file)
+            config_data_file.close()
+            for category in categories:
+                update_or_create_category_with_sectors(category)
+        except Exception as e:
+            print(e, "Error creating initial (categories & sectors) config data")
+            return
+        
+        # Load categories & sectors mapping
+        mappings = None
+        try:
+            mapping_file = open(settings.BASE_DIR / 'config_data/priority_to_sector_mapping.json')   
+            mappings = json.load(mapping_file)
+            mapping_file.close()
+        except Exception as e:
+            print(e, "Error creating initial (categories & sectors) config data")
+            return
+
         # Your command logic here
         self.nsc = NoSQLClient()
         facilitator_dbs = self.nsc.list_all_databases('facilitator')
@@ -34,11 +56,12 @@ class Command(BaseCommand):
                 })
 
             for document in db:
-                update_or_create_priorities_document(document)
+                update_or_create_priorities_document(document, mappings)
         self.stdout.write(self.style.SUCCESS('Successfully executed mycommand!'))
 
 
-def update_or_create_priorities_document(priorities_document):
+
+def update_or_create_priorities_document(priorities_document, priority_to_sector_mappings):
     # Extract the administrative_level_id from the priorities document
     adm_id = priorities_document['administrative_level_id']
 
@@ -50,20 +73,30 @@ def update_or_create_priorities_document(priorities_document):
             for idx, priority in enumerate(
                     priorities_document['form_response'][0]['priorisationSC11']):
                 try:
+                    if priority["besoin"] is None:
+                        continue
+
+                    # clean the data
+                    priority_name = priority["besoin"].strip()
+                    priority_name = priority_name.replace("'")
+                    priority_name = priority_name.replace('\n', '')
+                    priority_name = priority_name.replace('\t', '')
+
                     exist = Investment.objects.filter(
-                        title=priority["besoin"],
+                        title=priority_name,
                         administrative_level=administrative_level,
                         ranking=idx + 1,
                         description=priority["groupe"]
                     ).exists()
                     if not exist:
-                        sector = Sector.objects.get_or_create(name=priority["besoin"], description=priority["groupe"], category_id=10)
+                        sector_name = priority_to_sector_mappings[priority_name]
+                        sector = Sector.objects.filter(name=sector_name).first()
                         Investment.objects.create(
                             ranking=idx + 1,
-                            title=priority["besoin"],
+                            title=priority_name,
                             description=priority["groupe"],
                             estimated_cost=priority.get("coutEstime", 0),
-                            sector_id=sector[0].id,
+                            sector=sector,
                             delays_consumed=0,
                             duration=0,
                             financial_implementation_rate=0,
@@ -78,3 +111,8 @@ def update_or_create_priorities_document(priorities_document):
                     print(e, "Error creating investment", priority["besoin"], administrative_level)
     # Otherwise, create a new one
     time.sleep(1)
+
+def update_or_create_category_with_sectors(category):
+    category_row = Category.objects.get_or_create(name=category["name"], description=category["name"])
+    for sector_name in category["sectors"]:
+        Sector.objects.get_or_create(name=sector_name, description=sector_name, category=category_row[0])

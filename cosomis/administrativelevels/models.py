@@ -32,12 +32,7 @@ class AdministrativeLevel(BaseModel):
         (BLOCKED, _('Blocked'))
     )
 
-    # TODO: To delete
-    CANTON = 'Canton'
-    REGION = 'Region'
-    PREFECTURE = 'Prefecture'
-
-    VILLAGE = 'cillage'
+    VILLAGE = 'village'
     COMMUNE = 'commune'
     CITY = "arrondissement"
     COUNTRY = "country"
@@ -45,7 +40,7 @@ class AdministrativeLevel(BaseModel):
 
     TYPE = (  # Keep this order, is important for the gallery
         (VILLAGE, _('Village')),
-        (CITY, _('City')),
+        (CITY, _('Arrondissement')),
         (COMMUNE, _('Commune')),
         (DEPARTMENTS, _('Department')),
         (COUNTRY, _('Country'))
