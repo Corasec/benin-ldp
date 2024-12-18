@@ -89,7 +89,7 @@ def update_or_create_priorities_document(priorities_document, priority_to_sector
                         description=priority["groupe"]
                     ).exists()
                     if not exist:
-                        sector_name = priority_to_sector_mappings[priority_name]
+                        sector_name = priority_to_sector_mappings.get(priority_name, 'Autre')
                         sector = Sector.objects.filter(name=sector_name).first()
                         Investment.objects.create(
                             ranking=idx + 1,
