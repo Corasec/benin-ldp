@@ -78,7 +78,7 @@ def update_or_create_priorities_document(priorities_document, priority_to_sector
 
                     # clean the data
                     priority_name = priority["besoin"].strip()
-                    priority_name = priority_name.replace("'")
+                    priority_name = priority_name.strip("'")
                     priority_name = priority_name.replace('\n', '')
                     priority_name = priority_name.replace('\t', '')
 
