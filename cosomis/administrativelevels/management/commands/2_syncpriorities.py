@@ -89,13 +89,13 @@ def update_or_create_priorities_document(priorities_document, priority_to_sector
                         description=priority["groupe"]
                     ).exists()
                     if not exist:
-                        sector_name = priority_to_sector_mappings[priority_name]
+                        sector_name = priority_to_sector_mappings.get(priority_name, 'Autre')
                         sector = Sector.objects.filter(name=sector_name).first()
                         Investment.objects.create(
                             ranking=idx + 1,
                             title=priority_name,
                             description=priority["groupe"],
-                            estimated_cost=priority.get("coutEstime", 0),
+                            estimated_cost=40000000,  #TODO: use priority.get("coutEstime", 0),
                             sector=sector,
                             delays_consumed=0,
                             duration=0,

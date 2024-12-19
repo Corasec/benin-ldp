@@ -52,7 +52,7 @@
                     </div>
                     </div>
 
-                     <strong id="villages_title">{% translate 'Choose the village in city' %} : </strong><br>
+                     <strong id="villages_title">{% translate 'Choose the village in arrondissement' %} : </strong><br>
                     <div id="search_results">
 
                     </div>
@@ -98,14 +98,14 @@
         }
 
 
-        var administrative_level_ids = ["id_country", "id_department", "id_commune", "id_city"];
+        var administrative_level_ids = ["id_department", "id_commune", "id_city"];
         var administrative_level_ids_length = administrative_level_ids.length;
          document.getElementById("seeVillage").style.display = "none";
          document.getElementById("villages_title").style.display = "none"
-          // Parcourir les identifiants et griser les champs sauf id_region
+          // Parcourir les identifiants et griser les champs sauf id_department
           administrative_level_ids.forEach(function(id) {
             var element = document.getElementById(id);
-            if (id !== "id_country") {
+            if (id !== "id_department") {
               element.disabled = true; // Désactive le champ
 
             }
@@ -248,7 +248,7 @@
         width: 'inherit'
     });
     $("#id_city").select2({
-        placeholder: "{% translate 'City' %}",
+        placeholder: "{% translate 'Arrondissement' %}",
         language: '{{ current_language }}',
         allowClear: true,
         width: 'inherit'
