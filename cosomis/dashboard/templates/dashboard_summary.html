@@ -70,19 +70,14 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="country-select-id">{% translate 'Country' %}</label>
-                                        <select class="form-control" name="country-filter" empty-option="{% translate 'Country' %}" style="width: 100%;" id="country-select-id">
-                                            <option selected value="">{% translate 'Country' %}</option>
-                                            {% for country in countries %}
-                                                <option value="{{ country.id }}" {% if query_strings_raw|get_item:'country-filter' == country.id %}selected{% endif %}>{{ country.name }}</option>
-                                            {% endfor %}
-                                        </select>
+                                        <div style="width: 100%;"></div>
                                     </div>
                                 </div>
+
                                 <div class="horizontal-form">
                                     <div class="form-group">
                                         <label for="department-select-id">{% translate 'Department' %}</label>
-                                        <select class="form-control" name="department-filter" id="department-select-id" empty-option="{% translate 'Department' %}" style="width: 100%;" {% if not 'country-filter' in query_strings_raw %}disabled{% endif %}>
+                                        <select class="form-control" name="department-filter" id="department-select-id" empty-option="{% translate 'Department' %}" style="width: 100%;">
                                             <option selected value="">{% translate 'Department' %}</option>
                                             {% for department in departments %}
                                                 <option value="{{ department.id }}" {% if query_strings_raw|get_item:'department-filter' == department.id %}selected{% endif %}>{{ department.name }}</option>
@@ -99,9 +94,9 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="city-select-id">{% translate 'City' %}</label>
-                                        <select class="form-control" name="city-filter" id="city-select-id" empty-option="{% translate 'City' %}" style="width: 100%;" {% if not 'commune-filter' in query_strings_raw %}disabled{% endif %}>
-                                            <option selected value="">{% translate 'City' %}</option>
+                                        <label for="city-select-id">{% translate 'Arrondissement' %}</label>
+                                        <select class="form-control" name="city-filter" id="city-select-id" empty-option="{% translate 'Arrondissement' %}" style="width: 100%;" {% if not 'commune-filter' in query_strings_raw %}disabled{% endif %}>
+                                            <option selected value="">{% translate 'Arrondissement' %}</option>
                                             {% for city in cities %}
                                                 <option value="{{ city.id }}" {% if query_strings_raw|get_item:'city-filter' == city.id %}selected{% endif %}>{{ city.name }}</option>
                                             {% endfor %}
@@ -441,7 +436,7 @@
         });
 
         function initializeDashboard(statisticsComponent) {
-            ['country', 'department', 'commune', 'city', 'village'].forEach(level => {
+            ['department', 'commune', 'city', 'village'].forEach(level => {
                 $(`#${level}-select-id`).on('change', debounce(function() {
                     const selectedValue = $(this).val();
                     const nextLevel = getNextLevel(level);
@@ -475,13 +470,13 @@
             });
 
             function getNextLevel(level) {
-                const levels = ['country', 'department', 'commune', 'city', 'village'];
+                const levels = ['department', 'commune', 'city', 'village'];
                 const currentIndex = levels.indexOf(level);
                 return levels[currentIndex + 1] || '';
             }
 
             function getFollowingLevels(level) {
-                const levels = ['country', 'department', 'commune', 'city', 'village'];
+                const levels = ['department', 'commune', 'city', 'village'];
                 const currentIndex = levels.indexOf(level);
                 return levels.slice(currentIndex + 1).map(lvl => $(`#${lvl}-select-id`));
             }

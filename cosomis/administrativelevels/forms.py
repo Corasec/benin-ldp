@@ -165,12 +165,6 @@ class AdministrativeLevelForm(forms.ModelForm):
 
 # SearchVillages
 class VillageSearchForm(forms.Form):
-    country = forms.ModelChoiceField(
-        queryset=AdministrativeLevel.objects.filter(type=AdministrativeLevel.COUNTRY),
-        required=False,
-        empty_label=_("Tout le pays"),
-        label=_("Pays"),
-    )
     department = forms.ModelChoiceField(
         queryset=AdministrativeLevel.objects.filter(type=AdministrativeLevel.DEPARTMENTS),
         required=False,
@@ -180,12 +174,14 @@ class VillageSearchForm(forms.Form):
     commune = forms.ModelChoiceField(
         queryset=AdministrativeLevel.objects.filter(type=AdministrativeLevel.COMMUNE),
         required=False,
+        empty_label=_("Commune"),
         label=_("Commune"),
     )
     city = forms.ModelChoiceField(
         queryset=AdministrativeLevel.objects.filter(type=AdministrativeLevel.CITY),
         required=False,
-        label=_("City"),
+        empty_label=_("Arrondissement"),
+        label=_("Arrondissement"),
     )
 
 class FinancialPartnerForm(forms.Form):

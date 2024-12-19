@@ -95,7 +95,7 @@ def update_or_create_priorities_document(priorities_document, priority_to_sector
                             ranking=idx + 1,
                             title=priority_name,
                             description=priority["groupe"],
-                            estimated_cost=priority.get("coutEstime", 0),
+                            estimated_cost=40000000,  #TODO: use priority.get("coutEstime", 0),
                             sector=sector,
                             delays_consumed=0,
                             duration=0,

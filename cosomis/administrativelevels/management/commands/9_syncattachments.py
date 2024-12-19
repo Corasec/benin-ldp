@@ -20,6 +20,9 @@ class Command(BaseCommand):
         return False
 
     def handle(self, *args, **options):
+        # Clear the table
+        Attachment.objects.all().delete()
+
         self.nsc = NoSQLClient()
         facilitator_dbs = self.nsc.list_all_databases('facilitator')
         for db_name in facilitator_dbs:
@@ -67,14 +70,16 @@ def get_attachments_from_database(task_documents):
 
 def save_attachments_to_purs_test(adm, extracted_attachments):
     # Access the 'purs_test' database
+    base_url = 'https://cdd.coso.gouv.bj/fr/facilitators/serve-minio-file/'
 
     # Create a new document with the extracted attachments
     objects_to_create = []
     for attachment in extracted_attachments:
+        url = attachment.get('url')
         objects_to_create.append(Attachment(
             adm=adm,
             type=attachment.get('type').capitalize(),
-            url=attachment.get('url'),
+            url= f'{base_url}{url}',
             task=attachment.get('task'),
             name=attachment.get('task_name'),
             order=attachment.get('task_order')
