@@ -98,7 +98,9 @@ class Command(BaseCommand):
         })
         for document in db:
             try:
-                if not document['develop_mode'] and not document["training_mode"]:
+                dev_mode = document.get('develop_mode', False)
+                train_mode = document.get('training_mode', False)
+                if not dev_mode and not train_mode:
                     return True
             except:
                 return False
