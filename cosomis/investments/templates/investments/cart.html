@@ -189,7 +189,7 @@
                         <tbody>
                         {% for investment in object.funded_investments.all %}
                         <tr>
-                            <td>{{ investment.title }}</td>
+                            <td>{{ investment.sector.name }}</td>
                             <td>{{ investment.administrative_level.type }}</td>
                             <td data-order="{{ investment.estimated_cost }}" data-search="{{ investment.estimated_cost }}">
                                 {{ investment.estimated_cost|intcomma }}
@@ -216,7 +216,7 @@
                             <td>
                                 <a class="btn btn-xs btn-outline-danger remove-investment-link"
                                    data-id="{{ investment.id }}"
-                                   data-name="{{ investment.title }}">{% translate 'Remove from cart' %}</a>
+                                   data-name="{{ investment.sector.name }}">{% translate 'Remove from cart' %}</a>
                             </td>
                         </tr>
                         {% endfor %}

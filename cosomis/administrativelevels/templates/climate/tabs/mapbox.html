@@ -92,7 +92,7 @@
             <strong>{% translate "Current climate related investments" %}: </strong>
             {% for investment in investments %}
                 <div>
-                    <u>{{ investment.title }}</u>:
+                    <u>{{ investment.sector.name }}</u>:
                     {% if investment.contribution_to_climate %}{% translate "Yes" %}{% else %}
                         {% translate "No" %}{% endif %}
                 </div>

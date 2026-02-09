@@ -113,7 +113,7 @@
                                     <tbody>
                                     {% for investment in investments.all %}
                                     <tr>
-                                        <td>{{ investment.title }}</td>
+                                        <td>{{ investment.sector.name }}</td>
                                         <td data-order="{{ investment.estimated_cost }}" data-search="{{ investment.estimated_cost }}">
                                             {{ investment.estimated_cost|intcomma }}
                                         </td>
@@ -148,7 +148,7 @@
                                         <td>{{ investment.project_status | projectStatus }}</td>
                                         <td>
                                             <span class="badge badge-pill {{ investment.project_status | projectStatusColor }} investment-update-badge" 
-                                                  data-investment="{{ investment.id }}" data-name="{{ investment.title }}" 
+                                                  data-investment="{{ investment.id }}" data-name="{{ investment.sector.name }}" 
                                                   data-status="{{ investment.project_status }}" data-progress="{{ investment.physical_execution_rate }}" 
                                                   data-latitude="{{ investment.latitude }}" data-longitude="{{ investment.longitude }}"
                                                   style="font-size: 12px; padding: 10px; cursor: pointer;"
@@ -157,7 +157,7 @@
                                             </span>
                                             {% if investment.project_status != investment.NOT_FUNDED %}
                                                 <span class="badge badge-pill badge-primary image-update-badge mt-1" 
-                                                      data-investment="{{ investment.id }}" data-name="{{ investment.title }}" 
+                                                      data-investment="{{ investment.id }}" data-name="{{ investment.sector.name }}" 
                                                       style="font-size: 12px; padding: 10px; cursor: pointer;"
                                                 >{% translate 'Upload Image' %}</span>
                                             {% endif %}

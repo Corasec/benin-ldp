@@ -475,7 +475,7 @@
                             <td>
                                 <input class="project-table-check" id="checkbox-{{ investment.id }}" value="{{ investment.id }}" type="checkbox" checked>
                             </td>
-                            <td>{{ investment.title }}</td>
+                            <td>{{ investment.sector.name }}</td>
                             <td>{{ investment.administrative_level.type }}</td>
                             <td data-order="{{ investment.estimated_cost }}" data-search="{{ investment.estimated_cost }}">
                                 {{ investment.estimated_cost|intcomma }} FCFA

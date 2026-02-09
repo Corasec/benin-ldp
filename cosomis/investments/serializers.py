@@ -13,6 +13,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
     administrative_level__parent__parent__name = serializers.SerializerMethodField()
     administrative_level__parent__parent__parent__name = serializers.SerializerMethodField()
     population_priority = serializers.SerializerMethodField()
+    sector__name = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -52,4 +53,7 @@ class InvestmentSerializer(serializers.ModelSerializer):
         if obj.endorsed_by_pastoralist:
             population_priority.append('ME')
         return ', '.join(population_priority)
+
+    def get_sector__name(self, obj):
+        return obj.sector.name if obj.sector else ""
 

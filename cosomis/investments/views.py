@@ -189,7 +189,7 @@ class IndexListView(
         context["datatable_config"]["ajax"] = self.request.scheme + '://' + self.request.get_host() + self.request.path + "ajax/datatable?format=datatables"
         context["datatable_config"]["columns"] = [
             {'data': 'select_input', 'name': 'select_input', 'searchable': 'false', 'orderable': 'false'},
-            {'data': 'title'},
+            {'data': 'sector__name'},
             {'data': 'administrative_level__type'},
             {'data': 'estimated_cost'},
             {'data': 'administrative_level__name'},
