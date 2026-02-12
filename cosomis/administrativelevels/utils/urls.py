@@ -20,4 +20,7 @@ urlpatterns = [
     path('sectors-codes', views.SectorCodesXLSXView.as_view(), name='sectors_codes'),
     path('villages-codes', views.VillagesCodesXLSXView.as_view(), name='villages_codes'),
     path('villages-coordinates', views.InitializeVillageCoordinatesView.as_view(), name='initialize_village_coordinates'),
+    path('get-villages-by-department/', views.GetVillagesByDepartmentView.as_view(), name='get_villages_by_department'),
+    path('get-villages-by-commune/', views.GetVillagesByCommuneView.as_view(), name='get_villages_by_commune'),
+    path('get-villages-by-city/', views.GetVillagesByCityView.as_view(), name='get_villages_by_city'),
 ]

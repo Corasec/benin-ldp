@@ -585,3 +585,115 @@ class InitializeVillageCoordinatesView(LoginRequiredApproveRequiredMixin, generi
                         print(f"Converted {shp_path} to {geojson_path}")
                     except subprocess.CalledProcessError as e:
                         print(f"Error converting {shp_path}: {e}")
+
+
+
+class GetVillagesByDepartmentView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
+    """
+    Get all villages for a departement
+    Structure : Departement → Commune → Arrondissement (CITY) → Village
+    """
+    def get(self, request, *args, **kwargs):
+        department_id = request.GET.get('department_id')
+        
+        if not department_id:
+            return self.render_to_json_response([], safe=False)
+        
+        try:
+            department = AdministrativeLevel.objects.get(
+                id=int(department_id),
+                type=AdministrativeLevel.DEPARTMENTS
+            )
+            
+           
+            villages = AdministrativeLevel.objects.filter(
+                type=AdministrativeLevel.VILLAGE,
+                parent__parent__parent=department
+            ).distinct()
+            
+            d = [{
+                'id': elt.id, 
+                'name': elt.name, 
+                'disabled': self.is_empty(elt)
+            } for elt in villages]
+            
+            return self.render_to_json_response(sorted(d, key=lambda o: o['name']), safe=False)
+            
+        except AdministrativeLevel.DoesNotExist:
+            return self.render_to_json_response([], safe=False)
+    
+    def is_empty(self, village):
+        """check if village is empty (no phases, attachments and population)"""
+        phases = village.phases.all().count()
+        attachements = village.attachments.all().count()
+        return phases == 0 and attachements == 0 and village.total_population == 0
+
+
+class GetVillagesByCommuneView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
+    """
+    Get all villages for a commune
+    Structure : Commune → Arrondissement (CITY) → Village
+    """
+    def get(self, request, *args, **kwargs):
+        commune_id = request.GET.get('commune_id')
+        
+        if not commune_id:
+            return self.render_to_json_response([], safe=False)
+        
+        try:
+            commune = AdministrativeLevel.objects.get(
+                id=int(commune_id),
+                type=AdministrativeLevel.COMMUNE
+            )
+
+            villages = AdministrativeLevel.objects.filter(
+                type=AdministrativeLevel.VILLAGE,
+                parent__parent=commune  
+            ).distinct()
+            
+            d = [{
+                'id': elt.id, 
+                'name': elt.name, 
+                'disabled': self.is_empty(elt)
+            } for elt in villages]
+            
+            return self.render_to_json_response(sorted(d, key=lambda o: o['name']), safe=False)
+            
+        except AdministrativeLevel.DoesNotExist:
+            return self.render_to_json_response([], safe=False)
+    
+    def is_empty(self, village):
+        """check if village is empty"""
+        phases = village.phases.all().count()
+        attachements = village.attachments.all().count()
+        return phases == 0 and attachements == 0 and village.total_population == 0
+
+
+class GetVillagesByCityView(AJAXRequestMixin, LoginRequiredApproveRequiredMixin, JSONResponseMixin, generic.View):
+    """
+    Get all villages for City (arrondissement)
+    Structure : Arrondissement (CITY) → Village
+    """
+    def get(self, request, *args, **kwargs):
+        city_id = request.GET.get('city_id')
+        
+        if not city_id:
+            return self.render_to_json_response([], safe=False)
+        
+        villages = AdministrativeLevel.objects.filter(
+            parent_id=int(city_id),
+            type=AdministrativeLevel.VILLAGE
+        )
+        
+        d = [{
+            'id': elt.id, 
+            'name': elt.name, 
+            'disabled': self.is_empty(elt)
+        } for elt in villages]
+        
+        return self.render_to_json_response(sorted(d, key=lambda o: o['name']), safe=False)
+    
+    def is_empty(self, village):
+        phases = village.phases.all().count()
+        attachements = village.attachments.all().count()
+        return phases == 0 and attachements == 0 and village.total_population == 0

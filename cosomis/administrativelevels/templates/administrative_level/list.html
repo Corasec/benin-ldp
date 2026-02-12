@@ -79,152 +79,211 @@
     {% block javascript %}
     {{ block.super }}
 
-    <script type="text/javascript">
+<script type="text/javascript">
+    var url_village = "";
+    var current_villages_data = [];
 
-        var url_village= "";
-
-        function set_datas(element, data) {
-
-            let options = '';
-            $.each(data, function (index, value) {
-                let option = '<option value="' + value.id + '">';
-
-                option += value.name + '</option>';
-                options += option
-            });
-
-            element.html(options);
-            element.val(null).trigger('change');
-        }
-
-
-        var administrative_level_ids = ["id_department", "id_commune", "id_city"];
-        var administrative_level_ids_length = administrative_level_ids.length;
-         document.getElementById("seeVillage").style.display = "none";
-         document.getElementById("villages_title").style.display = "none"
-          // Parcourir les identifiants et griser les champs sauf id_department
-          administrative_level_ids.forEach(function(id) {
-            var element = document.getElementById(id);
-            if (id !== "id_department") {
-              element.disabled = true; // Désactive le champ
-
-            }
-          });
-
-        $(document).ready(function () {
-
-                $('.adl-filter select').on("change", function () {
-                    let elt_id = $(this).attr('id');
-                    if(elt_id && administrative_level_ids.includes(elt_id) && $(this).val() && $(this).val() != '') {
-                        const type = elt_id.split('_')[1].toLowerCase();
-                        const identifier = `check_`+ type ;
-                        document.getElementById(identifier).style.display = "block";
-                        let url = `{% url 'administrativelevels:list' %}` + type + '/' + $(this).val();
-                        document.getElementById(identifier).setAttribute('href', url);
-
-                        $.ajax({
-                            type: 'GET',
-                            url: "{% url 'administrativelevels:utils:get_choices_for_next_administrative_level_no_condition' %}",
-                            data: {
-                                parent_id: $(this).val(),
-                            },
-
-                            success: function (data) {
-
-                                let next_index_adl_id = null;
-                                try{
-                                    next_index_adl_id = administrative_level_ids.indexOf(elt_id) + 1;
-                                }catch(e){
-                                    //id don't exist
-                                }
-                                if (elt_id == "id_country") {
-                                    set_datas($(`#id_department`), data);
-                                }
-                                else if (elt_id == "id_department") {
-                                    set_datas($(`#id_commune`), data);
-                                }
-                                else if (elt_id == "id_commune") {
-                                    set_datas($(`#id_city`), data);
-                                }
-                                else if (elt_id == "id_city") {
-                                    let container = $("#search_results")
-                                    container.html('');
-                                    let container_txt_html = "";
-                                    data.forEach(function (item, index) {
-                                        
-                                        if (item.disabled){
-                                            container_txt_html += `<input type='radio' class='radio-button-search' name='options' value="${item.id}" id="${item.id}" disabled> `;
-                                            container_txt_html += `<label for="${item.id}" class="text-muted">${item.name}</label> &nbsp; &nbsp; &nbsp; `;
-                                        }else{
-                                            container_txt_html += `<input type='radio' class='radio-button-search' name='options' value="${item.id}" id="${item.id}"> `;
-                                            container_txt_html += `<label for="${item.id}">${item.name}</label> &nbsp; &nbsp; &nbsp; `;
-                                        }
-
-
-                                        if ( container_txt_html !== ""){
-                                            document.getElementById("seeVillage").style.display = "block";
-                                            document.getElementById("villages_title").style.display = "block";
-                                        }
-
-                                    });
-
-                                    container.html(container_txt_html);
-
-                                    $(".radio-button-search").click(function(event){
-                                       let url = `{% url "administrativelevels:village_detail" 0 %}`.replace('0', this.value);
-                                        url_village = url;
-                                        document.getElementById("seeVillage").style.display = "block";
-                                        //window.location.href = url;
-                                        document.getElementById("seeVillage").disabled = false;
-                                        document.getElementById("seeVillage").setAttribute('href', url);
-                                    });
-                                    if(url_village == ""){
-                                        document.getElementById("seeVillage").disabled = true;
-                                    }
-
-
-                                    $("#seeVillage").click(function(event){
-                                        window.location.href = url_village;
-                                    });
-                                    container[0].style.display = "block";
-                                }
-                                let i_start = 0
-                                if(next_index_adl_id !== null ){
-                                    $(`#${administrative_level_ids[next_index_adl_id]}`).prop('disabled', false);
-                                    i_start = next_index_adl_id+1;
-                                }
-                            },
-                            error: function (data) {
-                                alert(error_server_message + "Error " + data.status);
-                                $(`#${elt_id}`).attr('disabled', false);
-                            }
-                        }).done(function () {
-                            $(`#${elt_id}`).attr('disabled', false);
-                        });
-                    } else {
-                        const next_index = administrative_level_ids.indexOf(elt_id);
-
-                        for(let i=next_index; i < administrative_level_ids_length; i++) {
-                            const elt_id = administrative_level_ids[i]
-                            const type = elt_id.split('_')[1].toLowerCase();
-                            const identifier = `check_`+ type ;
-
-                            $(`#${elt_id}`).val(null).trigger('change.select2');
-                            document.getElementById(identifier).style.display = "none";
-                            if (i !== next_index) {
-                                $(`#${elt_id}`).prop('disabled', true);
-                            }
-                            if (i == administrative_level_ids_length - 1) {
-                                document.getElementById("villages_title").style.display = "none";
-                                document.getElementById("search_results").style.display = "none";
-                            }
-                        }
-                    }
-
-                });
-
+    function set_datas(element, data) {
+        let options = '';
+        $.each(data, function (index, value) {
+            let option = '<option value="' + value.id + '">';
+            option += value.name + '</option>';
+            options += option
         });
-    </script>
+        element.html(options);
+        element.val(null).trigger('change');
+    }
+
+    function display_villages(villages_data) {
+        let container = $("#search_results");
+        container.html('');
+        let container_txt_html = "";
+        
+        if (villages_data && villages_data.length > 0) {
+            villages_data.forEach(function (item, index) {
+                if (item.disabled) {
+                    container_txt_html += `<input type='radio' class='radio-button-search' name='options' value="${item.id}" id="${item.id}" disabled> `;
+                    container_txt_html += `<label for="${item.id}" class="text-muted">${item.name}</label> &nbsp; &nbsp; &nbsp; `;
+                } else {
+                    container_txt_html += `<input type='radio' class='radio-button-search' name='options' value="${item.id}" id="${item.id}"> `;
+                    container_txt_html += `<label for="${item.id}">${item.name}</label> &nbsp; &nbsp; &nbsp; `;
+                }
+            });
+            
+            document.getElementById("seeVillage").style.display = "block";
+            document.getElementById("villages_title").style.display = "block";
+            container.html(container_txt_html);
+            
+            $(".radio-button-search").click(function(event) {
+                let url = `{% url "administrativelevels:village_detail" 0 %}`.replace('0', this.value);
+                url_village = url;
+                document.getElementById("seeVillage").style.display = "block";
+                document.getElementById("seeVillage").disabled = false;
+                document.getElementById("seeVillage").setAttribute('href', url);
+            });
+            
+            if(url_village == "") {
+                document.getElementById("seeVillage").disabled = true;
+            }
+        } else {
+            container.html("<p class='text-muted'>{% translate 'No villages found' %}</p>");
+            document.getElementById("seeVillage").style.display = "none";
+            document.getElementById("villages_title").style.display = "none";
+        }
+        container[0].style.display = "block";
+    }
+
+    function load_villages_by_department(department_id) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'administrativelevels:utils:get_villages_by_department' %}",
+            data: {
+                department_id: department_id,
+            },
+            success: function(data) {
+                current_villages_data = data;
+                display_villages(data);
+            },
+            error: function(data) {
+                console.error("Error loading villages:", data);
+            }
+        });
+    }
+
+    function filter_villages_by_commune(commune_id) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'administrativelevels:utils:get_villages_by_commune' %}",
+            data: {
+                commune_id: commune_id,
+            },
+            success: function(data) {
+                current_villages_data = data;
+                display_villages(data);
+            },
+            error: function(data) {
+                console.error("Error filtering villages:", data);
+            }
+        });
+    }
+
+    function filter_villages_by_city(city_id) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'administrativelevels:utils:get_villages_by_city' %}",
+            data: {
+                city_id: city_id,
+            },
+            success: function(data) {
+                current_villages_data = data;
+                display_villages(data);
+            },
+            error: function(data) {
+                console.error("Error filtering villages:", data);
+            }
+        });
+    }
+
+    var administrative_level_ids = ["id_department", "id_commune", "id_city"];
+    var administrative_level_ids_length = administrative_level_ids.length;
+    
+    document.getElementById("seeVillage").style.display = "none";
+    document.getElementById("villages_title").style.display = "none";
+    
+    administrative_level_ids.forEach(function(id) {
+        var element = document.getElementById(id);
+        if (id !== "id_department") {
+            element.disabled = true;
+        }
+    });
+
+    $(document).ready(function() {
+        $('.adl-filter select').on("change", function() {
+            let elt_id = $(this).attr('id');
+            let selected_value = $(this).val();
+            
+            if (elt_id && administrative_level_ids.includes(elt_id) && selected_value && selected_value != '') {
+                const type = elt_id.split('_')[1].toLowerCase();
+                const identifier = `check_` + type;
+                document.getElementById(identifier).style.display = "block";
+                let url = `{% url 'administrativelevels:list' %}` + type + '/' + $(this).val();
+                document.getElementById(identifier).setAttribute('href', url);
+
+                // load villages depending of level
+                if (elt_id == "id_department") {
+                    load_villages_by_department(selected_value);
+                    $("#id_commune, #id_city").val(null).trigger('change.select2');
+                    $("#id_commune, #id_city").prop('disabled', true);
+                    $("#id_commune").prop('disabled', false);
+                    
+                } else if (elt_id == "id_commune") {
+                    filter_villages_by_commune(selected_value);
+                    $("#id_city").val(null).trigger('change.select2');
+                    $("#id_city").prop('disabled', false);
+                    
+                } else if (elt_id == "id_city") {
+                    filter_villages_by_city(selected_value);
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'administrativelevels:utils:get_choices_for_next_administrative_level_no_condition' %}",
+                    data: {
+                        parent_id: $(this).val(),
+                    },
+                    success: function(data) {
+                        let next_index_adl_id = null;
+                        try {
+                            next_index_adl_id = administrative_level_ids.indexOf(elt_id) + 1;
+                        } catch(e) {}
+                        
+                        if (elt_id == "id_country") {
+                            set_datas($(`#id_department`), data);
+                        } else if (elt_id == "id_department") {
+                            set_datas($(`#id_commune`), data);
+                        } else if (elt_id == "id_commune") {
+                            set_datas($(`#id_city`), data);
+                        }
+                        
+                        let i_start = 0;
+                        if (next_index_adl_id !== null) {
+                            $(`#${administrative_level_ids[next_index_adl_id]}`).prop('disabled', false);
+                            i_start = next_index_adl_id + 1;
+                        }
+                    },
+                    error: function(data) {
+                        alert(error_server_message + "Error " + data.status);
+                        $(`#${elt_id}`).attr('disabled', false);
+                    }
+                }).done(function() {
+                    $(`#${elt_id}`).attr('disabled', false);
+                });
+                
+            } else {
+                const next_index = administrative_level_ids.indexOf(elt_id);
+                
+                for (let i = next_index; i < administrative_level_ids_length; i++) {
+                    const elt_id = administrative_level_ids[i];
+                    const type = elt_id.split('_')[1].toLowerCase();
+                    const identifier = `check_` + type;
+                    
+                    $(`#${elt_id}`).val(null).trigger('change.select2');
+                    document.getElementById(identifier).style.display = "none";
+                    
+                    if (i !== next_index) {
+                        $(`#${elt_id}`).prop('disabled', true);
+                    }
+                    
+                    if (elt_id == "id_department") {
+                        document.getElementById("villages_title").style.display = "none";
+                        document.getElementById("search_results").style.display = "none";
+                        current_villages_data = [];
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
 {% block select2 %}
 <script src="{% static '\admin\js\vendor\select2\i18n\fr.js' %}"></script>
