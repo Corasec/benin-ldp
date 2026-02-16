@@ -189,8 +189,38 @@ class AdministrativeLevelDetailView(
         if "object" in context:
             context["title"] = "%s %s" % (_(context['object'].type), context['object'].name)
             if context["object"].is_village():
-                context["investments"] = self.__investment_repository.find_by_criteria(InvestmentCriteria(administrative_level=self.object))
+                # context["investments"] = self.__investment_repository.find_by_criteria(InvestmentCriteria(administrative_level=self.object))
+                village_investments = Investment.objects.filter(
+                    administrative_level=context["object"],
+                    investment_status=Investment.PRIORITY
+                ).select_related('sector', 'funded_by')
+                
+                context["investments"] = village_investments
+                context["priorities_count"] = village_investments.count()
+                
+                package = Package.objects.get_active_cart(user=self.request.user)
+                context["cart_items_id"] = [inv.id for inv in package.funded_investments.all()]
+                
                 context['geo_segment'] = context["object"].geo_segment
+                # filter logic
+                queryset = village_investments
+                
+                if "sector-filter" in self.request.GET:
+                    queryset = queryset.filter(sector_id=self.request.GET["sector-filter"])
+                
+                if "endorsed-by" in self.request.GET:
+                    endorsed_by = self.request.GET["endorsed-by"]
+                    if endorsed_by:
+                        queryset = queryset.filter(**{endorsed_by: True})
+                
+                
+                sector_ids = village_investments.values_list('sector', flat=True).distinct()
+                context["sectors"] = Sector.objects.filter(id__in=sector_ids)
+                
+                # cart
+                package = Package.objects.get_active_cart(user=self.request.user)
+                context["cart_items_id"] = [inv.id for inv in package.funded_investments.all()]
+
         admin_level = context.get("object")
 
 
@@ -237,6 +267,7 @@ class AdministrativeLevelDetailView(
             user=self.request.user
         )
         context["cart_items_id"] = [inv.id for inv in package.funded_investments.all()]
+        context["planning_status"]["priorities_identified"] = context.get("priorities_count", 0)
 
         return context
 
