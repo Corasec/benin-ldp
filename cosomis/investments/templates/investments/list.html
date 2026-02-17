@@ -459,7 +459,8 @@
                         <table class="table rounded-table table-striped" style="width: 100%;">
                             <thead>
                                 <th data-priority="1" class="align-middle border-top-left-corner"><input class="" id="checkbox-select-all" type="checkbox" checked></th>
-                                <th data-priority="2" class="align-middle rounded-0 border-0">{% translate 'Name' %}</th>
+                                <th data-priority="2" class="align-middle rounded-0 border-0">{% translate 'Type' %}</th>
+                                <th data-priority="2" class="align-middle rounded-0 border-0">{% translate 'Description' %}</th>
                                 <th data-priority="3" class="align-middle rounded-0 border-0">{% translate 'Source' %}</th>
                                 <th data-priority="4" class="align-middle rounded-0 border-0">{% translate 'Estimate cost' %}</th>
                                 <th data-priority="5" class="align-middle rounded-0 border-0">{% translate 'Village' %}</th>
@@ -476,6 +477,7 @@
                                 <input class="project-table-check" id="checkbox-{{ investment.id }}" value="{{ investment.id }}" type="checkbox" checked>
                             </td>
                             <td>{{ investment.sector.name }}</td>
+                            <td>{{ investment.title }}</td>
                             <td>{{ investment.administrative_level.type }}</td>
                             <td data-order="{{ investment.estimated_cost }}" data-search="{{ investment.estimated_cost }}">
                                 {{ investment.estimated_cost|intcomma }} FCFA

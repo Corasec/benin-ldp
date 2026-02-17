@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from investments.models import Investment
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -26,12 +27,25 @@ class InvestmentSerializer(serializers.ModelSerializer):
                 obj.id) + '" type="checkbox">'
         return '<input class="project-table-check" id="checkbox-' + str(obj.id) + '" value="' + str(
             obj.id) + '" type="checkbox" checked>'
+    
+    def get_title(self, obj):
+        if obj.title == 'Autre':
+            description = obj.description if obj.description else '-'
+            return ('<a '
+                    'href="#" data-container="body" data-toggle="popover" '
+                    'data-placement="top" data-trigger="hover" '
+                    'data-content="{}">'
+                    '{}'
+                    '</a>').format(description, obj.title)
+        else:
+            return obj.title
 
     def get_administrative_level__type(self, obj):
         return obj.administrative_level.type
 
     def get_administrative_level__name(self, obj):
-        return obj.administrative_level.name
+        url = reverse('administrativelevels:village_detail', args=[obj.administrative_level.id])
+        return '<a href="{}" target="_blank">{}</a>'.format(url, obj.administrative_level.name)
 
     def get_administrative_level__parent__name(self, obj):
         return obj.administrative_level.parent.name
