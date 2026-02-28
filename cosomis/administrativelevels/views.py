@@ -170,6 +170,7 @@ class AdministrativeLevelDetailView(
     active_level1 = "administrative_levels"
 
     def __init__(self):
+        super().__init__()
         self.__investment_repository = DbInvestmentRepository()
 
     def post(self, request, *args, **kwargs):
@@ -223,7 +224,7 @@ class AdministrativeLevelDetailView(
 
         admin_level = context.get("object")
 
-
+        context["ancestors"] = admin_level.get_ancestors()
         context["context_object_name"] = admin_level.type.lower()
 
         context['phases'] = self._get_planning_cycle()
