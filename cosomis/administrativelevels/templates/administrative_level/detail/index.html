@@ -8,6 +8,24 @@
 {% endblock %}
 
 
+{% block custom_title %}
+    {{ block.super }}
+    {% if ancestors %}
+    <div class="col-sm-12 mt-1">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 mb-0" style="font-size: 0.9rem;">
+                {% for ancestor in ancestors %}
+                <li class="breadcrumb-item">
+                    <a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a>
+                </li>
+                {% endfor %}
+                <li class="breadcrumb-item active" aria-current="page">{{ object.name }}</li>
+            </ol>
+        </nav>
+    </div>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     <div class="row mb-4">
         <div class="col-md-8 col-12">
@@ -124,7 +142,7 @@
 {#                                                                      href="#village_population">{% translate "Village population" %}</a>#}
 {#                            </li>#}
                             <li class="nav-item btn p-0 pl-2 pr-2"><a class="nav-link" data-toggle="tab"
-                                                                      href="#infrastructure_services">{% translate "Infrastructure and Services" %}</a>
+                                                                      href="#infrastructure_services">{% translate "Markets and AGR" %}</a>
                             </li>
                             <li class="nav-item btn p-0 pl-2 pr-2"><a class="nav-link" data-toggle="tab"
                                                                       href="#planning_cycle">{% translate "Planning Cycle" %}</a>
@@ -201,7 +219,7 @@
                                         <div class="col-12">
                                             <div class="card">
                                                 <div class="card-body">
-                                                    <h5>{% translate "Infrastructure and Services" %}</h5>
+                                                    <h5>{% translate "Markets and AGR" %}</h5>
                                                     <div id="infrastructure_and_services"></div>
                                                 </div>
 

@@ -106,6 +106,26 @@ class AdministrativeLevel(BaseModel):
             return assign.facilitator
         return None
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        type_to_url = {
+            self.VILLAGE: 'administrativelevels:village_detail',
+            self.CITY: 'administrativelevels:city_detail',
+            self.COMMUNE: 'administrativelevels:commune_detail',
+            self.DEPARTMENTS: 'administrativelevels:department_detail',
+            self.COUNTRY: 'administrativelevels:country_detail',
+        }
+        url_name = type_to_url.get(self.type, 'administrativelevels:detail')
+        return reverse(url_name, kwargs={'pk': self.pk})
+
+    def get_ancestors(self):
+        ancestors = []
+        current = self.parent
+        while current:
+            ancestors.insert(0, current)
+            current = current.parent
+        return ancestors
+
     def is_village(self):
         return self.type.lower() == self.VILLAGE.lower()
 
