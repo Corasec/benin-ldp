@@ -112,6 +112,14 @@
         ]
     },
     {
+        "name": "Énergie et éclairage",
+        "sectors": [
+            "Éclairage public solaire",
+            "Électrification rurale hors réseau",
+            "Extension du réseau électrique"
+        ]
+    },
+    {
         "name": "Autre",
         "sectors": [
             "Autre"
