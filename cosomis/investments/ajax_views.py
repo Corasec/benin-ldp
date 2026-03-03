@@ -1,7 +1,8 @@
 import math
 from xml.sax.handler import property_interning_dict
 
-from django.db.models import Count, Q, Subquery, F, Sum
+from django.db.models import Count, Q, Subquery, F, Sum, FloatField
+from django.db.models.functions import Coalesce, Cast
 from django.http import JsonResponse
 from django.views import View
 
@@ -323,25 +324,45 @@ class StatisticsView(View):
             }
 
 
-        # Fetch subprojects that have non-null latitude and longitude
-        subprojects_with_coordinates = investments.exclude(
-            latitude__isnull=True,
-            longitude__isnull=True
+        # Fetch subprojects with coordinates, falling back to the administrative
+        # level's coordinates when the investment has none of its own.
+        subprojects_with_coordinates = investments.annotate(
+            effective_lat=Coalesce(
+                Cast('latitude', FloatField()),
+                Cast('administrative_level__latitude', FloatField()),
+            ),
+            effective_lng=Coalesce(
+                Cast('longitude', FloatField()),
+                Cast('administrative_level__longitude', FloatField()),
+            ),
+        ).exclude(
+            effective_lat__isnull=True,
+            effective_lng__isnull=True,
         ).values(
             'id',
             'title',
             'administrative_level__name',
-            'latitude',
-            'longitude',
+            'effective_lat',
+            'effective_lng',
             'sector__name',
             'sector__category__name',
-            'physical_execution_rate'
+            'physical_execution_rate',
         )
 
-        # Filter out subprojects with NaN latitude or longitude
+        # Filter out NaN values and normalise keys to latitude/longitude
         filtered_subprojects = [
-            subproject for subproject in subprojects_with_coordinates
-            if not (math.isnan(subproject['latitude']) or math.isnan(subproject['longitude']))
+            {
+                'id': sp['id'],
+                'title': sp['title'],
+                'administrative_level__name': sp['administrative_level__name'],
+                'latitude': float(sp['effective_lat']),
+                'longitude': float(sp['effective_lng']),
+                'sector__name': sp['sector__name'],
+                'sector__category__name': sp['sector__category__name'],
+                'physical_execution_rate': sp['physical_execution_rate'],
+            }
+            for sp in subprojects_with_coordinates
+            if not (math.isnan(float(sp['effective_lat'])) or math.isnan(float(sp['effective_lng'])))
         ]
 
         data = {
