@@ -19,46 +19,46 @@
             </div>
             <div aria-labelledby="headingTwo" class="collapse show" id="collapseTwo">
                 <div class="card-body">
+                    <div class="mb-2">
+                        <a href="{% url 'cdd_funnel:export_csv' %}" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-csv"></i> {% translate 'Download report' %}
+                        </a>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table id="villages-datatable" class="table table-hover table-bordered dataTable dtr-inline">
                             <thead>
                                 <tr>
                                     <th>{% translate 'Name' %}</th>
                                     <th>{% translate 'Uncompleted tasks' %}</th>
+                                    <th>{% translate 'Phase' %}</th>
+                                    <th>{% translate 'Phase Order' %}</th>
+                                    <th>{% translate 'Activity' %}</th>
+                                    <th>{% translate 'Activity Order' %}</th>
+                                    <th>{% translate 'Task' %}</th>
+                                    <th>{% translate 'Task Order' %}</th>
+                                    <th>{% translate 'Administrative Unit' %}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% with villages as villages %}
-                                {% for village in villages %}
-                                    <tr>
-                                        <td class="text-left">
-                                            <a href="{% url 'administrativelevels:village_detail' village.id %}">
-                                                {{ village.name }}
-                                            </a>
-                                        </td>
-                                        <td>{{ village.uncompleted_tasks }}</td>
-                                    </tr>
-                                {% endfor %}
-                            {% endwith %}
+                            {% for village in villages %}
+                                <tr>
+                                    <td class="text-left">
+                                        <a href="{% url 'administrativelevels:village_detail' village.id %}">
+                                            {{ village.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ village.uncompleted_tasks }}</td>
+                                    <td>{{ village.phase }}</td>
+                                    <td>{{ village.phase.order }}</td>
+                                    <td>{{ village.activity }}</td>
+                                    <td>{{ village.activity.order }}</td>
+                                    <td>{{ village.task }}</td>
+                                    <td>{{ village.task.order }}</td>
+                                    <td>{{ village.administrative_unit }}</td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
-                        <div class="pagination">
-                            <span class="step-links">
-                                {% if page_obj.has_previous %}
-                                    <a href="?page=1">&laquo; first</a>
-                                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                                {% endif %}
-
-                                <span class="current">
-                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                                </span>
-
-                                {% if page_obj.has_next %}
-                                    <a href="?page={{ page_obj.next_page_number }}">next</a>
-                                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                                {% endif %}
-                            </span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -96,18 +96,11 @@
 {{ block.super }}
 <script type="text/javascript">
     $( document ).ready(function() {
-
-        $('.user-form-action').on('click', function(){
-
-            let user_id = $(this).attr('name');
-            let action = $(this).attr('id').split('-')[0];
-
-            $('#action-input-form-' + user_id).attr('value', action);
-
-            $('#approve-user-form-id-' + user_id).submit();
-
+        $('#villages-datatable').DataTable({
+            responsive: true,
+            pageLength: 25,
+            order: [[1, 'desc']],
         });
-
     });
 </script>
 {% endblock %}
